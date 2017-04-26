@@ -12,6 +12,13 @@ As per usual for my projects, ```iOSOpenDev``` will be required for compilation.
 That said, the maintainer scripts are all ```theos``` projects, and so providing a makefile for the Extender-Extensions and Extender-Installer directories should
 suffice.
 
+Pre-requisites
+=============
+
+This package depends upon:
+- ```ldid```
+- uikittools for ```uicache```
+
 Clever Bits
 ===========
 
