@@ -1,0 +1,17 @@
+Package: com.matchstic.Extender-Extensions
+Name: Extender-Extensions
+Version: 1.0-1
+Description: 
+Section: System
+Depends: firmware (>= 5.0), mobilesubstrate
+Conflicts: 
+Replaces: 
+Priority: optional
+Architecture: iphoneos-arm
+Author: Matt Clarke
+dev: 
+Homepage: 
+Depiction: 
+Maintainer: 
+Icon: 
+

@@ -1,0 +1,8 @@
+//
+// Prefix header for all source files of the 'Extender-Installer' target in the 'Extender-Installer' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <_Prefix/HBLog.h>
+#endif
