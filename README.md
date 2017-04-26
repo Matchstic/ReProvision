@@ -64,3 +64,8 @@ License
 Licensed under the BSD 2-Clause License.
 
 If you distribute this package on a repository, be aware that I will not provide any support whatsoever for users of it on said repository.  
+
+Other Notes
+==========
+
+I'm aware that there is another implementation of this idea from @julioverne. Please note that inspiration was used from him, though this is all original code.
