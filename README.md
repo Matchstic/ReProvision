@@ -1,7 +1,7 @@
 Extender Installer
 =================
 
-This package will automatically install the latest version of Cydia Extender onto the user's device during installation, and also provides a number of modifications, such as:
+This package will automatically install the latest version of [Cydia Extender](http://www.idownloadblog.com/2017/03/11/cydia-impactor-update-extender-release/) onto the user's device during installation, and also provides a number of modifications, such as:
 
 - Automatic re-signing of locally provisioned applications.
 - Installation of locally provisioned applications without the use of saurik's VPN.
