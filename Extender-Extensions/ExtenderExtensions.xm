@@ -132,11 +132,7 @@ dispatch_queue_t resignQueue;
     // We can assume that some users will not want any notifications at all.
     // Thus, provide a setting for that.
     
-    if ([title rangeOfString:@"Debug"].location != NSNotFound && ![EEResources shouldShowDebugAlerts]) {
-        return;
-    }
-    
-    if (![EEResources shouldShowAlerts]) {
+    if ([title isEqualToString:@"Debug"] && ![EEResources shouldShowDebugAlerts]) {
         return;
     }
     
@@ -184,6 +180,12 @@ dispatch_queue_t resignQueue;
 }
 
 %new
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+    // Ensure that alerts will display in-app.
+    completionHandler(UNNotificationPresentationOptionAlert);
+}
+
+%new
 - (void)_requestAppleDeveloperLogin {
     [EEResources signInWithCallback:^(BOOL result) {}];
 }
@@ -206,7 +208,10 @@ dispatch_queue_t resignQueue;
     
     // Register to send the user notifications.
     if ([self respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-        [self registerUserNotificationSettings:[objc_getClass("UIUserNotificationSettings") settingsForTypes:7 categories:nil]];
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIRemoteNotificationTypeAlert) categories:nil];
+        [self registerUserNotificationSettings:settings];
+        
+        //[self registerUserNotificationSettings:[objc_getClass("UIUserNotificationSettings") settingsForTypes:7 categories:nil]];
         [self registerForRemoteNotifications];
     } else {
         [self registerForRemoteNotificationTypes:7];
@@ -215,6 +220,12 @@ dispatch_queue_t resignQueue;
     // For responding to notifications.
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     center.delegate = (id<UNUserNotificationCenterDelegate>)self;
+
+    [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError * _Nullable error) {
+         if (error) {
+             // Failure to register for notifications.
+         }
+     }];
 }
 
 %new

@@ -1,3 +1,5 @@
 LatestBuild/
 *.deb
 Working/
+*.dylib
+.theos/

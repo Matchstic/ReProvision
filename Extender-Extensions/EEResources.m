@@ -10,6 +10,7 @@
 #import "SAMKeychain.h"
 #import "EEPackageDatabase.h"
 #import <UIKit/UIKit.h>
+#import <UserNotifications/UserNotifications.h>
 
 @interface Extender : UIApplication
 - (void)sendLocalNotification:(NSString*)title andBody:(NSString*)body;
@@ -27,6 +28,12 @@
 + (BOOL)shouldShowAlerts {
     id value = [[NSUserDefaults standardUserDefaults] objectForKey:@"showAlerts"];
     return value ? [value boolValue] : YES;
+}
+
+// How many days left until expiry.
++ (int)thresholdForResigning {
+    id value = [[NSUserDefaults standardUserDefaults] objectForKey:@"thresholdForResigning"];
+    return value ? [value intValue] : 2;
 }
 
 + (NSString*)username {
@@ -98,6 +105,11 @@
                     [EEResources storeUsername:userField.text andPassword:passField.text];
                     
                     [application sendLocalNotification:@"Sign In" andBody:@"Successfully signed in."];
+                    
+                    // Clear from notification center if needed.
+                    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+                    [center removeDeliveredNotificationsWithIdentifiers:@[@"login"]];
+                    [center removePendingNotificationRequestsWithIdentifiers:@[@"login"]];
                     
                     completionHandler(YES);
                     return;

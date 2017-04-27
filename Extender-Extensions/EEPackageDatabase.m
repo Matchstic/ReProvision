@@ -36,8 +36,6 @@
 - (id)isReachable:(id)arg1;
 @end
 
-#define RESIGN_THRESHOLD 5 // days, after the application was last signed.
-
 static EEPackageDatabase *sharedDatabase;
 
 // Codesigning stuff.
@@ -197,7 +195,7 @@ static NSDictionary *_getEntitlementsPlist() {
     [SSZipArchive createZipFileAtPath:[NSString stringWithFormat:@"%@/Unsigned/%@.ipa", EXTENDER_DOCUMENTS, bundleIdentifier] withContentsOfDirectory:[NSString stringWithFormat:@"%@/Unsigned/%@", EXTENDER_DOCUMENTS, bundleIdentifier]];
     
     // Cleanup.
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@Unsigned/%@", EXTENDER_DOCUMENTS, bundleIdentifier] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/Unsigned/%@", EXTENDER_DOCUMENTS, bundleIdentifier] error:nil];
     
     return [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/Unsigned/%@.ipa", EXTENDER_DOCUMENTS, bundleIdentifier]];
 }
@@ -261,17 +259,18 @@ static NSDictionary *_getEntitlementsPlist() {
         NSDateComponents *conversionInfo = [currCalendar components:unitFlags fromDate:now toDate:[package applicationExpireDate] options:0];
         int days = (int)[conversionInfo day];
         
-        if (days <= RESIGN_THRESHOLD) {
+        if (days <= [EEResources thresholdForResigning]) {
             [_installQueue addObject:[package bundleIdentifier]];
         }
     }
-    
-    [self _initiateNextInstallFromQueue];
     
     if (_installQueue.count == 0) {
         Extender *application = (Extender*)[UIApplication sharedApplication];
         [application sendLocalNotification:nil andBody:@"No applications need resigning at this time."];
     }
+    
+    // Note that this WILL modify the queue, so any checks for count should be done before.
+    [self _initiateNextInstallFromQueue];
 }
 
 - (void)_initiateNextInstallFromQueue {
@@ -297,11 +296,19 @@ static NSDictionary *_getEntitlementsPlist() {
     [self _buildIPAForExistingBundleIdentifier:[package bundleIdentifier]];
     
     Extender *application = (Extender*)[UIApplication sharedApplication];
-    [application sendLocalNotification:@"Debug" andBody:[NSString stringWithFormat:@"Requesting re-sign for: %@\nCreated the underlying IPA for this application.", [package applicationName]]];
+    [application sendLocalNotification:@"Debug" andBody:[NSString stringWithFormat:@"Requesting re-sign for: '%@'", [package applicationName]]];
     
     dispatch_async(_queue, ^{
         [application application:application openURL:[package packageURL] sourceApplication:application annotation:nil];
     });
+}
+
+- (void)errorDidOccur:(NSString*)message {
+    // When any error occurs, clear the installation queue so we can try again later.
+    [_installQueue removeAllObjects];
+    
+    // Now, display to the user we had an error.
+    
 }
 
 - (void)installPackageAtURL:(NSURL*)url withManifest:(NSDictionary*)manifest {

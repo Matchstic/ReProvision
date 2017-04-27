@@ -13,6 +13,7 @@
 + (BOOL)shouldShowDebugAlerts;
 + (BOOL)shouldShowAlerts;
 + (BOOL)shouldAutoSign;
++ (int)thresholdForResigning;
 
 + (NSString*)username;
 + (NSString*)password;

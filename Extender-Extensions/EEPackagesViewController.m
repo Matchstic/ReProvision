@@ -46,7 +46,7 @@
     [self.tableView registerClass:[EEPackagesCell class] forCellReuseIdentifier:REUSE];
     self.tableView.allowsSelection = NO;
     
-    UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc] initWithTitle:@"Re-Sign" style:UIBarButtonItemStylePlain target:self action:@selector(_resignApplicationsClicked:)];
+    UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc] initWithTitle:@"Re-sign" style:UIBarButtonItemStylePlain target:self action:@selector(_resignApplicationsClicked:)];
     self.navigationItem.leftBarButtonItem = anotherButton;
 }
 
@@ -82,7 +82,7 @@
 - (void)_resignApplicationsClicked:(id)sender {
     UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Application Re-Signing" message:@"Would you like to re-sign applications that are close to expiring?" preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction *attempt = [UIAlertAction actionWithTitle:@"Re-Sign" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+    UIAlertAction *attempt = [UIAlertAction actionWithTitle:@"Re-sign" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
         BOOL hasCachedUser = [EEResources username] != nil;
         
         if (!hasCachedUser) {
