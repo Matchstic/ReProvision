@@ -28,6 +28,8 @@
 - (EEPackage*)packageForIdentifier:(NSString*)bundleIdentifier;
 - (NSArray*)allPackages;
 
+- (void)errorDidOccur:(NSString*)message;
+
 - (void)resignApplicationsIfNecessaryWithTaskID:(UIBackgroundTaskIdentifier)bgTask;
 - (void)installPackageAtURL:(NSURL*)url withManifest:(NSDictionary*)manifest;
 

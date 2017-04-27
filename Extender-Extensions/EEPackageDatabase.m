@@ -244,7 +244,7 @@ static NSDictionary *_getEntitlementsPlist() {
     [application sendLocalNotification:@"Debug" andBody:@"Checking if any applications need signing."];
     
     NSDate *now = [NSDate date];
-    unsigned int unitFlags = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitMonth;
+    unsigned int unitFlags = NSCalendarUnitDay;
     NSCalendar *currCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     
     // Create installQueue if needed.
@@ -259,7 +259,7 @@ static NSDictionary *_getEntitlementsPlist() {
         NSDateComponents *conversionInfo = [currCalendar components:unitFlags fromDate:now toDate:[package applicationExpireDate] options:0];
         int days = (int)[conversionInfo day];
         
-        if (days <= [EEResources thresholdForResigning]) {
+        if (days < [EEResources thresholdForResigning]) {
             [_installQueue addObject:[package bundleIdentifier]];
         }
     }
@@ -307,8 +307,14 @@ static NSDictionary *_getEntitlementsPlist() {
     // When any error occurs, clear the installation queue so we can try again later.
     [_installQueue removeAllObjects];
     
-    // Now, display to the user we had an error.
+    // The meat of the error message is 2x \n in.
+    NSArray *split = [message componentsSeparatedByString:@"\n"];
     
+    NSString *errorMessage = [NSString stringWithFormat:@"%@\n(%@)", [split lastObject], [split objectAtIndex:1]];
+    
+    // Now, display to the user we had an error.
+    Extender *application = (Extender*)[UIApplication sharedApplication];
+    [application sendLocalNotification:@"Error" body:errorMessage withID:@"lastError"];
 }
 
 - (void)installPackageAtURL:(NSURL*)url withManifest:(NSDictionary*)manifest {

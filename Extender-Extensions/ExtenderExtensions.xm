@@ -232,7 +232,9 @@ dispatch_queue_t resignQueue;
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Did enter background!
     
-    [self beginResignRoutine:1];
+    // XXX: We do not need to call re-sign at this point, as real-world testing has proven that
+    // this is only reached when the Extender application moved from Foreground to Suspended.
+    //[self beginResignRoutine:1];
 }
 
 %new
@@ -319,6 +321,16 @@ dispatch_queue_t resignQueue;
             handler(attemptAction);
             [self _dismissWithAction:attemptAction];
         }
+    } else if ([self.title isEqualToString:@"Error"]) {
+        [[EEPackageDatabase sharedInstance] errorDidOccur:self.message];
+        
+        // There is only one action for an "error" alert.
+        UIAlertAction *closeAction = [self.actions firstObject];
+        
+        // XXX: Do we need to call it manually like this?
+        void (^handler)(UIAlertAction*) = closeAction.handler;
+        handler(closeAction);
+        [self _dismissWithAction:closeAction];
     } else {
         %orig;
     }

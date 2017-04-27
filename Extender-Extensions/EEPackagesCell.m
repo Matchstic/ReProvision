@@ -140,9 +140,9 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    self.icon.frame = CGRectMake(5, 5, 30, 30);
+    self.icon.frame = CGRectMake(10, 10, 30, 30);
     
-    CGFloat xOrigin = 40;
+    CGFloat xOrigin = 50;
     CGFloat yOrigin = 5;
     
     self.localisedTitleLabel.frame = CGRectMake(xOrigin, yOrigin, self.contentView.frame.size.width - xOrigin - 5, 25);

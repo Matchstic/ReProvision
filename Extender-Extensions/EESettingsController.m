@@ -7,6 +7,7 @@
 //
 
 #import "EESettingsController.h"
+#import "EETroubleshootController.h"
 #import "EEResources.h"
 
 @interface PSSpecifier (Private)
@@ -28,6 +29,7 @@
         // Create specifiers!
         [testingSpecs addObjectsFromArray:[self _appleIDSpecifiers]];
         [testingSpecs addObjectsFromArray:[self _alertSpecifiers]];
+        [testingSpecs addObjectsFromArray:[self _troubleshootSpecifiers]];
         
         _specifiers = testingSpecs;
     }
@@ -75,7 +77,7 @@
     NSMutableArray *array = [NSMutableArray array];
     
     PSSpecifier *group = [PSSpecifier groupSpecifierWithName:@"Configuration"];
-    [group setProperty:@"Set how close to an application's expiration date re-signs will occur." forKey:@"footerText"];
+    [group setProperty:@"Set how close to an application's expiration date before re-signs will occur." forKey:@"footerText"];
     [array addObject:group];
     
     /*PSSpecifier *showAlerts = [PSSpecifier preferenceSpecifierNamed:@"Show Alerts" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
@@ -98,6 +100,25 @@
     [threshold setProperty:@"thresholdForResigning" forKey:@"key"];
     
     [array addObject:threshold];
+    
+    return array;
+}
+
+- (NSArray*)_troubleshootSpecifiers {
+    NSMutableArray *array = [NSMutableArray array];
+    
+    PSSpecifier *group = [PSSpecifier groupSpecifierWithName:@""];
+    [array addObject:group];
+    
+    PSSpecifier* troubleshoot = [PSSpecifier preferenceSpecifierNamed:@"Troubleshooting"
+                                                            target:self
+                                                               set:NULL
+                                                               get:NULL
+                                                            detail:[EETroubleshootController class]
+                                                              cell:PSLinkCell
+                                                              edit:Nil];
+    
+    [array addObject:troubleshoot];
     
     return array;
 }
@@ -140,7 +161,22 @@
 
 - (id)readPreferenceValue:(PSSpecifier*)value {
     id val = [[NSUserDefaults standardUserDefaults] objectForKey:[value propertyForKey:@"key"]];
-    return val ? val : [val propertyForKey:@"default"];
+    
+    if (!val) {
+        // Defaults.
+        
+        NSString *key = [value propertyForKey:@"key"];
+        
+        if ([key isEqualToString:@"thresholdForResigning"]) {
+            return [NSNumber numberWithInt:2];
+        } else if ([key isEqualToString:@"showDebugAlerts"]) {
+            return [NSNumber numberWithBool:NO];
+        }
+        
+        return nil;
+    } else {
+        return val;
+    }
 }
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {

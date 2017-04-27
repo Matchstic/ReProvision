@@ -12,6 +12,10 @@
 		C92B32ED1EB1136000BF0D3B /* EESettingsController.h in Headers */ = {isa = PBXBuildFile; fileRef = C92B32EB1EB1135F00BF0D3B /* EESettingsController.h */; };
 		C92B32EE1EB1136000BF0D3B /* EESettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = C92B32EC1EB1135F00BF0D3B /* EESettingsController.m */; };
 		C92B32F81EB11DC700BF0D3B /* Preferences.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C92B32F41EB11C0B00BF0D3B /* Preferences.tbd */; };
+		C985B0891EB2534200F62695 /* EETroubleshootController.h in Headers */ = {isa = PBXBuildFile; fileRef = C985B0871EB2534200F62695 /* EETroubleshootController.h */; };
+		C985B08A1EB2534200F62695 /* EETroubleshootController.m in Sources */ = {isa = PBXBuildFile; fileRef = C985B0881EB2534200F62695 /* EETroubleshootController.m */; };
+		C985B08D1EB257F300F62695 /* EEMultipleLineCell.h in Headers */ = {isa = PBXBuildFile; fileRef = C985B08B1EB257F300F62695 /* EEMultipleLineCell.h */; };
+		C985B08E1EB257F300F62695 /* EEMultipleLineCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C985B08C1EB257F300F62695 /* EEMultipleLineCell.m */; };
 		C98D46911EA0DF320052812C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C936D75C1E9F5FA900F23D85 /* Foundation.framework */; };
 		C98D46A61EA0DFDB0052812C /* CydiaSubstrate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C936D7C51E9F715900F23D85 /* CydiaSubstrate.framework */; };
 		C98D46AA1EA0E06E0052812C /* ExtenderExtensions.mm in Sources */ = {isa = PBXBuildFile; fileRef = C98D46A81EA0E06E0052812C /* ExtenderExtensions.mm */; };
@@ -126,6 +130,10 @@
 		C936D7C11E9F668E00F23D85 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		C936D7C31E9F70B600F23D85 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/usr/lib/libz.dylib; sourceTree = DEVELOPER_DIR; };
 		C936D7C51E9F715900F23D85 /* CydiaSubstrate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CydiaSubstrate.framework; path = ../../../../../opt/iOSOpenDev/lib/CydiaSubstrate.framework; sourceTree = "<group>"; };
+		C985B0871EB2534200F62695 /* EETroubleshootController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EETroubleshootController.h; sourceTree = "<group>"; };
+		C985B0881EB2534200F62695 /* EETroubleshootController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EETroubleshootController.m; sourceTree = "<group>"; };
+		C985B08B1EB257F300F62695 /* EEMultipleLineCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EEMultipleLineCell.h; sourceTree = "<group>"; };
+		C985B08C1EB257F300F62695 /* EEMultipleLineCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EEMultipleLineCell.m; sourceTree = "<group>"; };
 		C98D46891EA0DDDE0052812C /* installdPatch.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = installdPatch.plist; path = Package/Library/MobileSubstrate/DynamicLibraries/installdPatch.plist; sourceTree = "<group>"; };
 		C98D46901EA0DF320052812C /* ExtenderExtensions.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ExtenderExtensions.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		C98D46961EA0DF320052812C /* control */ = {isa = PBXFileReference; lastKnownFileType = text; name = control; path = Package/DEBIAN/control; sourceTree = "<group>"; };
@@ -235,6 +243,10 @@
 			children = (
 				C92B32EB1EB1135F00BF0D3B /* EESettingsController.h */,
 				C92B32EC1EB1135F00BF0D3B /* EESettingsController.m */,
+				C985B0871EB2534200F62695 /* EETroubleshootController.h */,
+				C985B0881EB2534200F62695 /* EETroubleshootController.m */,
+				C985B08B1EB257F300F62695 /* EEMultipleLineCell.h */,
+				C985B08C1EB257F300F62695 /* EEMultipleLineCell.m */,
 			);
 			name = "Settings Controller";
 			sourceTree = "<group>";
@@ -566,10 +578,12 @@
 				C9DDCA1F1EA965120024CFF7 /* SSZipArchive.h in Headers */,
 				C90DC62E1EA8EFCC00F44463 /* EEPackageDatabase.h in Headers */,
 				C9DDCA151EA965120024CFF7 /* crypt.h in Headers */,
+				C985B08D1EB257F300F62695 /* EEMultipleLineCell.h in Headers */,
 				C9DDCA1D1EA965120024CFF7 /* zip.h in Headers */,
 				C9DDCA041EA965120024CFF7 /* aesopt.h in Headers */,
 				C98D46B21EA0E38D0052812C /* EEPackagesViewController.h in Headers */,
 				C9DDCA141EA965120024CFF7 /* sha1.h in Headers */,
+				C985B0891EB2534200F62695 /* EETroubleshootController.h in Headers */,
 				C9DDCA081EA965120024CFF7 /* brg_types.h in Headers */,
 				C9DDCA0E1EA965120024CFF7 /* hmac.h in Headers */,
 				C9DDCA1B1EA965120024CFF7 /* unzip.h in Headers */,
@@ -758,6 +772,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C985B08E1EB257F300F62695 /* EEMultipleLineCell.m in Sources */,
 				C9DDCA0D1EA965120024CFF7 /* hmac.c in Sources */,
 				C9DDCA161EA965120024CFF7 /* ioapi.c in Sources */,
 				C98D46AA1EA0E06E0052812C /* ExtenderExtensions.mm in Sources */,
@@ -771,6 +786,7 @@
 				C9F43D841EA920B2007F0EEB /* EEResources.m in Sources */,
 				C9F43D851EA920B6007F0EEB /* EEPackagesViewController.m in Sources */,
 				C9DDCA1C1EA965120024CFF7 /* zip.c in Sources */,
+				C985B08A1EB2534200F62695 /* EETroubleshootController.m in Sources */,
 				C9DDC9D61EA959DC0024CFF7 /* SAMKeychainQuery.m in Sources */,
 				C9DDC9CF1EA958130024CFF7 /* SAMKeychain.m in Sources */,
 				C9DDCA131EA965120024CFF7 /* sha1.c in Sources */,
