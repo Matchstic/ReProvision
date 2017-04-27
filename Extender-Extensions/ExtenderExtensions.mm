@@ -78,7 +78,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class NSFileManager; @class SBApplication; @class Extender; @class NEVPNConnection; @class UIAlertController; @class CyextTabBarController; @class NSURLSession; @class NETunnelProviderManager; @class NEVPNManager; 
+@class NEVPNManager; @class NSURLSession; @class UIAlertController; @class NETunnelProviderManager; @class NSFileManager; @class CyextTabBarController; @class SBApplication; @class Extender; @class NEVPNConnection; 
 
 
 #line 59 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
@@ -258,7 +258,9 @@ static void _logos_method$Extender$Extender$application$didFinishLaunchingWithOp
 static void _logos_method$Extender$Extender$applicationDidEnterBackground$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, UIApplication * application) {
     
     
-    [self beginResignRoutine:1];
+    
+    
+    
 }
 
 
@@ -534,7 +536,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationB
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_77d19a43(int argc, char **argv, char **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_79047c15(int argc, char **argv, char **envp) {
     {}
 
     

@@ -12,6 +12,9 @@
 #import "EEResources.h"
 
 @interface LSApplicationProxy : NSObject
+@property (nonatomic, readonly) long bundleModTime;
+@property (nonatomic, readonly) NSNumber *staticDiskUsage;
+@property (nonatomic, readonly) NSString *minimumSystemVersion;
 - (id)localizedName;
 + (instancetype)applicationProxyForIdentifier:(NSString*)arg1;
 - (id)primaryIconDataForVariant:(int)arg1;
@@ -167,7 +170,15 @@
     
     // We'll display a popup with some pertinant information regarding this application.
     
-    NSString *message = [NSString stringWithFormat:@"// TODO:\nAdd information here!"];
+    // staticDiskUsage (size in bytes)
+    // minimumSystemVersion
+    // installed time via bundleModTime.
+    
+    NSDate *bundleModifiedTimestamp = [NSDate dateWithTimeIntervalSinceReferenceDate:proxy.bundleModTime];
+    
+    CGFloat megabytes = [proxy.staticDiskUsage floatValue]/1024.0/1024.0;
+    
+    NSString *message = [NSString stringWithFormat:@"\nLast Signed Time\n%@\n\nInstall Size\n%.2f MB\n\nMinimum System Version\niOS %@", bundleModifiedTimestamp, megabytes, proxy.minimumSystemVersion];
     
     UIAlertController *controller = [UIAlertController alertControllerWithTitle:[proxy localizedName] message:message preferredStyle:UIAlertControllerStyleAlert];
     
