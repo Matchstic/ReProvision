@@ -6,8 +6,10 @@
 //
 //
 
-#import <Preferences/Preferences.h>
+#import <UIKit/UIKit.h>
 
-@interface EETroubleshootController : PSListController
+@interface EETroubleshootController : UITableViewController {
+    NSArray *_dataSauce;
+}
 
 @end

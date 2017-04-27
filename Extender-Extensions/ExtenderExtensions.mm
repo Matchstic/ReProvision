@@ -78,7 +78,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class NEVPNManager; @class NSURLSession; @class UIAlertController; @class NETunnelProviderManager; @class NSFileManager; @class CyextTabBarController; @class SBApplication; @class Extender; @class NEVPNConnection; 
+@class CyextTabBarController; @class NEVPNConnection; @class NSURLSession; @class Extender; @class SBApplication; @class NETunnelProviderManager; @class UIAlertController; @class NEVPNManager; @class NSFileManager; 
 
 
 #line 59 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
