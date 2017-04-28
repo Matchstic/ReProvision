@@ -16,6 +16,10 @@
 - (id)iconDataForVariant:(int)arg1;
 @end
 
+@interface UIImage (Private)
++ (UIImage *)_applicationIconImageForBundleIdentifier:(NSString *)bundleIdentifier format:(int)format scale:(CGFloat)scale;
+@end
+
 @implementation EEPackagesCell
 
 - (void)awakeFromNib {
@@ -80,16 +84,7 @@
     
     // icon.
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        UIImage *icon;
-        
-        if ([proxy respondsToSelector:@selector(primaryIconDataForVariant:)])
-            icon = [UIImage imageWithCGImage:(__bridge CGImageRef _Nonnull)([proxy primaryIconDataForVariant:2])];
-        else if ([proxy respondsToSelector:@selector(iconDataForVariant:)])
-            icon = [UIImage imageWithCGImage:(__bridge CGImageRef _Nonnull)([proxy iconDataForVariant:2])];
-        
-        if (!icon || icon.size.width == 0) {
-            icon = [UIImage imageNamed:@"unknown"];
-        }
+        UIImage *icon = [UIImage _applicationIconImageForBundleIdentifier:proxy.applicationIdentifier format:0 scale:[UIScreen mainScreen].scale];
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
             self.icon.image = icon;
