@@ -273,10 +273,6 @@ dispatch_queue_t resignQueue;
 
 #pragma mark Auto-fill user Apple ID details.
 
-// There is a possibility here that the user's development certificate needs to be revoked for some reason.
-// Error is "provison.cpp:81\nios/submitDevelopmentCSR =7460"
-// Thus, we will attempt to automatically handle that here.
-
 %hook UIAlertController
 
 - (void)_logBeingPresented {
@@ -318,6 +314,7 @@ dispatch_queue_t resignQueue;
             handler(attemptAction);
             [self _dismissWithAction:attemptAction];
         }
+        // XXX: Handle errors.
     } else if ([self.title isEqualToString:@"Error"]) {
         [[EEPackageDatabase sharedInstance] errorDidOccur:self.message];
         

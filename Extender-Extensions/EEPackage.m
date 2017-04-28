@@ -8,7 +8,6 @@
 
 #import "EEPackage.h"
 #import "EEResources.h"
-#import "PartialZip/PartialZip/PZFileBrowser.h"
 #import "SSZipArchive.h"
 #import "EEPackageDatabase.h"
 

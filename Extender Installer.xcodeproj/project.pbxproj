@@ -75,8 +75,6 @@
 		C9F43D841EA920B2007F0EEB /* EEResources.m in Sources */ = {isa = PBXBuildFile; fileRef = C9F43D7F1EA9208F007F0EEB /* EEResources.m */; };
 		C9F43D851EA920B6007F0EEB /* EEPackagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C98D46B11EA0E38D0052812C /* EEPackagesViewController.m */; };
 		C9F43D861EA920B9007F0EEB /* EEPackagesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C98D46B51EA0E3A10052812C /* EEPackagesCell.m */; };
-		C9F43D8C1EA92720007F0EEB /* PartialZip.h in Headers */ = {isa = PBXBuildFile; fileRef = C9F43D891EA92720007F0EEB /* PartialZip.h */; };
-		C9F43D8D1EA92720007F0EEB /* PZFileBrowser.h in Headers */ = {isa = PBXBuildFile; fileRef = C9F43D8A1EA92720007F0EEB /* PZFileBrowser.h */; };
 		C9F43D8F1EA92751007F0EEB /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C936D7C11E9F668E00F23D85 /* libz.tbd */; };
 /* End PBXBuildFile section */
 
@@ -208,9 +206,6 @@
 		C9F43D701EA91CC7007F0EEB /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		C9F43D7E1EA9208F007F0EEB /* EEResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EEResources.h; sourceTree = "<group>"; };
 		C9F43D7F1EA9208F007F0EEB /* EEResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EEResources.m; sourceTree = "<group>"; };
-		C9F43D891EA92720007F0EEB /* PartialZip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartialZip.h; sourceTree = "<group>"; };
-		C9F43D8A1EA92720007F0EEB /* PZFileBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PZFileBrowser.h; sourceTree = "<group>"; };
-		C9F43D8B1EA92720007F0EEB /* PZFileBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PZFileBrowser.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -301,6 +296,7 @@
 			children = (
 				C98D46A91EA0E06E0052812C /* ExtenderExtensions.xm */,
 				C98D46A81EA0E06E0052812C /* ExtenderExtensions.mm */,
+				C9F1460C1EB3D12800727A37 /* Package Database */,
 				C92B32F11EB1139300BF0D3B /* Settings Controller */,
 				C98D46B81EA0E3A70052812C /* Cached Packages Controller */,
 				C98D46BF1EA0F38C0052812C /* Misc. */,
@@ -330,8 +326,7 @@
 		C98D46971EA0DF320052812C /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				C9F146061EB3AC6D00727A37 /* NSData+GZIP.h */,
-				C9F146071EB3AC6D00727A37 /* NSData+GZIP.m */,
+				C9F1460B1EB3D10E00727A37 /* Third-party Classes */,
 				C98D46981EA0DF320052812C /* PackageVersion.plist */,
 				C98D46991EA0DF320052812C /* Extender-Extensions-Prefix.pch */,
 			);
@@ -376,13 +371,6 @@
 		C98D46BF1EA0F38C0052812C /* Misc. */ = {
 			isa = PBXGroup;
 			children = (
-				C9DDC9D91EA965120024CFF7 /* SSZipArchive */,
-				C9DDC9C91EA958130024CFF7 /* SAMKeychain */,
-				C9F43D871EA92720007F0EEB /* PartialZip */,
-				C98D46BB1EA0EFA00052812C /* EEPackage.h */,
-				C98D46BC1EA0EFA00052812C /* EEPackage.m */,
-				C90DC62C1EA8EFCC00F44463 /* EEPackageDatabase.h */,
-				C90DC62D1EA8EFCC00F44463 /* EEPackageDatabase.m */,
 				C9F43D7E1EA9208F007F0EEB /* EEResources.h */,
 				C9F43D7F1EA9208F007F0EEB /* EEResources.m */,
 				C9F145FE1EB3A45F00727A37 /* EEAppleServices.h */,
@@ -530,6 +518,36 @@
 			path = minizip;
 			sourceTree = "<group>";
 		};
+		C9F1460A1EB3D0D500727A37 /* NSData+GZip */ = {
+			isa = PBXGroup;
+			children = (
+				C9F146061EB3AC6D00727A37 /* NSData+GZIP.h */,
+				C9F146071EB3AC6D00727A37 /* NSData+GZIP.m */,
+			);
+			name = "NSData+GZip";
+			sourceTree = "<group>";
+		};
+		C9F1460B1EB3D10E00727A37 /* Third-party Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C9F1460A1EB3D0D500727A37 /* NSData+GZip */,
+				C9DDC9D91EA965120024CFF7 /* SSZipArchive */,
+				C9DDC9C91EA958130024CFF7 /* SAMKeychain */,
+			);
+			name = "Third-party Classes";
+			sourceTree = "<group>";
+		};
+		C9F1460C1EB3D12800727A37 /* Package Database */ = {
+			isa = PBXGroup;
+			children = (
+				C98D46BB1EA0EFA00052812C /* EEPackage.h */,
+				C98D46BC1EA0EFA00052812C /* EEPackage.m */,
+				C90DC62C1EA8EFCC00F44463 /* EEPackageDatabase.h */,
+				C90DC62D1EA8EFCC00F44463 /* EEPackageDatabase.m */,
+			);
+			name = "Package Database";
+			sourceTree = "<group>";
+		};
 		C9F3E7DD1EA3F9BA001A09D1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -556,17 +574,6 @@
 			children = (
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		C9F43D871EA92720007F0EEB /* PartialZip */ = {
-			isa = PBXGroup;
-			children = (
-				C9F43D891EA92720007F0EEB /* PartialZip.h */,
-				C9F43D8A1EA92720007F0EEB /* PZFileBrowser.h */,
-				C9F43D8B1EA92720007F0EEB /* PZFileBrowser.m */,
-			);
-			name = PartialZip;
-			path = PartialZip/PartialZip;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -596,14 +603,12 @@
 				C9DDCA1B1EA965120024CFF7 /* unzip.h in Headers */,
 				C9DDCA011EA965120024CFF7 /* aes_via_ace.h in Headers */,
 				C9DDCA171EA965120024CFF7 /* ioapi.h in Headers */,
-				C9F43D8D1EA92720007F0EEB /* PZFileBrowser.h in Headers */,
 				C9DDC9D51EA959DC0024CFF7 /* SAMKeychainQuery.h in Headers */,
 				C92B32ED1EB1136000BF0D3B /* EESettingsController.h in Headers */,
 				C9DDCA101EA965120024CFF7 /* prng.h in Headers */,
 				C98D46BD1EA0EFA00052812C /* EEPackage.h in Headers */,
 				C9DDCA221EA965120024CFF7 /* ZipArchive.h in Headers */,
 				C98D46B61EA0E3A10052812C /* EEPackagesCell.h in Headers */,
-				C9F43D8C1EA92720007F0EEB /* PartialZip.h in Headers */,
 				C9DDCA001EA965120024CFF7 /* aes.h in Headers */,
 				C9F43D801EA9208F007F0EEB /* EEResources.h in Headers */,
 				C9DDCA0C1EA965120024CFF7 /* fileenc.h in Headers */,
