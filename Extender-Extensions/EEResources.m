@@ -293,7 +293,7 @@ static NSDictionary *_getEntitlementsPlist() {
                         // Done revoking!
                         completionHandler(YES);
                         
-                        UIAlertController *endcontroller = [UIAlertController alertControllerWithTitle:@"Revoke Certificates" message:[NSString stringWithFormat:@"%d certificate%@ revoked, and you should receive an email shortly stating that certificates were revoked.\n\nYou may need to adjust the Re-sign Threshold to force applications to be re-signed.\n\nThe next re-sign may give a 'Could not extract archive' error; this is fine, and can be ignored.", revoked, revoked == 1 ? @" was" : @"s were"] preferredStyle:UIAlertControllerStyleAlert];
+                        UIAlertController *endcontroller = [UIAlertController alertControllerWithTitle:@"Revoke Certificates" message:[NSString stringWithFormat:@"%d certificate%@ revoked, and you should receive an email shortly stating that certificates were revoked.\n\nYou will need to manually re-sign applications by pressing 'Re-sign' in the Installed tab.\n\nThe next re-sign may give a 'Could not extract archive' error; this is fine, and can be ignored.", revoked, revoked == 1 ? @" was" : @"s were"] preferredStyle:UIAlertControllerStyleAlert];
                         
                         UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
                             [controller dismissViewControllerAnimated:YES completion:nil];
