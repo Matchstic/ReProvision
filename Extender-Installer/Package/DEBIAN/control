@@ -1,7 +1,7 @@
 Package: com.matchstic.Extender-Installer
-Name: Cydia Extender Installer
-Version: 0.2
-Description: Unofficial Cydia Extender installer
+Name: Extender Installer
+Version: 0.2.1
+Description: A Cydia Extender installer, with modifications
 Section: System
 Depends: firmware (>= 10.0), mobilesubstrate, ldid, uikittools
 Priority: optional
@@ -9,3 +9,6 @@ Architecture: iphoneos-arm
 Author: Matt Clarke <matt@incendo.ws>
 dev: Matt Clarke <matt@incendo.ws>
 Maintainer: Matt Clarke <matt@incendo.ws>
+Homepage: https://github.com/Matchstic/Extender-Installer
+Depiction: http://incendo.ws/repo/depictions/com.matchstic.extender-installer.html
+Icon: file:///Applications/Extender.app/AppIcon60x60@2x.png

@@ -7,7 +7,7 @@
 //
 
 #import "EETroubleshootController.h"
-#import "EEMultipleLineCell.h"
+#import "EEResources.h"
 
 @interface EETroubleshootController ()
 
@@ -24,7 +24,7 @@
     [[self navigationItem] setTitle:@"Troubleshooting"];
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:REUSE];
-    self.tableView.allowsSelection = NO;
+    self.tableView.allowsSelection = YES;
     
     [self _setupDataSauce];
     [self.tableView reloadData];
@@ -38,7 +38,8 @@
     
     NSMutableArray *submitDevelopmentCSR = [NSMutableArray array];
     [submitDevelopmentCSR addObject:@"ios/submitDevelopmentCSR =7460"];
-    [submitDevelopmentCSR addObject:@"This error usually occurs when running Extender on multiple devices with the same Apple ID.\n\nTo resolve, you can sign in on one device with a different Apple ID.\n\nNote: this issue is being looked into to remove this need for another Apple ID."];
+    [submitDevelopmentCSR addObject:@"This error usually occurs when running Extender on multiple devices with the same Apple ID.\n\nOne possible solution is to revoke developer certificates, which can be done below."];
+    [submitDevelopmentCSR addObject:@"Revoke Certificates"];
     
     [items addObject:submitDevelopmentCSR];
     
@@ -91,6 +92,14 @@
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
+    // Also handle if a button.
+    if (indexPath.row == 2) {
+        cell.textLabel.textColor = [UIColor redColor];
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    } else {
+        cell.textLabel.textAlignment = NSTextAlignmentLeft;
+    }
+    
     cell.accessoryType = UITableViewCellAccessoryNone;
     
     return cell;
@@ -122,8 +131,10 @@
     CGFloat extra = 24;
     
     // We also need to add an additional 20pt for each instance of "\n\n" in the string.
-    NSArray *split = [str componentsSeparatedByString:@"\n\n"];
-    extra += (split.count - 1) * 20;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        NSArray *split = [str componentsSeparatedByString:@"\n\n"];
+        extra += (split.count - 1) * 20;
+    }
     
     return [self boundedRectForFont:font andText:str width:self.tableView.contentSize.width].size.height + extra;
 }
@@ -131,6 +142,24 @@
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     return NO;
+}
+
+// Selection.
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (indexPath.row == 2) {
+        // This is a button.
+        
+        switch (indexPath.section) {
+            case 0:
+                [EEResources attemptToRevokeCertificateWithCallback:^(BOOL success) {}];
+                break;
+                
+            default:
+                break;
+        }
+    }
 }
 
 // XXX: As we are going to be presented by Preferences.framework, we have to implement a couple of shims.

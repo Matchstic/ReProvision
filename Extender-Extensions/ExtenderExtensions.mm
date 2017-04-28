@@ -78,7 +78,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class CyextTabBarController; @class NEVPNConnection; @class NSURLSession; @class Extender; @class SBApplication; @class NETunnelProviderManager; @class UIAlertController; @class NEVPNManager; @class NSFileManager; 
+@class NETunnelProviderManager; @class Extender; @class NEVPNConnection; @class NSURLSession; @class NEVPNManager; @class NSFileManager; @class UIAlertController; @class CyextTabBarController; @class SBApplication; 
 
 
 #line 59 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
@@ -233,11 +233,8 @@ static void _logos_method$Extender$Extender$application$didFinishLaunchingWithOp
     [self beginResignRoutine:0];
     
     
-    if ([self respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIRemoteNotificationTypeAlert) categories:nil];
-        [self registerUserNotificationSettings:settings];
-        
-        
+    if ([self respondsToSelector:@selector(registerUserNotificationSettings:)]) {        
+        [self registerUserNotificationSettings:[objc_getClass("UIUserNotificationSettings") settingsForTypes:7 categories:nil]];
         [self registerForRemoteNotifications];
     } else {
         [self registerForRemoteNotificationTypes:7];
@@ -536,7 +533,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationB
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_79047c15(int argc, char **argv, char **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_a402b0e3(int argc, char **argv, char **envp) {
     {}
 
     

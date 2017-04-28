@@ -38,58 +38,6 @@
 
 static EEPackageDatabase *sharedDatabase;
 
-// Codesigning stuff.
-
-#define CS_OPS_ENTITLEMENTS_BLOB 7
-#define MAX_CSOPS_BUFFER_LEN 3*PATH_MAX // 3K < 1 page
-
-int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
-
-struct csheader {
-    uint32_t magic;
-    uint32_t length;
-};
-
-static NSDictionary *_getEntitlementsPlist() {
-    pid_t process_id = getpid();
-    CFMutableDataRef data = NULL;
-    struct csheader header;
-    uint32_t bufferlen;
-    int ret;
-    
-    ret = csops(process_id, CS_OPS_ENTITLEMENTS_BLOB, &header, sizeof(header));
-    
-    if (ret != -1 || errno != ERANGE) {
-        NSLog(@"csops failed: %s\n", strerror(errno));
-        return [NSDictionary dictionary];
-    } else {
-        bufferlen = ntohl(header.length);
-        
-        data = CFDataCreateMutable(NULL, bufferlen);
-        CFDataSetLength(data, bufferlen);
-        
-        ret = csops(process_id, CS_OPS_ENTITLEMENTS_BLOB, CFDataGetMutableBytePtr(data), bufferlen);
-        
-        CFDataDeleteBytes(data, CFRangeMake(0, 8));
-        
-        // Data now contains our entitlements.
-        
-        NSString *error;
-        NSPropertyListFormat format;
-        
-        id plist = [NSPropertyListSerialization propertyListFromData:(__bridge NSData*)data mutabilityOption:NSPropertyListImmutable format:&format errorDescription:&error];
-        
-        if (error) {
-            NSLog(@"ERROR: %@", error);
-        }
-        
-        if (data)
-            CFRelease(data);
-        
-        return plist;
-    }
-}
-
 @implementation EEPackageDatabase
 
 + (instancetype)sharedInstance {
@@ -113,8 +61,7 @@ static NSDictionary *_getEntitlementsPlist() {
 }
 
 - (NSArray *)retrieveAllTeamIDApplications {
-    NSDictionary *entitlements = _getEntitlementsPlist();
-    NSString *teamID = [entitlements objectForKey:@"com.apple.developer.team-identifier"];
+    NSString *teamID = [EEResources getTeamID];
     
     if (!teamID || [teamID isEqualToString:@""]) {
         return [NSArray array];
@@ -235,13 +182,13 @@ static NSDictionary *_getEntitlementsPlist() {
     
     if (![EEResources username]) {
         Extender *application = (Extender*)[UIApplication sharedApplication];
-        [application sendLocalNotification:@"Sign In" body:@"Please login with your Apple ID to sign applications." withID:@"login"];
+        [application sendLocalNotification:@"Sign In" body:@"Please login with your Apple ID to re-sign applications." withID:@"login"];
         
         return;
     }
     
     Extender *application = (Extender*)[UIApplication sharedApplication];
-    [application sendLocalNotification:@"Debug" andBody:@"Checking if any applications need signing."];
+    [application sendLocalNotification:@"Debug" andBody:@"Checking if any applications need re-signing."];
     
     NSDate *now = [NSDate date];
     unsigned int unitFlags = NSCalendarUnitDay;
@@ -266,7 +213,7 @@ static NSDictionary *_getEntitlementsPlist() {
     
     if (_installQueue.count == 0) {
         Extender *application = (Extender*)[UIApplication sharedApplication];
-        [application sendLocalNotification:nil andBody:@"No applications need resigning at this time."];
+        [application sendLocalNotification:nil andBody:@"No applications need re-signing at this time."];
     }
     
     // Note that this WILL modify the queue, so any checks for count should be done before.
@@ -363,7 +310,7 @@ static NSDictionary *_getEntitlementsPlist() {
                                                             error:&error];
     
         if (!result) {
-            [application sendLocalNotification:@"Failed" andBody:[NSString stringWithFormat:@"Failed to re-sign: '%@' with error: %@", title, error.localizedDescription]];
+            [application sendLocalNotification:@"Failed" body:[NSString stringWithFormat:@"Failed to re-sign: '%@' with error: %@", title, error.localizedDescription] withID:@"lastError"];
         } else {
             // Note that we should change the alert's text based upon if the user has installed this application before.
             

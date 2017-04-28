@@ -36,6 +36,7 @@ int entropy_fun(unsigned char buf[], unsigned int len)
     return i;
 }
 #else
+int entropy_fun(unsigned char buf[], unsigned int len);
 int entropy_fun(unsigned char buf[], unsigned int len)
 {
     int frand = open("/dev/random", O_RDONLY);

@@ -9,6 +9,7 @@
 #import "EEResources.h"
 #import "SAMKeychain.h"
 #import "EEPackageDatabase.h"
+#import "EEAppleServices.h"
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
@@ -17,6 +18,59 @@
 @end
 
 #define SERVICE @"com.cydia.Extender"
+
+// Codesigning stuff.
+
+#define CS_OPS_ENTITLEMENTS_BLOB 7
+#define MAX_CSOPS_BUFFER_LEN 3*PATH_MAX // 3K < 1 page
+
+int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
+
+struct csheader {
+    uint32_t magic;
+    uint32_t length;
+};
+
+static NSDictionary *_getEntitlementsPlist() {
+    pid_t process_id = getpid();
+    CFMutableDataRef data = NULL;
+    struct csheader header;
+    uint32_t bufferlen;
+    int ret;
+    
+    ret = csops(process_id, CS_OPS_ENTITLEMENTS_BLOB, &header, sizeof(header));
+    
+    if (ret != -1 || errno != ERANGE) {
+        NSLog(@"csops failed: %s\n", strerror(errno));
+        return [NSDictionary dictionary];
+    } else {
+        bufferlen = ntohl(header.length);
+        
+        data = CFDataCreateMutable(NULL, bufferlen);
+        CFDataSetLength(data, bufferlen);
+        
+        ret = csops(process_id, CS_OPS_ENTITLEMENTS_BLOB, CFDataGetMutableBytePtr(data), bufferlen);
+        
+        CFDataDeleteBytes(data, CFRangeMake(0, 8));
+        
+        // Data now contains our entitlements.
+        
+        NSError *error;
+        NSPropertyListFormat format;
+        
+        id plist = [NSPropertyListSerialization propertyListWithData:(__bridge NSData*)data options:NSPropertyListImmutable format:&format error:&error];
+        
+        if (error) {
+            NSLog(@"ERROR: %@", error);
+        }
+        
+        if (data)
+            CFRelease(data);
+        
+        return plist;
+    }
+}
+
 
 @implementation EEResources
 
@@ -51,6 +105,13 @@
     [SAMKeychain setPassword:password forService:SERVICE account:username];
 }
 
++ (NSString*)getTeamID {
+    NSDictionary *entitlements = _getEntitlementsPlist();
+    NSString *teamID = [entitlements objectForKey:@"com.apple.developer.team-identifier"];
+    
+    return teamID;
+}
+
 + (void)signOut {
     NSString *username = [self username];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"cachedUsername"];
@@ -77,53 +138,34 @@
         
         // Once validated, we store the username and password to NSUserDefaults and the keychain respectively.
         
-        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://idmsa.apple.com/IDMSWebAuth/clientDAW.cgi"]];
-        
-        [request setHTTPMethod:@"POST"];
-        [request setValue:@"text/x-xml-plist" forHTTPHeaderField:@"Accept"];
-        [request setValue:@"en-us" forHTTPHeaderField:@"Accept-Language"];
-        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-        [request setValue:@"Xcode" forHTTPHeaderField:@"User-Agent"];
-        
-        NSString *postString = [NSString stringWithFormat:@"appIdKey=ba2ec180e6ca6e6c6a542255453b24d6e6e5b2be0cc48bc1b0d8ad64cfe0228f&userLocale=en_US&protocolVersion=A1234&appleId=%@&password=%@&format=plist", userField.text, passField.text];
-        
-        [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
-        
-        // The result of this request will determine what we do next.
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSError *error;
-            NSURLResponse* response;
-            NSData* data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-            
-            NSDictionary *plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:nil];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *userString = [plist objectForKey:@"userString"];
-                if ((!userString || [userString isEqualToString:@""]) && data) {
-                    // Success!
-                    
-                    [EEResources storeUsername:userField.text andPassword:passField.text];
-                    
-                    [application sendLocalNotification:@"Sign In" andBody:@"Successfully signed in."];
-                    
-                    // Clear from notification center if needed.
-                    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-                    [center removeDeliveredNotificationsWithIdentifiers:@[@"login"]];
-                    [center removePendingNotificationRequestsWithIdentifiers:@[@"login"]];
-                    
-                    completionHandler(YES);
-                    return;
-                } else if (data) {
-                    // Failure. Update UI.
-                    controller.message = userString;
-                } else {
-                    controller.message = [NSString stringWithFormat:@"Error: %@", error.description];
-                }
+        [EEAppleServices signInWithUsername:userField.text password:passField.text andCompletionHandler:^(NSError *error, NSDictionary *plist) {
+           
+            NSString *userString = [plist objectForKey:@"userString"];
+            if ((!userString || [userString isEqualToString:@""]) && plist) {
+                // Success!
                 
-                // Reshow controller!
-                [application.keyWindow.rootViewController presentViewController:controller animated:YES completion:nil];
-            });
-        });
+                [EEResources storeUsername:userField.text andPassword:passField.text];
+                
+                [application sendLocalNotification:@"Sign In" andBody:@"Successfully signed in."];
+                
+                // Clear from notification center if needed.
+                UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+                [center removeDeliveredNotificationsWithIdentifiers:@[@"login"]];
+                [center removePendingNotificationRequestsWithIdentifiers:@[@"login"]];
+                
+                completionHandler(YES);
+                return;
+            } else if (plist) {
+                // Failure. Update UI.
+                controller.message = userString;
+            } else {
+                controller.message = [NSString stringWithFormat:@"Error: %@", error.description];
+            }
+            
+            // Reshow controller!
+            [application.keyWindow.rootViewController presentViewController:controller animated:YES completion:nil];
+            
+        }];
     }];
     
     UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
@@ -165,18 +207,139 @@
     
     NSData *stringData = [stringContent dataUsingEncoding:NSASCIIStringEncoding];
     
-    NSString *error;
+    NSError *error;
     NSPropertyListFormat format;
     
-    id plist = [NSPropertyListSerialization propertyListFromData:stringData  mutabilityOption:NSPropertyListImmutable format:&format errorDescription:&error];
+    id plist = [NSPropertyListSerialization propertyListWithData:stringData options:NSPropertyListImmutable format:&format error:&error];
     
     return plist;
 }
 
-+ (BOOL)attemptToRevokeCertificate {
-    NSError *error;
++ (void)attemptToRevokeCertificateWithCallback:(void (^)(BOOL))completionHandler {
+    if (![EEResources username]) {
+        // User needs to sign in.
+        [EEResources signInWithCallback:^(BOOL success) {
+            if (success) {
+                [EEResources attemptToRevokeCertificateWithCallback:completionHandler];
+            }
+        }];
+    }
     
-    return error == nil;
+    Extender *application = (Extender*)[UIApplication sharedApplication];
+    UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Revoke Certificate" message:@"Revoking any iOS Developer certificates will require all applications using them to be re-signed." preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *attempt = [UIAlertAction actionWithTitle:@"Revoke" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+        // Alright, user is sure...
+        
+        // First, we need the myAcInfo value to be set in AppleServices.
+        [EEAppleServices signInWithUsername:[EEResources username] password:[EEResources password] andCompletionHandler:^(NSError *error, NSDictionary *plist) {
+            if (error) {
+                // Oh shit.
+                [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
+                completionHandler(NO);
+                return;
+            }
+            
+            // Now, list all teams so we can find the certs for the teams the user is in.
+            [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                if (error) {
+                    // oh shit.
+                    [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
+                    completionHandler(NO);
+                    return;
+                }
+                
+                NSArray *teams = [plist objectForKey:@"teams"];
+                NSString *teamId;
+                
+                // We don't want to be revoking a group cert if we can help it.
+                for (NSDictionary *team in teams) {
+                    NSString *type = [team objectForKey:@"type"];
+                    
+                    if ([type isEqualToString:@"Individual"]) {
+                        teamId = [team objectForKey:@"teamId"];
+                        break;
+                    }
+                }
+                
+                // We now have the team ID.
+                [EEAppleServices listAllDevelopmentCertificatesForTeamID:teamId withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                    if (error) {
+                        // oh shit.
+                        [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
+                        completionHandler(NO);
+                    }
+                    
+                    NSArray *certs = [plist objectForKey:@"certificates"];
+                    NSMutableArray *serials = [NSMutableArray array];
+                    for (NSDictionary *cert in certs) {
+                        // To revoke a certificate, we need its serial number.
+                        // Note though that we won't revoke the certifcates that do not include a machine name.
+                        
+                        if ([cert objectForKey:@"machineName"]) {
+                            NSString *serial = [cert objectForKey:@"serialNumber"];
+                            [serials addObject:serial];
+                        }
+                    }
+                    
+                    [self _revokeSerials:serials withTeamID:teamId count:0 andCompletionHandler:^(int revoked, NSError *error) {
+                        if (error) {
+                            // oh shit.
+                            [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
+                            completionHandler(NO);
+                            return;
+                        }
+                        
+                        // Done revoking!
+                        completionHandler(YES);
+                        
+                        UIAlertController *endcontroller = [UIAlertController alertControllerWithTitle:@"Revoke Certificates" message:[NSString stringWithFormat:@"%d certificate%@ revoked.\n\nYou should receive an email shortly stating that certificates were revoked.", revoked, revoked == 1 ? @" was" : @"s were"] preferredStyle:UIAlertControllerStyleAlert];
+                        
+                        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
+                            [controller dismissViewControllerAnimated:YES completion:nil];
+                        }];
+                        
+                        [endcontroller addAction:cancel];
+                        
+                        [application.keyWindow.rootViewController presentViewController:endcontroller animated:YES completion:nil];
+                    }];
+                }];
+            }];
+        }];
+    }];
+    
+    UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
+        [controller dismissViewControllerAnimated:YES completion:nil];
+        completionHandler(NO);
+    }];
+    
+    [controller addAction:cancel];
+    [controller addAction:attempt];
+    
+    [application.keyWindow.rootViewController presentViewController:controller animated:YES completion:nil];
+}
+
++ (void)_revokeSerials:(NSArray*)serials withTeamID:(NSString*)teamId count:(int)certs andCompletionHandler:(void(^)(int, NSError*))completionHandler {
+    
+    // guard.
+    if (serials.count == 0) {
+        completionHandler(certs, nil);
+        return;
+    }
+    
+    NSString *serial = [serials firstObject];
+    [EEAppleServices revokeCertificateForSerialNumber:serial andTeamID:teamId withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+        if (error) {
+            completionHandler(certs, error);
+            return;
+        }
+        
+        // Pop current serial off array and recurse.
+        NSMutableArray *array = [serials mutableCopy];
+        [array removeObject:serial];
+            
+        [self _revokeSerials:array withTeamID:teamId count:certs+1 andCompletionHandler:completionHandler];
+    }];
 }
 
 + (void)reloadSettings {

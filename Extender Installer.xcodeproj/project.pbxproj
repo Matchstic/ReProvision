@@ -14,8 +14,6 @@
 		C92B32F81EB11DC700BF0D3B /* Preferences.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C92B32F41EB11C0B00BF0D3B /* Preferences.tbd */; };
 		C985B0891EB2534200F62695 /* EETroubleshootController.h in Headers */ = {isa = PBXBuildFile; fileRef = C985B0871EB2534200F62695 /* EETroubleshootController.h */; };
 		C985B08A1EB2534200F62695 /* EETroubleshootController.m in Sources */ = {isa = PBXBuildFile; fileRef = C985B0881EB2534200F62695 /* EETroubleshootController.m */; };
-		C985B08D1EB257F300F62695 /* EEMultipleLineCell.h in Headers */ = {isa = PBXBuildFile; fileRef = C985B08B1EB257F300F62695 /* EEMultipleLineCell.h */; };
-		C985B08E1EB257F300F62695 /* EEMultipleLineCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C985B08C1EB257F300F62695 /* EEMultipleLineCell.m */; };
 		C98D46911EA0DF320052812C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C936D75C1E9F5FA900F23D85 /* Foundation.framework */; };
 		C98D46A61EA0DFDB0052812C /* CydiaSubstrate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C936D7C51E9F715900F23D85 /* CydiaSubstrate.framework */; };
 		C98D46AA1EA0E06E0052812C /* ExtenderExtensions.mm in Sources */ = {isa = PBXBuildFile; fileRef = C98D46A81EA0E06E0052812C /* ExtenderExtensions.mm */; };
@@ -66,6 +64,10 @@
 		C9DDCA201EA965120024CFF7 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = C9DDC9FD1EA965120024CFF7 /* SSZipArchive.m */; };
 		C9DDCA211EA965120024CFF7 /* SSZipCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = C9DDC9FE1EA965120024CFF7 /* SSZipCommon.h */; };
 		C9DDCA221EA965120024CFF7 /* ZipArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = C9DDC9FF1EA965120024CFF7 /* ZipArchive.h */; };
+		C9F146001EB3A45F00727A37 /* EEAppleServices.h in Headers */ = {isa = PBXBuildFile; fileRef = C9F145FE1EB3A45F00727A37 /* EEAppleServices.h */; };
+		C9F146011EB3A45F00727A37 /* EEAppleServices.m in Sources */ = {isa = PBXBuildFile; fileRef = C9F145FF1EB3A45F00727A37 /* EEAppleServices.m */; };
+		C9F146081EB3AC6D00727A37 /* NSData+GZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = C9F146061EB3AC6D00727A37 /* NSData+GZIP.h */; };
+		C9F146091EB3AC6D00727A37 /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = C9F146071EB3AC6D00727A37 /* NSData+GZIP.m */; };
 		C9F43D711EA91CC7007F0EEB /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9F43D701EA91CC7007F0EEB /* MobileCoreServices.framework */; };
 		C9F43D801EA9208F007F0EEB /* EEResources.h in Headers */ = {isa = PBXBuildFile; fileRef = C9F43D7E1EA9208F007F0EEB /* EEResources.h */; };
 		C9F43D821EA920AE007F0EEB /* EEPackage.m in Sources */ = {isa = PBXBuildFile; fileRef = C98D46BC1EA0EFA00052812C /* EEPackage.m */; };
@@ -132,8 +134,6 @@
 		C936D7C51E9F715900F23D85 /* CydiaSubstrate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CydiaSubstrate.framework; path = ../../../../../opt/iOSOpenDev/lib/CydiaSubstrate.framework; sourceTree = "<group>"; };
 		C985B0871EB2534200F62695 /* EETroubleshootController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EETroubleshootController.h; sourceTree = "<group>"; };
 		C985B0881EB2534200F62695 /* EETroubleshootController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EETroubleshootController.m; sourceTree = "<group>"; };
-		C985B08B1EB257F300F62695 /* EEMultipleLineCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EEMultipleLineCell.h; sourceTree = "<group>"; };
-		C985B08C1EB257F300F62695 /* EEMultipleLineCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EEMultipleLineCell.m; sourceTree = "<group>"; };
 		C98D46891EA0DDDE0052812C /* installdPatch.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = installdPatch.plist; path = Package/Library/MobileSubstrate/DynamicLibraries/installdPatch.plist; sourceTree = "<group>"; };
 		C98D46901EA0DF320052812C /* ExtenderExtensions.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ExtenderExtensions.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		C98D46961EA0DF320052812C /* control */ = {isa = PBXFileReference; lastKnownFileType = text; name = control; path = Package/DEBIAN/control; sourceTree = "<group>"; };
@@ -197,6 +197,10 @@
 		C9DDC9FD1EA965120024CFF7 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 		C9DDC9FE1EA965120024CFF7 /* SSZipCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipCommon.h; sourceTree = "<group>"; };
 		C9DDC9FF1EA965120024CFF7 /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
+		C9F145FE1EB3A45F00727A37 /* EEAppleServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EEAppleServices.h; sourceTree = "<group>"; };
+		C9F145FF1EB3A45F00727A37 /* EEAppleServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EEAppleServices.m; sourceTree = "<group>"; };
+		C9F146061EB3AC6D00727A37 /* NSData+GZIP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GZIP.h"; sourceTree = "<group>"; };
+		C9F146071EB3AC6D00727A37 /* NSData+GZIP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GZIP.m"; sourceTree = "<group>"; };
 		C9F3E7DC1EA3F9BA001A09D1 /* prerm.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = prerm.xcodeproj; path = prerm/prerm.xcodeproj; sourceTree = "<group>"; };
 		C9F3E7E31EA4E1FF001A09D1 /* extrainst_.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = extrainst_.xcodeproj; path = extrainst_/extrainst_.xcodeproj; sourceTree = "<group>"; };
 		C9F3E7F51EA4E58F001A09D1 /* postinst.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = postinst.xcodeproj; path = postinst/postinst.xcodeproj; sourceTree = "<group>"; };
@@ -245,8 +249,6 @@
 				C92B32EC1EB1135F00BF0D3B /* EESettingsController.m */,
 				C985B0871EB2534200F62695 /* EETroubleshootController.h */,
 				C985B0881EB2534200F62695 /* EETroubleshootController.m */,
-				C985B08B1EB257F300F62695 /* EEMultipleLineCell.h */,
-				C985B08C1EB257F300F62695 /* EEMultipleLineCell.m */,
 			);
 			name = "Settings Controller";
 			sourceTree = "<group>";
@@ -328,6 +330,8 @@
 		C98D46971EA0DF320052812C /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C9F146061EB3AC6D00727A37 /* NSData+GZIP.h */,
+				C9F146071EB3AC6D00727A37 /* NSData+GZIP.m */,
 				C98D46981EA0DF320052812C /* PackageVersion.plist */,
 				C98D46991EA0DF320052812C /* Extender-Extensions-Prefix.pch */,
 			);
@@ -381,6 +385,8 @@
 				C90DC62D1EA8EFCC00F44463 /* EEPackageDatabase.m */,
 				C9F43D7E1EA9208F007F0EEB /* EEResources.h */,
 				C9F43D7F1EA9208F007F0EEB /* EEResources.m */,
+				C9F145FE1EB3A45F00727A37 /* EEAppleServices.h */,
+				C9F145FF1EB3A45F00727A37 /* EEAppleServices.m */,
 			);
 			name = Misc.;
 			sourceTree = "<group>";
@@ -577,9 +583,10 @@
 				C9DDC9CE1EA958130024CFF7 /* SAMKeychain.h in Headers */,
 				C9DDCA1F1EA965120024CFF7 /* SSZipArchive.h in Headers */,
 				C90DC62E1EA8EFCC00F44463 /* EEPackageDatabase.h in Headers */,
+				C9F146001EB3A45F00727A37 /* EEAppleServices.h in Headers */,
 				C9DDCA151EA965120024CFF7 /* crypt.h in Headers */,
-				C985B08D1EB257F300F62695 /* EEMultipleLineCell.h in Headers */,
 				C9DDCA1D1EA965120024CFF7 /* zip.h in Headers */,
+				C9F146081EB3AC6D00727A37 /* NSData+GZIP.h in Headers */,
 				C9DDCA041EA965120024CFF7 /* aesopt.h in Headers */,
 				C98D46B21EA0E38D0052812C /* EEPackagesViewController.h in Headers */,
 				C9DDCA141EA965120024CFF7 /* sha1.h in Headers */,
@@ -772,7 +779,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C985B08E1EB257F300F62695 /* EEMultipleLineCell.m in Sources */,
+				C9F146091EB3AC6D00727A37 /* NSData+GZIP.m in Sources */,
 				C9DDCA0D1EA965120024CFF7 /* hmac.c in Sources */,
 				C9DDCA161EA965120024CFF7 /* ioapi.c in Sources */,
 				C98D46AA1EA0E06E0052812C /* ExtenderExtensions.mm in Sources */,
@@ -794,6 +801,7 @@
 				C9DDCA1A1EA965120024CFF7 /* unzip.c in Sources */,
 				C9DDCA021EA965120024CFF7 /* aescrypt.c in Sources */,
 				C9DDCA201EA965120024CFF7 /* SSZipArchive.m in Sources */,
+				C9F146011EB3A45F00727A37 /* EEAppleServices.m in Sources */,
 				C9DDCA0B1EA965120024CFF7 /* fileenc.c in Sources */,
 				C9DDCA0F1EA965120024CFF7 /* prng.c in Sources */,
 				C9F43D861EA920B9007F0EEB /* EEPackagesCell.m in Sources */,

@@ -12,17 +12,17 @@
 
 + (BOOL)shouldShowDebugAlerts;
 + (BOOL)shouldShowAlerts;
-+ (BOOL)shouldAutoSign;
 + (int)thresholdForResigning;
 
 + (NSString*)username;
 + (NSString*)password;
++ (NSString*)getTeamID;
 + (void)storeUsername:(NSString*)username andPassword:(NSString*)password;
 + (void)signOut;
 + (void)signInWithCallback:(void (^)(BOOL))completionHandler;
 
 + (NSDictionary *)provisioningProfileAtPath:(NSString *)path;
-+ (BOOL)attemptToRevokeCertificate;
++ (void)attemptToRevokeCertificateWithCallback:(void (^)(BOOL))completionHandler;
 
 + (void)reloadSettings;
 

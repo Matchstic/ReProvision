@@ -207,11 +207,8 @@ dispatch_queue_t resignQueue;
     [self beginResignRoutine:0];
     
     // Register to send the user notifications.
-    if ([self respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIRemoteNotificationTypeAlert) categories:nil];
-        [self registerUserNotificationSettings:settings];
-        
-        //[self registerUserNotificationSettings:[objc_getClass("UIUserNotificationSettings") settingsForTypes:7 categories:nil]];
+    if ([self respondsToSelector:@selector(registerUserNotificationSettings:)]) {        
+        [self registerUserNotificationSettings:[objc_getClass("UIUserNotificationSettings") settingsForTypes:7 categories:nil]];
         [self registerForRemoteNotifications];
     } else {
         [self registerForRemoteNotificationTypes:7];
