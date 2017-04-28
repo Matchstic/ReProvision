@@ -226,7 +226,7 @@ static NSDictionary *_getEntitlementsPlist() {
     }
     
     Extender *application = (Extender*)[UIApplication sharedApplication];
-    UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Revoke Certificate" message:@"Revoking any iOS Developer certificates will require all applications using them to be re-signed." preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Revoke Certificates" message:@"Revoking any developer certificates will require all applications using them to be re-signed.\n\nAre you sure you wish to continue?" preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *attempt = [UIAlertAction actionWithTitle:@"Revoke" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         // Alright, user is sure...
