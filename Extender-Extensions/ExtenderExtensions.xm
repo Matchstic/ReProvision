@@ -265,7 +265,7 @@ dispatch_queue_t resignQueue;
         // Sign the downloaded applications in turn, and attempt installations.
         
         [[EEPackageDatabase sharedInstance] rebuildDatabase];
-        [[EEPackageDatabase sharedInstance] resignApplicationsIfNecessaryWithTaskID:bgTask];
+        [[EEPackageDatabase sharedInstance] resignApplicationsIfNecessaryWithTaskID:bgTask andCheckExpiry:YES];
     });
 }
 

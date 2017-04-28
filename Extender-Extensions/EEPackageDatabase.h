@@ -30,7 +30,7 @@
 
 - (void)errorDidOccur:(NSString*)message;
 
-- (void)resignApplicationsIfNecessaryWithTaskID:(UIBackgroundTaskIdentifier)bgTask;
+- (void)resignApplicationsIfNecessaryWithTaskID:(UIBackgroundTaskIdentifier)bgTask andCheckExpiry:(BOOL)check;
 - (void)installPackageAtURL:(NSURL*)url withManifest:(NSDictionary*)manifest;
 
 

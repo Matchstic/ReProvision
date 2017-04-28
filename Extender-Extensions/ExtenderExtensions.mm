@@ -78,7 +78,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class NETunnelProviderManager; @class Extender; @class NEVPNConnection; @class NSURLSession; @class NEVPNManager; @class NSFileManager; @class UIAlertController; @class CyextTabBarController; @class SBApplication; 
+@class UIAlertController; @class NETunnelProviderManager; @class NSURLSession; @class SBApplication; @class NEVPNConnection; @class NEVPNManager; @class NSFileManager; @class CyextTabBarController; @class Extender; 
 
 
 #line 59 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
@@ -291,7 +291,7 @@ static void _logos_method$Extender$Extender$beginResignRoutine$(_LOGOS_SELF_TYPE
         
         
         [[EEPackageDatabase sharedInstance] rebuildDatabase];
-        [[EEPackageDatabase sharedInstance] resignApplicationsIfNecessaryWithTaskID:bgTask];
+        [[EEPackageDatabase sharedInstance] resignApplicationsIfNecessaryWithTaskID:bgTask andCheckExpiry:YES];
     });
 }
 

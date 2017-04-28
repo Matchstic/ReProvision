@@ -155,7 +155,7 @@ static EEPackageDatabase *sharedDatabase;
     return [_packages allValues];
 }
 
-- (void)resignApplicationsIfNecessaryWithTaskID:(UIBackgroundTaskIdentifier)bgTask {
+- (void)resignApplicationsIfNecessaryWithTaskID:(UIBackgroundTaskIdentifier)bgTask andCheckExpiry:(BOOL)check {
     _currentBgTask = bgTask;
     
     // Check if the queue is still being walked.
@@ -201,12 +201,18 @@ static EEPackageDatabase *sharedDatabase;
         [_installQueue removeAllObjects];
     }
     
-    for (EEPackage *package in [self allPackages]) {
+    if (check) {
+        for (EEPackage *package in [self allPackages]) {
         
-        NSDateComponents *conversionInfo = [currCalendar components:unitFlags fromDate:now toDate:[package applicationExpireDate] options:0];
-        int days = (int)[conversionInfo day];
+            NSDateComponents *conversionInfo = [currCalendar components:unitFlags fromDate:now toDate:[package applicationExpireDate] options:0];
+            int days = (int)[conversionInfo day];
         
-        if (days < [EEResources thresholdForResigning]) {
+            if (days < [EEResources thresholdForResigning]) {
+                [_installQueue addObject:[package bundleIdentifier]];
+            }
+        }
+    } else {
+        for (EEPackage *package in [self allPackages]) {
             [_installQueue addObject:[package bundleIdentifier]];
         }
     }

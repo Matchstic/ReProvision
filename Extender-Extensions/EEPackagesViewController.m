@@ -83,7 +83,7 @@
 }
 
 - (void)_resignApplicationsClicked:(id)sender {
-    UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Application Re-signing" message:@"Would you like to re-sign applications that are close to expiring?" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Application Re-signing" message:@"Would you like to re-sign all applications?" preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *attempt = [UIAlertAction actionWithTitle:@"Re-sign" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
         BOOL hasCachedUser = [EEResources username] != nil;
@@ -129,7 +129,7 @@
         // Sign the downloaded applications in turn, and attempt installations.
         
         [[EEPackageDatabase sharedInstance] rebuildDatabase];
-        [[EEPackageDatabase sharedInstance] resignApplicationsIfNecessaryWithTaskID:bgTask];
+        [[EEPackageDatabase sharedInstance] resignApplicationsIfNecessaryWithTaskID:bgTask andCheckExpiry:NO];
     });
 }
 
