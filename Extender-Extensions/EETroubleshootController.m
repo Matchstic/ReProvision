@@ -49,6 +49,12 @@
     
     [items addObject:dotAppInfoPlist];
     
+    NSMutableArray *archive = [NSMutableArray array];
+    [archive addObject:@"Could not extract archive"];
+    [archive addObject:@"This error may occur when an IPA is signed, but not repackaged correctly.\n\nTo resolve, simply try again another time."];
+    
+    [items addObject:archive];
+    
     _dataSauce = items;
 }
 

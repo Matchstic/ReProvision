@@ -139,10 +139,10 @@
     [spec setName:title];
     
     if (hasCachedUser) {
-        [self removeContiguousSpecifiers:_loggedOutAppleSpecifiers animated:NO];
+        [self removeContiguousSpecifiers:_loggedOutAppleSpecifiers animated:YES];
         [self insertContiguousSpecifiers:_loggedInAppleSpecifiers atIndex:0];
     } else {
-        [self removeContiguousSpecifiers:_loggedInAppleSpecifiers animated:NO];
+        [self removeContiguousSpecifiers:_loggedInAppleSpecifiers animated:YES];
         [self insertContiguousSpecifiers:_loggedOutAppleSpecifiers atIndex:0];
     }
 }
