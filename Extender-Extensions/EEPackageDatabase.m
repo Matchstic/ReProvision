@@ -164,7 +164,7 @@ static EEPackageDatabase *sharedDatabase;
     }
     
     // If Low Power Mode is enabled, we will not attempt a resign to avoid power consumption.
-    if ([[NSProcessInfo processInfo] isLowPowerModeEnabled]) {
+    if ([[NSProcessInfo processInfo] isLowPowerModeEnabled] && check) {
         Extender *application = (Extender*)[UIApplication sharedApplication];
         [application sendLocalNotification:@"Debug" andBody:@"Not proceeding to re-sign due to Low Power Mode being active."];
         
@@ -274,7 +274,7 @@ static EEPackageDatabase *sharedDatabase;
     Extender *application = (Extender*)[UIApplication sharedApplication];
     
     // There is a possibility we may be called twice here!
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+    if ([url isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
         return;
     }
     
@@ -289,10 +289,10 @@ static EEPackageDatabase *sharedDatabase;
     NSString *pkgName = [NSString stringWithFormat:@"pkg_%f", [[NSDate date] timeIntervalSince1970]];
     NSString *toPath = [NSString stringWithFormat:@"%@/Signed/%@.ipa", EXTENDER_DOCUMENTS, pkgName];
     
-    if (![[NSFileManager defaultManager] moveItemAtPath:[url path] toPath:toPath error:&error1]) {
+    if (![[NSFileManager defaultManager] copyItemAtPath:[url path] toPath:toPath error:&error1] || error1) {
         NSLog(@"ERROR: %@", error1);
         
-        [application sendLocalNotification:@"Debug" andBody:[NSString stringWithFormat:@"Failed to move to path: '%@', with error: %@", toPath, error1.description]];
+        [application sendLocalNotification:@"Debug" andBody:[NSString stringWithFormat:@"Failed to copy to path: '%@', with error: %@", toPath, error1.description]];
         
         return;
     }

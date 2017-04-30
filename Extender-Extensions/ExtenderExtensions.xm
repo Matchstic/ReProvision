@@ -201,7 +201,7 @@ dispatch_queue_t resignQueue;
     [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:7200];
     
     // And a timer for good measure.
-    heartbeatTimer = [NSTimer scheduledTimerWithTimeInterval:3600 target:self selector:@selector(_resignTimerCallback:) userInfo:nil repeats:YES];
+    heartbeatTimer = [NSTimer scheduledTimerWithTimeInterval:7200 target:self selector:@selector(_resignTimerCallback:) userInfo:nil repeats:YES];
     
     // Kick off first check.
     [self beginResignRoutine:0];

@@ -78,7 +78,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class UIAlertController; @class NETunnelProviderManager; @class NSURLSession; @class SBApplication; @class NEVPNManager; @class NSFileManager; @class Extender; @class NEVPNConnection; @class CyextTabBarController; 
+@class Extender; @class NEVPNConnection; @class NETunnelProviderManager; @class CyextTabBarController; @class NEVPNManager; @class UIAlertController; @class NSURLSession; @class SBApplication; @class NSFileManager; 
 
 
 #line 59 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
@@ -227,7 +227,7 @@ static void _logos_method$Extender$Extender$application$didFinishLaunchingWithOp
     [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:7200];
     
     
-    heartbeatTimer = [NSTimer scheduledTimerWithTimeInterval:3600 target:self selector:@selector(_resignTimerCallback:) userInfo:nil repeats:YES];
+    heartbeatTimer = [NSTimer scheduledTimerWithTimeInterval:7200 target:self selector:@selector(_resignTimerCallback:) userInfo:nil repeats:YES];
     
     
     [self beginResignRoutine:0];

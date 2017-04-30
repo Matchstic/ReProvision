@@ -77,7 +77,7 @@
     NSMutableArray *array = [NSMutableArray array];
     
     PSSpecifier *group = [PSSpecifier groupSpecifierWithName:@"Configuration"];
-    [group setProperty:@"Set how close to an application's expiration date before re-signs will occur." forKey:@"footerText"];
+    [group setProperty:@"Set how many days away from an application's expiration date a re-sign will occur." forKey:@"footerText"];
     [array addObject:group];
     
     /*PSSpecifier *showAlerts = [PSSpecifier preferenceSpecifierNamed:@"Show Alerts" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
