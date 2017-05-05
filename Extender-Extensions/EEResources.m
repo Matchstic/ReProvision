@@ -95,6 +95,11 @@ static NSDictionary *_getEntitlementsPlist() {
     return value ? [value intValue] : 2;
 }
 
++ (BOOL)shouldAutomaticallyResign {
+    id value = [[NSUserDefaults standardUserDefaults] objectForKey:@"resign"];
+    return value ? [value boolValue] : YES;
+}
+
 + (NSString*)username {
     return [[NSUserDefaults standardUserDefaults] objectForKey:@"cachedUsername"];
 }

@@ -249,6 +249,10 @@ dispatch_queue_t resignQueue;
 
 %new
 - (void)beginResignRoutine:(int)location {
+    // User wishes not to automatically re-sign.
+    if (![EEResources shouldAutomaticallyResign]) {
+        return;
+    }
     
     UIApplication *application = [UIApplication sharedApplication];
     UIBackgroundTaskIdentifier __block bgTask = [application beginBackgroundTaskWithName:@"Cydia Extender Auto Sign" expirationHandler:^{

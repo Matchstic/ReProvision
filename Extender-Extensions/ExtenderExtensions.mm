@@ -78,7 +78,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class UNUserNotificationCenter; @class NETunnelProviderManager; @class NSFileManager; @class CyextTabBarController; @class UIAlertController; @class SBApplication; @class NSURLSession; @class NEVPNConnection; @class Extender; @class NEVPNManager; 
+@class Extender; @class NSURLSession; @class NSFileManager; @class NETunnelProviderManager; @class UNUserNotificationCenter; @class NEVPNConnection; @class CyextTabBarController; @class UIAlertController; @class SBApplication; @class NEVPNManager; 
 
 
 #line 59 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
@@ -275,6 +275,10 @@ static void _logos_method$Extender$Extender$_resignTimerCallback$(_LOGOS_SELF_TY
 
 
 static void _logos_method$Extender$Extender$beginResignRoutine$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, int location) {
+    
+    if (![EEResources shouldAutomaticallyResign]) {
+        return;
+    }
     
     UIApplication *application = [UIApplication sharedApplication];
     UIBackgroundTaskIdentifier __block bgTask = [application beginBackgroundTaskWithName:@"Cydia Extender Auto Sign" expirationHandler:^{
@@ -552,7 +556,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationB
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_ed0f9528(int argc, char **argv, char **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_9f0b0077(int argc, char **argv, char **envp) {
     {}
 
     

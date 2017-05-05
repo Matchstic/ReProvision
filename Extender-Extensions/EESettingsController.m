@@ -76,14 +76,33 @@
 - (NSArray*)_alertSpecifiers {
     NSMutableArray *array = [NSMutableArray array];
     
-    PSSpecifier *group = [PSSpecifier groupSpecifierWithName:@"Configuration"];
+    PSSpecifier *group = [PSSpecifier groupSpecifierWithName:@"Automated Re-signing"];
     [group setProperty:@"Set how many days away from an application's expiration date a re-sign will occur." forKey:@"footerText"];
     [array addObject:group];
+    
+    PSSpecifier *resign = [PSSpecifier preferenceSpecifierNamed:@"Automatically Re-sign" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
+    [resign setProperty:@"resign" forKey:@"key"];
+    [resign setProperty:@1 forKey:@"default"];
+    
+    [array addObject:resign];
+    
+    PSSpecifier *threshold = [PSSpecifier preferenceSpecifierNamed:@"Re-sign Applications When:" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:NSClassFromString(@"PSListItemsController") cell:PSLinkListCell edit:nil];
+    [threshold setProperty:@YES forKey:@"enabled"];
+    [threshold setProperty:@2 forKey:@"default"];
+    threshold.values = [NSArray arrayWithObjects:@1, @2, @3, @4, @5, @6, nil];
+    threshold.titleDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"1 Day Left", @"2 Days Left", @"3 Days Left", @"4 Days Left", @"5 Days Left", @"6 Days Left", nil] forKeys:threshold.values];
+    threshold.shortTitleDictionary = threshold.titleDictionary;
+    [threshold setProperty:@"thresholdForResigning" forKey:@"key"];
+    
+    [array addObject:threshold];
     
     /*PSSpecifier *showAlerts = [PSSpecifier preferenceSpecifierNamed:@"Show Alerts" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
      [showAlerts setProperty:@"showAlerts" forKey:@"key"];
      
      [array addObject:showAlerts];*/
+    
+    PSSpecifier *group2 = [PSSpecifier groupSpecifierWithName:@"Notifications"];
+    [array addObject:group2];
     
     PSSpecifier *showInfoAlerts = [PSSpecifier preferenceSpecifierNamed:@"Show Non-Urgent Alerts" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
     [showInfoAlerts setProperty:@"showNonUrgentAlerts" forKey:@"key"];
@@ -96,16 +115,6 @@
     [showDebugAlerts setProperty:@0 forKey:@"default"];
     
     [array addObject:showDebugAlerts];
-    
-    PSSpecifier *threshold = [PSSpecifier preferenceSpecifierNamed:@"Re-sign Application When:" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:NSClassFromString(@"PSListItemsController") cell:PSLinkListCell edit:nil];
-    [threshold setProperty:@YES forKey:@"enabled"];
-    [threshold setProperty:@2 forKey:@"default"];
-    threshold.values = [NSArray arrayWithObjects:@1, @2, @3, @4, @5, @6, nil];
-    threshold.titleDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"1 Day Left", @"2 Days Left", @"3 Days Left", @"4 Days Left", @"5 Days Left", @"6 Days Left", nil] forKeys:threshold.values];
-    threshold.shortTitleDictionary = threshold.titleDictionary;
-    [threshold setProperty:@"thresholdForResigning" forKey:@"key"];
-    
-    [array addObject:threshold];
     
     return array;
 }
@@ -179,6 +188,8 @@
             return [NSNumber numberWithBool:NO];
         } else if ([key isEqualToString:@"showNonUrgentAlerts"]) {
             return [NSNumber numberWithBool:NO];
+        } else if ([key isEqualToString:@"resign"]) {
+            return [NSNumber numberWithBool:YES];
         }
         
         return nil;
