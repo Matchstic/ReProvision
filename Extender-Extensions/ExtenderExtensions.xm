@@ -29,6 +29,7 @@
 - (void)registerForRemoteNotificationTypes:(unsigned long long)arg1;
 - (void)_resignTimerCallback:(id)sender;
 - (void)_requestAppleDeveloperLogin;
+- (void)_reloadHeartbeatTimer;
 
 - (_Bool)application:(id)arg1 openURL:(id)arg2 sourceApplication:(id)arg3 annotation:(id)arg4;
 @end
@@ -197,11 +198,7 @@ dispatch_queue_t resignQueue;
     
     resignQueue = dispatch_queue_create("com.cydia.Extender.queue", NULL);
     
-    // Setup fetch interval.
-    [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:7200];
-    
-    // And a timer for good measure.
-    heartbeatTimer = [NSTimer scheduledTimerWithTimeInterval:7200 target:self selector:@selector(_resignTimerCallback:) userInfo:nil repeats:YES];
+    [self _reloadHeartbeatTimer];
     
     // Kick off first check.
     [self beginResignRoutine:0];
@@ -240,6 +237,21 @@ dispatch_queue_t resignQueue;
     [self beginResignRoutine:2];
     
     completionHandler(UIBackgroundFetchResultNoData);
+}
+
+%new
+- (void)_reloadHeartbeatTimer {
+    NSTimeInterval interval = [EEResources heartbeatTimerInterval];
+    
+    if (heartbeatTimer) {
+        [heartbeatTimer invalidate];
+        heartbeatTimer = nil;
+    }
+    
+    heartbeatTimer = [NSTimer scheduledTimerWithTimeInterval:interval target:self selector:@selector(_resignTimerCallback:) userInfo:nil repeats:YES];
+    
+    // Setup fetch interval - allows the timer to run if this application becomes suspended.
+    [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:interval];
 }
 
 %new

@@ -17,6 +17,9 @@
 + (BOOL)shouldAutomaticallyResign;
 + (BOOL)shouldResignInLowPowerMode;
 
++ (NSTimeInterval)heartbeatTimerInterval;
++ (void)reloadHeartbeatTimer;
+
 + (NSString*)username;
 + (NSString*)password;
 + (NSString*)getTeamID;

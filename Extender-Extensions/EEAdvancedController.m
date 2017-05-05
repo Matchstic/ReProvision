@@ -7,6 +7,7 @@
 //
 
 #import "EEAdvancedController.h"
+#import "EEResources.h"
 
 @interface EEAdvancedController ()
 
@@ -47,14 +48,14 @@
     
     [array addObject:resign];
     
-    // TODO: This needs to be hooked up in-code.
     PSSpecifier *threshold = [PSSpecifier preferenceSpecifierNamed:@"Check Expiry Times:" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:NSClassFromString(@"PSListItemsController") cell:PSLinkListCell edit:nil];
-    [threshold setProperty:@NO forKey:@"enabled"];
+    [threshold setProperty:@YES forKey:@"enabled"];
     [threshold setProperty:@2 forKey:@"default"];
-    threshold.values = [NSArray arrayWithObjects:@1, @2, @3, @4, @5, @6, nil];
+    threshold.values = [NSArray arrayWithObjects:@1, @2, @6, @12, @24, @48, nil];
     threshold.titleDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Every 1 Hour", @"Every 2 Hours", @"Every 6 Hours", @"Every 12 Hours", @"Every 24 Hours", @"Every Other Day", nil] forKeys:threshold.values];
     threshold.shortTitleDictionary = threshold.titleDictionary;
-    [threshold setProperty:@"checkTimeForResigning" forKey:@"key"];
+    [threshold setProperty:@"heartbeatTimerInterval" forKey:@"key"];
+    [threshold setProperty:@"A longer time between checks uses less battery, but has more risk that applications won't be re-signed before a reboot." forKey:@"staticTextMessage"];
     
     [array addObject:threshold];
     
@@ -89,9 +90,9 @@
         
         if ([key isEqualToString:@"resignInLowPowerMode"]) {
             return [NSNumber numberWithBool:NO];
-        } else if ([key isEqualToString:@"checkTimeForResigning"]) {
+        } else if ([key isEqualToString:@"heartbeatTimerInterval"]) {
             return [NSNumber numberWithInt:2];
-        }else if ([key isEqualToString:@"autoRevokeCertificates"]) {
+        } else if ([key isEqualToString:@"autoRevokeCertificates"]) {
             return [NSNumber numberWithBool:NO];
         }
         
@@ -103,6 +104,11 @@
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
     [[NSUserDefaults standardUserDefaults] setObject:value forKey:[specifier propertyForKey:@"key"]];
+    
+    NSString *key = [specifier propertyForKey:@"key"];
+    if ([key isEqualToString:@"heartbeatTimerInterval"]) {
+        [EEResources reloadHeartbeatTimer];
+    }
 }
 
 @end

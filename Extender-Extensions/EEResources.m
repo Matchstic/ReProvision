@@ -15,6 +15,7 @@
 
 @interface Extender : UIApplication
 - (void)sendLocalNotification:(NSString*)title andBody:(NSString*)body;
+- (void)_reloadHeartbeatTimer;
 @end
 
 #define SERVICE @"com.cydia.Extender"
@@ -71,7 +72,6 @@ static NSDictionary *_getEntitlementsPlist() {
     }
 }
 
-
 @implementation EEResources
 
 + (BOOL)shouldShowDebugAlerts {
@@ -103,6 +103,20 @@ static NSDictionary *_getEntitlementsPlist() {
 + (BOOL)shouldResignInLowPowerMode {
     id value = [[NSUserDefaults standardUserDefaults] objectForKey:@"resignInLowPowerMode"];
     return value ? [value boolValue] : NO;
+}
+
++ (NSTimeInterval)heartbeatTimerInterval {
+    id value = [[NSUserDefaults standardUserDefaults] objectForKey:@"heartbeatTimerInterval"];
+    int time = value ? [value intValue] : 2;
+    
+    NSTimeInterval interval = 3600;
+    interval *= time;
+    
+    return interval;
+}
+
++ (void)reloadHeartbeatTimer {
+    [(Extender*)[UIApplication sharedApplication] _reloadHeartbeatTimer];
 }
 
 + (NSString*)username {
