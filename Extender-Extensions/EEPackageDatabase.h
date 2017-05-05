@@ -19,6 +19,9 @@
     NSMutableArray *_installQueue;
     NSArray *_teamIDApplications;
     UIBackgroundTaskIdentifier _currentBgTask;
+    int _currentCycleCount;
+    BOOL _isRevoking;
+    NSMutableArray *_currentInstallQueue;
 }
 
 + (instancetype)sharedInstance;

@@ -157,6 +157,7 @@ static EEPackageDatabase *sharedDatabase;
 
 - (void)resignApplicationsIfNecessaryWithTaskID:(UIBackgroundTaskIdentifier)bgTask andCheckExpiry:(BOOL)check {
     _currentBgTask = bgTask;
+    _currentCycleCount = 0;
     
     // Check if the queue is still being walked.
     if (_installQueue.count != 0) {
@@ -268,13 +269,80 @@ static EEPackageDatabase *sharedDatabase;
     
     NSString *errorMessage = [NSString stringWithFormat:@"%@\n(%@)", [split lastObject], [split objectAtIndex:1]];
     
+    // We may be able to handle this ourselves.
+    NSString *errorReason = [split objectAtIndex:1];
+    if ([errorReason isEqualToString:@"ios/submitDevelopmentCSR =7460"]) {
+        // Attempt an auto-revoke if enabled.
+        
+        if ([EEResources shouldAutoRevokeIfNeeded] && _currentCycleCount == 0 && !_isRevoking) {
+            // Make sure we don't get called to revoke twice.
+            _isRevoking = YES;
+            
+            Extender *application = (Extender*)[UIApplication sharedApplication];
+            [application sendLocalNotification:@"Debug" andBody:@"Attempting to revoke certificates"];
+            
+            [EEResources _actuallyRevokeCertificatesWithAlert:nil andCallback:^(BOOL success) {
+                if (success) {
+                    // Restart this installation cycle.
+                    
+                    // This is a very important alert!
+                    [application sendLocalNotification:nil andBody:@"Automatically revoked certificates to resolve an error.\nYou will receieve an email about this, which can be ignored."];
+                    
+                     // Since we have revoked certificates, ALL applications must be re-signed.
+                    [self resignApplicationsIfNecessaryWithTaskID:_currentBgTask andCheckExpiry:NO];
+                    
+                    // So that we don't loop infinitely here.
+                    _currentCycleCount++;
+                } else {
+                    // Alert the user.
+                    [application sendLocalNotification:@"Error" body:@"Could not automatically revoke certificates" withID:@"lastError"];
+                }
+                
+                _isRevoking = NO;
+            }];
+            
+            return;
+        } else if (![EEResources shouldAutoRevokeIfNeeded]) {
+            // Now, display to the user we had an error.
+            Extender *application = (Extender*)[UIApplication sharedApplication];
+            [application sendLocalNotification:@"Error" body:[NSString stringWithFormat:@"%@\n\nTry enabling \"Auto-Revoke Certificates\" in the Advanced panel to resolve this, or tap \"Revoke Certificates\" in the Troubleshooting panel.", [split lastObject]] withID:@"lastError"];
+            
+            // Exit the current background task.
+            [[UIApplication sharedApplication] endBackgroundTask:_currentBgTask];
+            _currentBgTask = UIBackgroundTaskInvalid;
+            
+            return;
+        }
+    }
+    
     // Now, display to the user we had an error.
     Extender *application = (Extender*)[UIApplication sharedApplication];
     [application sendLocalNotification:@"Error" body:errorMessage withID:@"lastError"];
+    
+    // Exit the current background task.
+    [[UIApplication sharedApplication] endBackgroundTask:_currentBgTask];
+    _currentBgTask = UIBackgroundTaskInvalid;
 }
 
 - (void)installPackageAtURL:(NSURL*)url withManifest:(NSDictionary*)manifest {
     Extender *application = (Extender*)[UIApplication sharedApplication];
+    
+    // The manifest will contain the bundleIdentifier and the display name.
+    NSDictionary *item = [[manifest objectForKey:@"items"] firstObject];
+    NSDictionary *metadata = [item objectForKey:@"metadata"];
+    
+    NSString *bundleID = [metadata objectForKey:@"bundle-identifier"];
+    NSString *title = [metadata objectForKey:@"title"];
+    
+    if (!_currentInstallQueue)
+        _currentInstallQueue = [NSMutableArray array];
+    
+    if ([_currentInstallQueue containsObject:bundleID]) {
+        // We've been called multiple times for this one.
+        return;
+    } else {
+        [_currentInstallQueue addObject:bundleID];
+    }
     
     // There is a possibility we may be called twice here!
     if ([url isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
@@ -302,13 +370,6 @@ static EEPackageDatabase *sharedDatabase;
     
     url = [NSURL fileURLWithPath:toPath];
     
-    // The manifest will contain the bundleIdentifier and the display name.
-    NSDictionary *item = [[manifest objectForKey:@"items"] firstObject];
-    NSDictionary *metadata = [item objectForKey:@"metadata"];
-    
-    NSString *bundleID = [metadata objectForKey:@"bundle-identifier"];
-    NSString *title = [metadata objectForKey:@"title"];
-    
     // We can now begin installation, and allow us to move onto the next application.
     dispatch_async(_queue, ^{
         NSError *error;
@@ -319,17 +380,18 @@ static EEPackageDatabase *sharedDatabase;
                                                             error:&error];
     
         if (!result) {
-            [application sendLocalNotification:@"Failed" body:[NSString stringWithFormat:@"Failed to re-sign: '%@' with error: %@", title, error.localizedDescription] withID:@"lastError"];
+            [application sendLocalNotification:@"Failed" body:[NSString stringWithFormat:@"Failed to re-sign: '%@'.\nError: %@", title, error.localizedDescription] withID:@"lastError"];
         } else {
             // Note that we should change the alert's text based upon if the user has installed this application before.
             
             LSApplicationProxy *proxy = [LSApplicationProxy applicationProxyForIdentifier:bundleID];
             
-            [application sendLocalNotification:@"Success" andBody:[NSString stringWithFormat:@"%@: '%@'", proxy != nil ? @"Re-signed" : @"Installed", title]];
+            [application sendLocalNotification:@"Success" body:[NSString stringWithFormat:@"%@: '%@'", proxy != nil ? @"Re-signed" : @"Installed", title] withID:bundleID];
         }
     
         // Clean up.
         [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
+        [_currentInstallQueue removeObject:bundleID];
     });
     
     // Signal that we can continue to the next application, as we've signed this one and queued it for installation.

@@ -66,13 +66,12 @@
     NSMutableArray *array = [NSMutableArray array];
     
     PSSpecifier *group = [PSSpecifier groupSpecifierWithName:@"Error Handling"];
-    [group setProperty:@"Some errors may be resolved automatically by revoking any existing certificates." forKey:@"footerText"];
+    [group setProperty:@"Some errors may be resolved automatically by revoking any existing certificates. Note that this is only a temporary workaround.\n\nIt is strongly NOT recommended to use this feature if you have multiple devices." forKey:@"footerText"];
     [array addObject:group];
     
-    // TODO: Needs to be hooked up in-code
     PSSpecifier *resign = [PSSpecifier preferenceSpecifierNamed:@"Auto-Revoke Certificates" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
-    [resign setProperty:@"autoRevokeCertificates" forKey:@"key"];
-    [resign setProperty:@NO forKey:@"enabled"];
+    [resign setProperty:@"shouldAutoRevokeIfNeeded" forKey:@"key"];
+    [resign setProperty:@YES forKey:@"enabled"];
     [resign setProperty:@0 forKey:@"default"];
     
     [array addObject:resign];
@@ -92,7 +91,7 @@
             return [NSNumber numberWithBool:NO];
         } else if ([key isEqualToString:@"heartbeatTimerInterval"]) {
             return [NSNumber numberWithInt:2];
-        } else if ([key isEqualToString:@"autoRevokeCertificates"]) {
+        } else if ([key isEqualToString:@"shouldAutoRevokeIfNeeded"]) {
             return [NSNumber numberWithBool:NO];
         }
         

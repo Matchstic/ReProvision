@@ -16,6 +16,7 @@
 + (int)thresholdForResigning;
 + (BOOL)shouldAutomaticallyResign;
 + (BOOL)shouldResignInLowPowerMode;
++ (BOOL)shouldAutoRevokeIfNeeded;
 
 + (NSTimeInterval)heartbeatTimerInterval;
 + (void)reloadHeartbeatTimer;
@@ -29,6 +30,7 @@
 
 + (NSDictionary *)provisioningProfileAtPath:(NSString *)path;
 + (void)attemptToRevokeCertificateWithCallback:(void (^)(BOOL))completionHandler;
++ (void)_actuallyRevokeCertificatesWithAlert:(id)controller andCallback:(void (^)(BOOL))completionHandler;
 
 + (void)reloadSettings;
 

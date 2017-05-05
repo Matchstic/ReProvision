@@ -119,6 +119,11 @@ static NSDictionary *_getEntitlementsPlist() {
     [(Extender*)[UIApplication sharedApplication] _reloadHeartbeatTimer];
 }
 
++ (BOOL)shouldAutoRevokeIfNeeded {
+    id value = [[NSUserDefaults standardUserDefaults] objectForKey:@"shouldAutoRevokeIfNeeded"];
+    return value ? [value boolValue] : NO;
+}
+
 + (NSString*)username {
     return [[NSUserDefaults standardUserDefaults] objectForKey:@"cachedUsername"];
 }
@@ -262,82 +267,7 @@ static NSDictionary *_getEntitlementsPlist() {
     
     UIAlertAction *attempt = [UIAlertAction actionWithTitle:@"Revoke" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         // Alright, user is sure...
-        
-        // First, we need the myAcInfo value to be set in AppleServices.
-        [EEAppleServices signInWithUsername:[EEResources username] password:[EEResources password] andCompletionHandler:^(NSError *error, NSDictionary *plist) {
-            if (error) {
-                // Oh shit.
-                [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
-                completionHandler(NO);
-                return;
-            }
-            
-            // Now, list all teams so we can find the certs for the teams the user is in.
-            [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
-                if (error) {
-                    // oh shit.
-                    [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
-                    completionHandler(NO);
-                    return;
-                }
-                
-                NSArray *teams = [plist objectForKey:@"teams"];
-                NSString *teamId;
-                
-                // We don't want to be revoking a group cert if we can help it.
-                for (NSDictionary *team in teams) {
-                    NSString *type = [team objectForKey:@"type"];
-                    
-                    if ([type isEqualToString:@"Individual"]) {
-                        teamId = [team objectForKey:@"teamId"];
-                        break;
-                    }
-                }
-                
-                // We now have the team ID.
-                [EEAppleServices listAllDevelopmentCertificatesForTeamID:teamId withCompletionHandler:^(NSError *error, NSDictionary *plist) {
-                    if (error) {
-                        // oh shit.
-                        [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
-                        completionHandler(NO);
-                    }
-                    
-                    NSArray *certs = [plist objectForKey:@"certificates"];
-                    NSMutableArray *serials = [NSMutableArray array];
-                    for (NSDictionary *cert in certs) {
-                        // To revoke a certificate, we need its serial number.
-                        // Note though that we won't revoke the certifcates that do not include a machine name.
-                        
-                        if ([cert objectForKey:@"machineName"]) {
-                            NSString *serial = [cert objectForKey:@"serialNumber"];
-                            [serials addObject:serial];
-                        }
-                    }
-                    
-                    [self _revokeSerials:serials withTeamID:teamId count:0 andCompletionHandler:^(int revoked, NSError *error) {
-                        if (error) {
-                            // oh shit.
-                            [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
-                            completionHandler(NO);
-                            return;
-                        }
-                        
-                        // Done revoking!
-                        completionHandler(YES);
-                        
-                        UIAlertController *endcontroller = [UIAlertController alertControllerWithTitle:@"Revoke Certificates" message:[NSString stringWithFormat:@"%d certificate%@ revoked, and you should receive an email shortly stating that certificates were revoked.\n\nYou will need to manually re-sign applications by pressing 'Re-sign' in the Installed tab.\n\nThe next re-sign may give a 'Could not extract archive' error; this is fine, and can be ignored.", revoked, revoked == 1 ? @" was" : @"s were"] preferredStyle:UIAlertControllerStyleAlert];
-                        
-                        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
-                            [controller dismissViewControllerAnimated:YES completion:nil];
-                        }];
-                        
-                        [endcontroller addAction:cancel];
-                        
-                        [application.keyWindow.rootViewController presentViewController:endcontroller animated:YES completion:nil];
-                    }];
-                }];
-            }];
-        }];
+        [self _actuallyRevokeCertificatesWithAlert:controller andCallback:completionHandler];
     }];
     
     UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
@@ -349,6 +279,88 @@ static NSDictionary *_getEntitlementsPlist() {
     [controller addAction:attempt];
     
     [application.keyWindow.rootViewController presentViewController:controller animated:YES completion:nil];
+}
+
++ (void)_actuallyRevokeCertificatesWithAlert:(UIAlertController*)controller andCallback:(void (^)(BOOL))completionHandler {
+    Extender *application = (Extender*)[UIApplication sharedApplication];
+    
+    // First, we need the myAcInfo value to be set in AppleServices.
+    [EEAppleServices signInWithUsername:[EEResources username] password:[EEResources password] andCompletionHandler:^(NSError *error, NSDictionary *plist) {
+        if (error) {
+            // Oh shit.
+            [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
+            completionHandler(NO);
+            return;
+        }
+        
+        // Now, list all teams so we can find the certs for the teams the user is in.
+        [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+            if (error) {
+                // oh shit.
+                [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
+                completionHandler(NO);
+                return;
+            }
+            
+            NSArray *teams = [plist objectForKey:@"teams"];
+            NSString *teamId;
+            
+            // We don't want to be revoking a group cert if we can help it.
+            for (NSDictionary *team in teams) {
+                NSString *type = [team objectForKey:@"type"];
+                
+                if ([type isEqualToString:@"Individual"]) {
+                    teamId = [team objectForKey:@"teamId"];
+                    break;
+                }
+            }
+            
+            // We now have the team ID.
+            [EEAppleServices listAllDevelopmentCertificatesForTeamID:teamId withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                if (error) {
+                    // oh shit.
+                    [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
+                    completionHandler(NO);
+                }
+                
+                NSArray *certs = [plist objectForKey:@"certificates"];
+                NSMutableArray *serials = [NSMutableArray array];
+                for (NSDictionary *cert in certs) {
+                    // To revoke a certificate, we need its serial number.
+                    // Note though that we won't revoke the certifcates that do not include a machine name.
+                    
+                    if ([cert objectForKey:@"machineName"]) {
+                        NSString *serial = [cert objectForKey:@"serialNumber"];
+                        [serials addObject:serial];
+                    }
+                }
+                
+                [self _revokeSerials:serials withTeamID:teamId count:0 andCompletionHandler:^(int revoked, NSError *error) {
+                    if (error) {
+                        // oh shit.
+                        [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
+                        completionHandler(NO);
+                        return;
+                    }
+                    
+                    // Done revoking!
+                    completionHandler(YES);
+                    
+                    if (controller) {
+                        UIAlertController *endcontroller = [UIAlertController alertControllerWithTitle:@"Revoke Certificates" message:[NSString stringWithFormat:@"%d certificate%@ revoked, and you should receive an email shortly stating that certificates were revoked.\n\nYou will need to manually re-sign applications by pressing 'Re-sign' in the Installed tab.\n\nThe next re-sign may give a 'Could not extract archive' error; this is fine, and can be ignored.", revoked, revoked == 1 ? @" was" : @"s were"] preferredStyle:UIAlertControllerStyleAlert];
+                    
+                        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
+                            [controller dismissViewControllerAnimated:YES completion:nil];
+                        }];
+                    
+                        [endcontroller addAction:cancel];
+                    
+                        [application.keyWindow.rootViewController presentViewController:endcontroller animated:YES completion:nil];
+                    }
+                }];
+            }];
+        }];
+    }];
 }
 
 + (void)_revokeSerials:(NSArray*)serials withTeamID:(NSString*)teamId count:(int)certs andCompletionHandler:(void(^)(int, NSError*))completionHandler {

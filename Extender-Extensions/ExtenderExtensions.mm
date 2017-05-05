@@ -79,7 +79,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class UIAlertController; @class CyextTabBarController; @class SBApplication; @class NEVPNManager; @class NSURLSession; @class UNUserNotificationCenter; @class Extender; @class NSFileManager; @class NEVPNConnection; @class NETunnelProviderManager; 
+@class NETunnelProviderManager; @class NSURLSession; @class UIAlertController; @class Extender; @class NEVPNManager; @class SBApplication; @class NSFileManager; @class UNUserNotificationCenter; @class CyextTabBarController; @class NEVPNConnection; 
 
 
 #line 60 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
@@ -278,8 +278,6 @@ static void _logos_method$Extender$Extender$_reloadHeartbeatTimer(_LOGOS_SELF_TY
     
     
     [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:interval];
-    
-    [self sendLocalNotification:@"Debug" andBody:[NSString stringWithFormat:@"Setup heartbeat timer, with interval: %d", (int)interval]];
 }
 
 
@@ -572,7 +570,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationB
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_7463661e(int argc, char **argv, char **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_1b94f98e(int argc, char **argv, char **envp) {
     {}
 
     
