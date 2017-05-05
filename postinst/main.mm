@@ -13,6 +13,10 @@ static int run_system(const char *args[]) {
     return stat;
 }
 
+void classicMatchsticEasterEgg() {
+    xlog(@"\n\nI'm trying to free your mind, Neo. But I can only show you the door. You're the one that has to walk through it.");
+}
+
 void reloadInstalld() {
     static const char *plist = "/System/Library/LaunchDaemons/com.apple.mobile.installd.plist";
     
@@ -37,6 +41,8 @@ int main(int argc, char **argv, char **envp) {
     
     @autoreleasepool {
         reloadInstalld();
+        
+        classicMatchsticEasterEgg();
     }
     
     return 0;

@@ -106,6 +106,8 @@ void downloadImpactor() {
         xlog(@"\n\n\n\n*******************************************");
         xlog(@"Try installing again another time.");
         xlog(@"*******************************************\n\n\n\n");
+        
+        exit(1);
     }
     
     xlog(@"Downloaded.");
@@ -270,10 +272,6 @@ void cleanup() {
     [[NSFileManager defaultManager] removeItemAtPath:@"/tmp/Extender/" error:nil];
 }
 
-void classicMatchsticEasterEgg() {
-    xlog(@"\n\nI'm trying to free your mind, Neo. But I can only show you the door. You're the one that has to walk through it.");
-}
-
 int main (int argc, const char * argv[])
 {
 
@@ -315,8 +313,6 @@ int main (int argc, const char * argv[])
         install();
         
         cleanup();
-        
-        classicMatchsticEasterEgg();
     }
 	return 0;
 }
