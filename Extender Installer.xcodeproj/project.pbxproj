@@ -12,6 +12,8 @@
 		C92B32ED1EB1136000BF0D3B /* EESettingsController.h in Headers */ = {isa = PBXBuildFile; fileRef = C92B32EB1EB1135F00BF0D3B /* EESettingsController.h */; };
 		C92B32EE1EB1136000BF0D3B /* EESettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = C92B32EC1EB1135F00BF0D3B /* EESettingsController.m */; };
 		C92B32F81EB11DC700BF0D3B /* Preferences.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C92B32F41EB11C0B00BF0D3B /* Preferences.tbd */; };
+		C947240B1EBD28570090C9DD /* EEAdvancedController.h in Headers */ = {isa = PBXBuildFile; fileRef = C94724091EBD28570090C9DD /* EEAdvancedController.h */; };
+		C947240C1EBD28570090C9DD /* EEAdvancedController.m in Sources */ = {isa = PBXBuildFile; fileRef = C947240A1EBD28570090C9DD /* EEAdvancedController.m */; };
 		C985B0891EB2534200F62695 /* EETroubleshootController.h in Headers */ = {isa = PBXBuildFile; fileRef = C985B0871EB2534200F62695 /* EETroubleshootController.h */; };
 		C985B08A1EB2534200F62695 /* EETroubleshootController.m in Sources */ = {isa = PBXBuildFile; fileRef = C985B0881EB2534200F62695 /* EETroubleshootController.m */; };
 		C98D46911EA0DF320052812C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C936D75C1E9F5FA900F23D85 /* Foundation.framework */; };
@@ -130,6 +132,8 @@
 		C936D7C11E9F668E00F23D85 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		C936D7C31E9F70B600F23D85 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/usr/lib/libz.dylib; sourceTree = DEVELOPER_DIR; };
 		C936D7C51E9F715900F23D85 /* CydiaSubstrate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CydiaSubstrate.framework; path = ../../../../../opt/iOSOpenDev/lib/CydiaSubstrate.framework; sourceTree = "<group>"; };
+		C94724091EBD28570090C9DD /* EEAdvancedController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EEAdvancedController.h; sourceTree = "<group>"; };
+		C947240A1EBD28570090C9DD /* EEAdvancedController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EEAdvancedController.m; sourceTree = "<group>"; };
 		C985B0871EB2534200F62695 /* EETroubleshootController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EETroubleshootController.h; sourceTree = "<group>"; };
 		C985B0881EB2534200F62695 /* EETroubleshootController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EETroubleshootController.m; sourceTree = "<group>"; };
 		C98D46891EA0DDDE0052812C /* installdPatch.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = installdPatch.plist; path = Package/Library/MobileSubstrate/DynamicLibraries/installdPatch.plist; sourceTree = "<group>"; };
@@ -242,6 +246,8 @@
 			children = (
 				C92B32EB1EB1135F00BF0D3B /* EESettingsController.h */,
 				C92B32EC1EB1135F00BF0D3B /* EESettingsController.m */,
+				C94724091EBD28570090C9DD /* EEAdvancedController.h */,
+				C947240A1EBD28570090C9DD /* EEAdvancedController.m */,
 				C985B0871EB2534200F62695 /* EETroubleshootController.h */,
 				C985B0881EB2534200F62695 /* EETroubleshootController.m */,
 			);
@@ -599,6 +605,7 @@
 				C9DDCA141EA965120024CFF7 /* sha1.h in Headers */,
 				C985B0891EB2534200F62695 /* EETroubleshootController.h in Headers */,
 				C9DDCA081EA965120024CFF7 /* brg_types.h in Headers */,
+				C947240B1EBD28570090C9DD /* EEAdvancedController.h in Headers */,
 				C9DDCA0E1EA965120024CFF7 /* hmac.h in Headers */,
 				C9DDCA1B1EA965120024CFF7 /* unzip.h in Headers */,
 				C9DDCA011EA965120024CFF7 /* aes_via_ace.h in Headers */,
@@ -791,6 +798,7 @@
 				C9DDCA051EA965120024CFF7 /* aestab.c in Sources */,
 				C9DDCA111EA965120024CFF7 /* pwd2key.c in Sources */,
 				C9F43D821EA920AE007F0EEB /* EEPackage.m in Sources */,
+				C947240C1EBD28570090C9DD /* EEAdvancedController.m in Sources */,
 				C9DDCA031EA965120024CFF7 /* aeskey.c in Sources */,
 				C9F43D831EA920B0007F0EEB /* EEPackageDatabase.m in Sources */,
 				C92B32EE1EB1136000BF0D3B /* EESettingsController.m in Sources */,

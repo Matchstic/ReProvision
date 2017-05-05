@@ -15,6 +15,7 @@
 + (BOOL)shouldShowNonUrgentAlerts;
 + (int)thresholdForResigning;
 + (BOOL)shouldAutomaticallyResign;
++ (BOOL)shouldResignInLowPowerMode;
 
 + (NSString*)username;
 + (NSString*)password;

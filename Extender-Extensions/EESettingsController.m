@@ -8,6 +8,7 @@
 
 #import "EESettingsController.h"
 #import "EETroubleshootController.h"
+#import "EEAdvancedController.h"
 #import "EEResources.h"
 
 @interface PSSpecifier (Private)
@@ -110,6 +111,19 @@
     [showDebugAlerts setProperty:@0 forKey:@"default"];
     
     [array addObject:showDebugAlerts];
+    
+    PSSpecifier *group3 = [PSSpecifier groupSpecifierWithName:@""];
+    [array addObject:group3];
+    
+    PSSpecifier* troubleshoot = [PSSpecifier preferenceSpecifierNamed:@"Advanced"
+                                                               target:self
+                                                                  set:NULL
+                                                                  get:NULL
+                                                               detail:[EEAdvancedController class]
+                                                                 cell:PSLinkCell
+                                                                 edit:Nil];
+    
+    [array addObject:troubleshoot];
     
     return array;
 }

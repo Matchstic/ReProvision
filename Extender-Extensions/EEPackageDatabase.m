@@ -163,12 +163,14 @@ static EEPackageDatabase *sharedDatabase;
         return;
     }
     
-    // If Low Power Mode is enabled, we will not attempt a resign to avoid power consumption.
+    // If Low Power Mode is enabled, we will not attempt a resign to avoid power consumption, unless the user allows it.
     if ([[NSProcessInfo processInfo] isLowPowerModeEnabled] && check) {
-        Extender *application = (Extender*)[UIApplication sharedApplication];
-        [application sendLocalNotification:@"Debug" andBody:@"Not proceeding to re-sign due to Low Power Mode being active."];
+        if (![EEResources shouldResignInLowPowerMode]) {
+            Extender *application = (Extender*)[UIApplication sharedApplication];
+            [application sendLocalNotification:@"Debug" andBody:@"Not proceeding to re-sign due to Low Power Mode being active."];
         
-        return;
+            return;
+        }
     }
     
     // We should also check network state before proceeding.

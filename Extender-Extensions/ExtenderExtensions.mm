@@ -78,7 +78,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class NETunnelProviderManager; @class CyextTabBarController; @class Extender; @class NEVPNManager; @class SBApplication; @class NEVPNConnection; @class NSFileManager; @class UIAlertController; @class NSURLSession; @class UNUserNotificationCenter; 
+@class UNUserNotificationCenter; @class NSFileManager; @class NEVPNConnection; @class CyextTabBarController; @class NETunnelProviderManager; @class UIAlertController; @class SBApplication; @class NEVPNManager; @class NSURLSession; @class Extender; 
 
 
 #line 59 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
@@ -489,6 +489,8 @@ static UNUserNotificationCenter* _logos_method$Extender$UNUserNotificationCenter
 
 
 
+
+
 static _Bool (*_logos_orig$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrInstall)(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool _logos_method$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrInstall(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool (*_logos_orig$SpringBoard$SBApplication$_shouldAutoLaunchOnBootOrInstall$)(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL, _Bool); static _Bool _logos_method$SpringBoard$SBApplication$_shouldAutoLaunchOnBootOrInstall$(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL, _Bool); static _Bool (*_logos_orig$SpringBoard$SBApplication$_shouldAutoLaunchForVoIP)(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool _logos_method$SpringBoard$SBApplication$_shouldAutoLaunchForVoIP(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool (*_logos_orig$SpringBoard$SBApplication$shouldAutoRelaunchAfterExit)(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool _logos_method$SpringBoard$SBApplication$shouldAutoRelaunchAfterExit(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool (*_logos_orig$SpringBoard$SBApplication$supportsFetchBackgroundMode)(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool _logos_method$SpringBoard$SBApplication$supportsFetchBackgroundMode(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool (*_logos_orig$SpringBoard$SBApplication$supportsBackgroundAppRefresh)(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool _logos_method$SpringBoard$SBApplication$supportsBackgroundAppRefresh(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool (*_logos_orig$SpringBoard$SBApplication$supportsRemoteNotificationBackgroundMode)(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationBackgroundMode(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST, SEL); 
 
 #pragma mark Force auto-relaunch, and backgrounding
@@ -556,7 +558,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationB
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_9f0b0077(int argc, char **argv, char **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_94cc59e8(int argc, char **argv, char **envp) {
     {}
 
     

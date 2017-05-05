@@ -100,6 +100,11 @@ static NSDictionary *_getEntitlementsPlist() {
     return value ? [value boolValue] : YES;
 }
 
++ (BOOL)shouldResignInLowPowerMode {
+    id value = [[NSUserDefaults standardUserDefaults] objectForKey:@"resignInLowPowerMode"];
+    return value ? [value boolValue] : NO;
+}
+
 + (NSString*)username {
     return [[NSUserDefaults standardUserDefaults] objectForKey:@"cachedUsername"];
 }
