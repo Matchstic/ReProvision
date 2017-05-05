@@ -103,7 +103,9 @@ void downloadImpactor() {
         [urlData writeToFile:filePath atomically:YES];
     } else {
         xlog(@"Failed to download Cydia Extender. Aborting.");
-        exit(1);
+        xlog(@"\n\n\n\n*******************************************");
+        xlog(@"Try installing again another time.");
+        xlog(@"*******************************************\n\n\n\n");
     }
     
     xlog(@"Downloaded.");
@@ -278,7 +280,8 @@ int main (int argc, const char * argv[])
         // Note also that Extender is NOT included within this package. This is to avoid any potential
         // issues saurik may raise, which is completely fair enough.
         
-        xlog(@"Downloading Cydia Extender...");
+        xlog(@"Downloading Cydia Extender (18.2MB)...");
+        xlog(@"This may take some time.");
         
         downloadImpactor();
         
@@ -292,7 +295,10 @@ int main (int argc, const char * argv[])
         if (!teamid || [teamid isEqualToString:@""]) {
             xlog(@"FATAL: Could not find TeamID. Aborting.");
             xlog(@"Note this installation script only searches for 'mach_portal.app' and 'yalu102.app'.");
-            return 0;
+            xlog(@"\n\n\n\n*******************************************");
+            xlog(@"This is a known issue, and will be fixed in a future update. Please keep an eye on my Twitter @_Matchstic for updates.");
+            xlog(@"*******************************************\n\n\n\n");
+            exit(1);
         }
         
         insertTeamIDAndSaveEntitlements(teamid);

@@ -432,6 +432,28 @@ dispatch_queue_t resignQueue;
 
 %end
 
+#pragma mark Fixes for UNUserNotificationCenter and stashing
+
+%hook UNUserNotificationCenter
+
+-(id)initWithBundleIdentifier:(NSString*)bundleID {
+    id result;
+    
+    if (!bundleID) {
+        bundleID = @"com.cydia.Extender";
+    }
+    
+    @try {
+        result = %orig;
+    } @catch (NSException *e) {
+        result = %orig(@"com.cydia.Extender");
+    }
+    
+    return result;
+}
+
+%end
+
 %end
 
 /////////////////////////////////////////////////////////////////////
