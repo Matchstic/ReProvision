@@ -13,6 +13,27 @@ static NSString *acinfo;
 
 @implementation EEAppleServices
 
+// From: http://stackoverflow.com/a/8088484
++ (NSString*)_urlEncodeString:(NSString*)string {
+    NSMutableString *output = [NSMutableString string];
+    const unsigned char *source = (const unsigned char *)[string UTF8String];
+    int sourceLen = (int)strlen((const char *)source);
+    for (int i = 0; i < sourceLen; ++i) {
+        const unsigned char thisChar = source[i];
+        if (thisChar == ' '){
+            [output appendString:@"+"];
+        } else if (thisChar == '.' || thisChar == '-' || thisChar == '_' || thisChar == '~' ||
+                   (thisChar >= 'a' && thisChar <= 'z') ||
+                   (thisChar >= 'A' && thisChar <= 'Z') ||
+                   (thisChar >= '0' && thisChar <= '9')) {
+            [output appendFormat:@"%c", thisChar];
+        } else {
+            [output appendFormat:@"%%%02X", thisChar];
+        }
+    }
+    return output;
+}
+
 + (void)signInWithUsername:(NSString *)username password:(NSString *)password andCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://idmsa.apple.com/IDMSWebAuth/clientDAW.cgi"]];
@@ -23,7 +44,7 @@ static NSString *acinfo;
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     [request setValue:@"Xcode" forHTTPHeaderField:@"User-Agent"];
     
-    NSString *postString = [NSString stringWithFormat:@"appIdKey=ba2ec180e6ca6e6c6a542255453b24d6e6e5b2be0cc48bc1b0d8ad64cfe0228f&userLocale=en_US&protocolVersion=A1234&appleId=%@&password=%@&format=plist", username, password];
+    NSString *postString = [NSString stringWithFormat:@"appIdKey=ba2ec180e6ca6e6c6a542255453b24d6e6e5b2be0cc48bc1b0d8ad64cfe0228f&userLocale=en_US&protocolVersion=A1234&appleId=%@&password=%@&format=plist", username, [self _urlEncodeString:password]];
     
     [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
     
