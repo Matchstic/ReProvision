@@ -180,6 +180,7 @@ static EEPackageDatabase *sharedDatabase;
         return;
     }
     
+    // TODO: If there is no Team ID saved, also present "Sign In" notification.
     if (![EEResources username]) {
         Extender *application = (Extender*)[UIApplication sharedApplication];
         [application sendLocalNotification:@"Sign In" body:@"Please login with your Apple ID to re-sign applications." withID:@"login"];

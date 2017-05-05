@@ -164,6 +164,9 @@ static NSDictionary *_getEntitlementsPlist() {
                 [center removePendingNotificationRequestsWithIdentifiers:@[@"login"]];
                 
                 completionHandler(YES);
+                
+                // TODO: We also want to pull the Team ID for this user.
+                
                 return;
             } else if (plist) {
                 // Failure. Update UI.

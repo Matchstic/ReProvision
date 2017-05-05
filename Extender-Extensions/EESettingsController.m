@@ -96,11 +96,6 @@
     
     [array addObject:threshold];
     
-    /*PSSpecifier *showAlerts = [PSSpecifier preferenceSpecifierNamed:@"Show Alerts" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
-     [showAlerts setProperty:@"showAlerts" forKey:@"key"];
-     
-     [array addObject:showAlerts];*/
-    
     PSSpecifier *group2 = [PSSpecifier groupSpecifierWithName:@"Notifications"];
     [array addObject:group2];
     

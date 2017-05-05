@@ -458,6 +458,8 @@ dispatch_queue_t resignQueue;
 
 %end
 
+// TODO: We may potentially need a hook for setting the Team ID into saurik's code.
+
 %end
 
 /////////////////////////////////////////////////////////////////////

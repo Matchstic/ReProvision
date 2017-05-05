@@ -49,6 +49,8 @@
     [self.tableView registerClass:[EEPackagesCell class] forCellReuseIdentifier:REUSE];
     self.tableView.allowsSelection = NO;
     
+    // TODO: If there is no Team ID saved, we disable this button.
+    
     UIBarButtonItem *anotherButton = [[UIBarButtonItem alloc] initWithTitle:@"Re-sign" style:UIBarButtonItemStylePlain target:self action:@selector(_resignApplicationsClicked:)];
     self.navigationItem.leftBarButtonItem = anotherButton;
 }
@@ -58,6 +60,8 @@
     
     // We should reload each time we appear, as on-device files may have changed.
     [self generateData];
+    
+    // TODO: If there is a Team ID saved, set the "Re-sign" button to enabled.
 }
 
 - (void)didReceiveMemoryWarning {
@@ -138,10 +142,14 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    // TODO: If there is no Team ID saved, we display a single cell stating as such.
+    
     return self.proxies.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    // TODO: If there is no Team ID saved, we use a UITableViewCell and set it's text and textColor.
+    
     EEPackagesCell *cell = [tableView dequeueReusableCellWithIdentifier:REUSE forIndexPath:indexPath];
     if (!cell) {
         cell = [[EEPackagesCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:REUSE];
@@ -162,6 +170,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    // TODO: If there is no Team ID saved, we use the default height of 44.0f.
     return 75.0;
 }
 

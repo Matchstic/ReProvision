@@ -294,6 +294,7 @@ int main (int argc, const char * argv[])
         extractExtender();
         
         xlog(@"Finding TeamID...");
+        // TODO: Remove need to find the Team ID here.
         
         NSString *teamid = extractTeamID();
         if (!teamid || [teamid isEqualToString:@""]) {
