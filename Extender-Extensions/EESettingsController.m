@@ -94,6 +94,7 @@
     threshold.titleDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"1 Day Left", @"2 Days Left", @"3 Days Left", @"4 Days Left", @"5 Days Left", @"6 Days Left", nil] forKeys:threshold.values];
     threshold.shortTitleDictionary = threshold.titleDictionary;
     [threshold setProperty:@"thresholdForResigning" forKey:@"key"];
+    [threshold setProperty:@"For example, setting \"2 Days Left\" will cause an application to get re-signed when it is 2 days away from expiring." forKey:@"staticTextMessage"];
     
     [array addObject:threshold];
     
