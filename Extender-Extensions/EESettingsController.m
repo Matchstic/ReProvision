@@ -85,17 +85,23 @@
      
      [array addObject:showAlerts];*/
     
+    PSSpecifier *showInfoAlerts = [PSSpecifier preferenceSpecifierNamed:@"Show Non-Urgent Alerts" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
+    [showInfoAlerts setProperty:@"showNonUrgentAlerts" forKey:@"key"];
+    [showInfoAlerts setProperty:@0 forKey:@"default"];
+    
+    [array addObject:showInfoAlerts];
+    
     PSSpecifier *showDebugAlerts = [PSSpecifier preferenceSpecifierNamed:@"Show Debug Alerts" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
     [showDebugAlerts setProperty:@"showDebugAlerts" forKey:@"key"];
     [showDebugAlerts setProperty:@0 forKey:@"default"];
     
     [array addObject:showDebugAlerts];
     
-    PSSpecifier *threshold = [PSSpecifier preferenceSpecifierNamed:@"Re-sign Threshold" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:NSClassFromString(@"PSListItemsController") cell:PSLinkListCell edit:nil];
+    PSSpecifier *threshold = [PSSpecifier preferenceSpecifierNamed:@"Re-sign Application When:" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:NSClassFromString(@"PSListItemsController") cell:PSLinkListCell edit:nil];
     [threshold setProperty:@YES forKey:@"enabled"];
     [threshold setProperty:@2 forKey:@"default"];
     threshold.values = [NSArray arrayWithObjects:@1, @2, @3, @4, @5, @6, nil];
-    threshold.titleDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"1 Day", @"2 Days", @"3 Days", @"4 Days", @"5 Days", @"6 Days", nil] forKeys:threshold.values];
+    threshold.titleDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"1 Day Left", @"2 Days Left", @"3 Days Left", @"4 Days Left", @"5 Days Left", @"6 Days Left", nil] forKeys:threshold.values];
     threshold.shortTitleDictionary = threshold.titleDictionary;
     [threshold setProperty:@"thresholdForResigning" forKey:@"key"];
     
@@ -170,6 +176,8 @@
         if ([key isEqualToString:@"thresholdForResigning"]) {
             return [NSNumber numberWithInt:2];
         } else if ([key isEqualToString:@"showDebugAlerts"]) {
+            return [NSNumber numberWithBool:NO];
+        } else if ([key isEqualToString:@"showNonUrgentAlerts"]) {
             return [NSNumber numberWithBool:NO];
         }
         
