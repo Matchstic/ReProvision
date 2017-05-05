@@ -84,6 +84,11 @@ static NSDictionary *_getEntitlementsPlist() {
     return value ? [value boolValue] : YES;
 }
 
++ (BOOL)shouldShowNonUrgentAlerts {
+    id value = [[NSUserDefaults standardUserDefaults] objectForKey:@"showNonUrgentAlerts"];
+    return value ? [value boolValue] : NO;
+}
+
 // How many days left until expiry.
 + (int)thresholdForResigning {
     id value = [[NSUserDefaults standardUserDefaults] objectForKey:@"thresholdForResigning"];

@@ -12,6 +12,7 @@
 
 + (BOOL)shouldShowDebugAlerts;
 + (BOOL)shouldShowAlerts;
++ (BOOL)shouldShowNonUrgentAlerts;
 + (int)thresholdForResigning;
 
 + (NSString*)username;

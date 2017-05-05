@@ -217,7 +217,7 @@ static EEPackageDatabase *sharedDatabase;
         }
     }
     
-    if (_installQueue.count == 0) {
+    if (_installQueue.count == 0 && [EEResources shouldShowNonUrgentAlerts]) {
         Extender *application = (Extender*)[UIApplication sharedApplication];
         [application sendLocalNotification:nil andBody:@"No applications need re-signing at this time."];
     }
