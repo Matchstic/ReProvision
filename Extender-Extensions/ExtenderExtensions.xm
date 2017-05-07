@@ -470,7 +470,31 @@ dispatch_queue_t resignQueue;
 
 %end
 
-// TODO: We may potentially need a hook for setting the Team ID into saurik's code.
+#pragma mark Hook Team ID into csops().
+
+/* We need a hook for setting the Team ID into saurik's code.
+ * His approach is to read it via csops() into a plist, and then does effectively:
+ * [entitlements objectForKey:@"com.apple.developer.team-identifier"];
+ *
+ * We could hook csops() directly, though that returns a bplist, which will be a pain to
+ * work with.
+ *
+ * However, the main issue is that no Objective-C is used for plist handling.
+ * Thus, we need to hook a C or C++ function somewhere in plist_from_bin in Extender.dylib.
+ *
+ * The implmentation for this comes from: https://github.com/julioverne/Extendlife/blob/master/Extendlife.xm#L40
+ */
+%hookf(size_t, strlen, const char *str) {
+    size_t len = %orig(str);
+    
+    if (strncmp(str, "AAAAAAAAAA", 10) == 0 && len == 10) {
+        NSString *teamID = [EEResources getTeamID];
+        if (teamID)
+            memcpy((void*)str, (const void *)[teamID UTF8String], 10);
+    }
+    
+    return %orig(str);
+}
 
 %end
 

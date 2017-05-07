@@ -291,10 +291,10 @@ int main (int argc, const char * argv[])
         
         extractExtender();
         
-        xlog(@"Finding TeamID...");
+        //xlog(@"Finding TeamID...");
         // TODO: Remove need to find the Team ID here.
         
-        NSString *teamid = extractTeamID();
+        /*NSString *teamid = extractTeamID();
         if (!teamid || [teamid isEqualToString:@""]) {
             xlog(@"FATAL: Could not find TeamID. Aborting.");
             xlog(@"Note this installation script only searches for 'mach_portal.app' and 'yalu102.app'.");
@@ -302,8 +302,9 @@ int main (int argc, const char * argv[])
             xlog(@"This is a known issue, and will be fixed in a future update. Please keep an eye on my Twitter @_Matchstic for updates.");
             xlog(@"*******************************************\n\n\n\n");
             exit(1);
-        }
+        }*/
         
+        NSString *teamid = @"AAAAAAAAAA";
         insertTeamIDAndSaveEntitlements(teamid);
         
         modifyInfoPlist();

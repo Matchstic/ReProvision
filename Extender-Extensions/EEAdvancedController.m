@@ -66,7 +66,7 @@
     NSMutableArray *array = [NSMutableArray array];
     
     PSSpecifier *group = [PSSpecifier groupSpecifierWithName:@"Error Handling"];
-    [group setProperty:@"Some errors may be resolved automatically by revoking any existing certificates. Note that this is only a temporary workaround.\n\nIt is strongly NOT recommended to use this feature if you have multiple devices." forKey:@"footerText"];
+    [group setProperty:@"Some errors may be resolved automatically by revoking any existing certificates. This is only a temporary workaround.\n\nIt is strongly NOT recommended to use this feature if you use Extender: Reloaded on multiple devices." forKey:@"footerText"];
     [array addObject:group];
     
     PSSpecifier *resign = [PSSpecifier preferenceSpecifierNamed:@"Auto-Revoke Certificates" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];

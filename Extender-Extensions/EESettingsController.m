@@ -145,6 +145,9 @@
     
     [array addObject:troubleshoot];
     
+    PSSpecifier *spacer = [PSSpecifier groupSpecifierWithName:@""];
+    [array addObject:spacer];
+    
     return array;
 }
 

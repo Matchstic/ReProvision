@@ -55,6 +55,7 @@ static EEPackageDatabase *sharedDatabase;
     
     if (self) {
         _queue = dispatch_queue_create("com.cydia.Extender.resignQueue", NULL);
+        _currentBgTask = UIBackgroundTaskInvalid;
     }
     
     return self;
@@ -156,11 +157,22 @@ static EEPackageDatabase *sharedDatabase;
 }
 
 - (void)resignApplicationsIfNecessaryWithTaskID:(UIBackgroundTaskIdentifier)bgTask andCheckExpiry:(BOOL)check {
+    // Check if there is a current background task.
+    if (_currentBgTask != UIBackgroundTaskInvalid) {
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+        return;
+    }
+    
     _currentBgTask = bgTask;
     _currentCycleCount = 0;
     
-    // Check if the queue is still being walked.
-    if (_installQueue.count != 0) {
+    // If there is no Team ID or username, saved present "Sign In" notification.
+    if (![EEResources username] || ![EEResources getTeamID]) {
+        Extender *application = (Extender*)[UIApplication sharedApplication];
+        [application sendLocalNotification:@"Sign In" body:@"Please login with your Apple ID to re-sign applications." withID:@"login"];
+        
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+        _currentBgTask = UIBackgroundTaskInvalid;
         return;
     }
     
@@ -170,6 +182,8 @@ static EEPackageDatabase *sharedDatabase;
             Extender *application = (Extender*)[UIApplication sharedApplication];
             [application sendLocalNotification:@"Debug" andBody:@"Not proceeding to re-sign due to Low Power Mode being active."];
         
+            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+            _currentBgTask = UIBackgroundTaskInvalid;
             return;
         }
     }
@@ -180,14 +194,8 @@ static EEPackageDatabase *sharedDatabase;
         Extender *application = (Extender*)[UIApplication sharedApplication];
         [application sendLocalNotification:@"Debug" andBody:@"Not proceeding to re-sign due to no network access."];
         
-        return;
-    }
-    
-    // TODO: If there is no Team ID saved, also present "Sign In" notification.
-    if (![EEResources username]) {
-        Extender *application = (Extender*)[UIApplication sharedApplication];
-        [application sendLocalNotification:@"Sign In" body:@"Please login with your Apple ID to re-sign applications." withID:@"login"];
-        
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+        _currentBgTask = UIBackgroundTaskInvalid;
         return;
     }
     
@@ -205,10 +213,21 @@ static EEPackageDatabase *sharedDatabase;
         [_installQueue removeAllObjects];
     }
     
+    // Clear the installation queue for preventing multiple installations.
+    if (_currentInstallQueue) {
+        [_currentInstallQueue removeAllObjects];
+    }
+    
     if (check) {
         for (EEPackage *package in [self allPackages]) {
-        
-            NSDateComponents *conversionInfo = [currCalendar components:unitFlags fromDate:now toDate:[package applicationExpireDate] options:0];
+            NSDate *expirationDate = [package applicationExpireDate];
+            
+            // If a nil expiration date is given, then the checks for days away will always be true.
+            if (!expirationDate) {
+                continue;
+            }
+            
+            NSDateComponents *conversionInfo = [currCalendar components:unitFlags fromDate:now toDate:expirationDate options:0];
             int days = (int)[conversionInfo day];
         
             if (days < [EEResources thresholdForResigning]) {
@@ -267,7 +286,20 @@ static EEPackageDatabase *sharedDatabase;
     // The meat of the error message is 2x \n in.
     NSArray *split = [message componentsSeparatedByString:@"\n"];
     
-    NSString *errorMessage = [NSString stringWithFormat:@"%@\n(%@)", [split lastObject], [split objectAtIndex:1]];
+    NSString *meat = [split lastObject];
+    if (split.count > 3) {
+        // Combine the end strings into one.
+        
+        NSMutableString *str = [@"" mutableCopy];
+        
+        for (int i = 2; i < split.count; i++) {
+            [str appendFormat:@"%@%@", i == 2 ? @"" : @"\n", [split objectAtIndex:i]];
+        }
+        
+        meat = str;
+    }
+    
+    NSString *errorMessage = [NSString stringWithFormat:@"%@\n(%@)", meat, [split objectAtIndex:1]];
     
     // We may be able to handle this ourselves.
     NSString *errorReason = [split objectAtIndex:1];
@@ -334,6 +366,7 @@ static EEPackageDatabase *sharedDatabase;
     NSString *bundleID = [metadata objectForKey:@"bundle-identifier"];
     NSString *title = [metadata objectForKey:@"title"];
     
+    // This is to avoid multiple installs from openURL:.
     if (!_currentInstallQueue)
         _currentInstallQueue = [NSMutableArray array];
     
@@ -380,7 +413,7 @@ static EEPackageDatabase *sharedDatabase;
                                                             error:&error];
     
         if (!result) {
-            [application sendLocalNotification:@"Failed" body:[NSString stringWithFormat:@"Failed to re-sign: '%@'.\nError: %@", title, error.localizedDescription] withID:@"lastError"];
+            [application sendLocalNotification:@"Failed" andBody:[NSString stringWithFormat:@"Failed to re-sign: '%@'.\nError: %@", title, error.localizedDescription]];
         } else {
             // Note that we should change the alert's text based upon if the user has installed this application before.
             
@@ -391,7 +424,6 @@ static EEPackageDatabase *sharedDatabase;
     
         // Clean up.
         [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
-        [_currentInstallQueue removeObject:bundleID];
     });
     
     // Signal that we can continue to the next application, as we've signed this one and queued it for installation.

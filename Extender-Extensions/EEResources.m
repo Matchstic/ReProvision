@@ -125,7 +125,7 @@ static NSDictionary *_getEntitlementsPlist() {
 }
 
 + (NSString*)username {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:@"cachedUsername"];
+    return [[NSUserDefaults standardUserDefaults] objectForKey:@"cachedUsername2"];
 }
 
 + (NSString*)password {
@@ -133,22 +133,28 @@ static NSDictionary *_getEntitlementsPlist() {
 }
 
 + (void)storeUsername:(NSString*)username andPassword:(NSString*)password {
-    [[NSUserDefaults standardUserDefaults] setObject:username forKey:@"cachedUsername"];
+    [[NSUserDefaults standardUserDefaults] setObject:username forKey:@"cachedUsername2"];
     
     // Add password to Keychain.
     [SAMKeychain setPassword:password forService:SERVICE account:username];
 }
 
 + (NSString*)getTeamID {
-    NSDictionary *entitlements = _getEntitlementsPlist();
-    NSString *teamID = [entitlements objectForKey:@"com.apple.developer.team-identifier"];
+    //NSDictionary *entitlements = _getEntitlementsPlist();
+    //NSString *teamID = [entitlements objectForKey:@"com.apple.developer.team-identifier"];
     
-    return teamID;
+    //return teamID;
+    
+    return [[NSUserDefaults standardUserDefaults] objectForKey:@"teamID"];
+}
+
++ (void)storeTeamID:(NSString*)teamID {
+    [[NSUserDefaults standardUserDefaults] setObject:teamID forKey:@"teamID"];
 }
 
 + (void)signOut {
     NSString *username = [self username];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"cachedUsername"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"cachedUsername2"];
     
     // Remove password from Keychain
     [SAMKeychain deletePasswordForService:SERVICE account:username];
@@ -180,21 +186,56 @@ static NSDictionary *_getEntitlementsPlist() {
                 
                 [EEResources storeUsername:userField.text andPassword:passField.text];
                 
-                [application sendLocalNotification:@"Sign In" andBody:@"Successfully signed in."];
-                
                 // Clear from notification center if needed.
                 UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
                 [center removeDeliveredNotificationsWithIdentifiers:@[@"login"]];
                 [center removePendingNotificationRequestsWithIdentifiers:@[@"login"]];
                 
-                completionHandler(YES);
-                
-                // TODO: We also want to pull the Team ID for this user.
+                // We also want to pull the Team ID for this user, rather than find it on installation.
+                [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                    if (error) {
+                        // oh shit.
+                        [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
+                        completionHandler(NO);
+                        return;
+                    }
+                    
+                    NSArray *teams = [plist objectForKey:@"teams"];
+                    NSString *teamId;
+                    
+                    // We don't want to be working off a group cert if we can help it.
+                    for (NSDictionary *team in teams) {
+                        NSString *type = [team objectForKey:@"type"];
+                        
+                        if ([type isEqualToString:@"Individual"]) {
+                            teamId = [team objectForKey:@"teamId"];
+                            break;
+                        }
+                    }
+                    
+                    [EEResources storeTeamID:teamId];
+                    
+                    // All done!
+                    [application sendLocalNotification:@"Sign In" andBody:@"Successfully signed in."];
+                    [application sendLocalNotification:@"Debug" andBody:[NSString stringWithFormat:@"Got Team ID: %@", teamId]];
+                    completionHandler(YES);
+                }];
                 
                 return;
             } else if (plist) {
                 // Failure. Update UI.
                 controller.message = userString;
+                
+                // -22938 => App Specific Pwd?
+                // -20101 => incorrect credentials.
+                
+                NSString *resultCode = [plist objectForKey:@"resultCode"];
+                
+                if ([resultCode isEqualToString:@"-22938"]) {
+                    controller.title = @"App Specific Password";
+                } else {
+                    controller.title = @"Error";
+                }
             } else {
                 controller.message = [NSString stringWithFormat:@"Error: %@", error.description];
             }
@@ -327,12 +368,12 @@ static NSDictionary *_getEntitlementsPlist() {
                 NSMutableArray *serials = [NSMutableArray array];
                 for (NSDictionary *cert in certs) {
                     // To revoke a certificate, we need its serial number.
+
                     // Note though that we won't revoke the certifcates that do not include a machine name.
-                    
-                    if ([cert objectForKey:@"machineName"]) {
+                    //if ([cert objectForKey:@"machineName"]) {
                         NSString *serial = [cert objectForKey:@"serialNumber"];
                         [serials addObject:serial];
-                    }
+                    //}
                 }
                 
                 [self _revokeSerials:serials withTeamID:teamId count:0 andCompletionHandler:^(int revoked, NSError *error) {
