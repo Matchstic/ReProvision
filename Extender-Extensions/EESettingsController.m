@@ -50,10 +50,10 @@
     // Logged in
     
     NSString *title = [NSString stringWithFormat:@"Apple ID: %@", [EEResources username]];
-    PSSpecifier *appleid = [PSSpecifier preferenceSpecifierNamed:title target:self set:nil get:nil detail:nil cell:PSStaticTextCell edit:nil];
-    [appleid setProperty:@"appleid" forKey:@"key"];
+    _loggedInSpec = [PSSpecifier preferenceSpecifierNamed:title target:self set:nil get:nil detail:nil cell:PSStaticTextCell edit:nil];
+    [_loggedInSpec setProperty:@"appleid" forKey:@"key"];
     
-    [loggedIn addObject:appleid];
+    [loggedIn addObject:_loggedInSpec];
     
     PSSpecifier *signout = [PSSpecifier preferenceSpecifierNamed:@"Sign Out" target:self set:nil get:nil detail:nil cell:PSButtonCell edit:nil];
     [signout setButtonAction:@selector(didClickSignOut:)];
@@ -70,8 +70,8 @@
     _loggedInAppleSpecifiers = loggedIn;
     _loggedOutAppleSpecifiers = loggedOut;
     
-    BOOL hasCachedUser = [EEResources username] != nil;
-    return hasCachedUser ? _loggedInAppleSpecifiers : _loggedOutAppleSpecifiers;
+    _hasCachedUser = [EEResources username] != nil;
+    return _hasCachedUser ? _loggedInAppleSpecifiers : _loggedOutAppleSpecifiers;
 }
 
 - (NSArray*)_alertSpecifiers {
@@ -151,20 +151,20 @@
     return array;
 }
 
-- (void)updateSpecifiersForAppleID {
+- (void)updateSpecifiersForAppleID:(NSString*)username {
     BOOL hasCachedUser = [EEResources username] != nil;
     
-    // Update "Apple ID: XXX"
-    NSString *title = [NSString stringWithFormat:@"Apple ID: %@", [EEResources username]];
-    PSSpecifier *spec;
-    for (PSSpecifier *spec1 in _loggedInAppleSpecifiers) {
-        if ([[spec propertyForKey:@"key"] isEqualToString:@"appleid"]) {
-            spec = spec1;
-            break;
-        }
+    if (hasCachedUser == _hasCachedUser) {
+        // Do nothing.
+        return;
     }
     
-    [spec setName:title];
+    _hasCachedUser = hasCachedUser;
+    
+    // Update "Apple ID: XXX"
+    NSString *title = [NSString stringWithFormat:@"Apple ID: %@", username];
+    [_loggedInSpec setName:title];
+    [_loggedInSpec setProperty:title forKey:@"label"];
     
     if (hasCachedUser) {
         [self removeContiguousSpecifiers:_loggedOutAppleSpecifiers animated:YES];
@@ -178,12 +178,14 @@
 - (void)didClickSignOut:(id)sender {
     [EEResources signOut];
     
-    [self updateSpecifiersForAppleID];
+    [self updateSpecifiersForAppleID:@""];
 }
 
 - (void)didClickSignIn:(id)sender {
-    [EEResources signInWithCallback:^(BOOL result) {
-        [self updateSpecifiersForAppleID];
+    [EEResources signInWithCallback:^(BOOL result, NSString *username) {
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            [self updateSpecifiersForAppleID:username];
+        });
     }];
 }
 

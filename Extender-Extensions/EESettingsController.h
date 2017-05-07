@@ -12,6 +12,8 @@
 @interface EESettingsController : PSListController {
     NSArray *_loggedInAppleSpecifiers;
     NSArray *_loggedOutAppleSpecifiers;
+    PSSpecifier *_loggedInSpec;
+    BOOL _hasCachedUser;
 }
 
 @end

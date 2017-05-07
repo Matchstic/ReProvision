@@ -188,7 +188,7 @@ dispatch_queue_t resignQueue;
 
 %new
 - (void)_requestAppleDeveloperLogin {
-    [EEResources signInWithCallback:^(BOOL result) {}];
+    [EEResources signInWithCallback:^(BOOL result, NSString *username) {}];
 }
 
 #pragma mark Callbacks for background execution

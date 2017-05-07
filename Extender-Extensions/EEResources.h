@@ -26,7 +26,7 @@
 + (NSString*)getTeamID;
 + (void)storeUsername:(NSString*)username andPassword:(NSString*)password;
 + (void)signOut;
-+ (void)signInWithCallback:(void (^)(BOOL))completionHandler;
++ (void)signInWithCallback:(void (^)(BOOL, NSString*))completionHandler;
 
 + (NSDictionary *)provisioningProfileAtPath:(NSString *)path;
 + (void)attemptToRevokeCertificateWithCallback:(void (^)(BOOL))completionHandler;

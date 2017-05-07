@@ -155,12 +155,13 @@ static NSDictionary *_getEntitlementsPlist() {
 + (void)signOut {
     NSString *username = [self username];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"cachedUsername2"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"teamID"];
     
     // Remove password from Keychain
     [SAMKeychain deletePasswordForService:SERVICE account:username];
 }
 
-+ (void)signInWithCallback:(void (^)(BOOL))completionHandler {
++ (void)signInWithCallback:(void (^)(BOOL, NSString*))completionHandler {
     Extender *application = (Extender*)[UIApplication sharedApplication];
     
     UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Apple Developer" message:@"Your password is only sent to Apple." preferredStyle:UIAlertControllerStyleAlert];
@@ -170,6 +171,8 @@ static NSDictionary *_getEntitlementsPlist() {
         NSArray *textFields = [controller textFields];
         UITextField *userField = [textFields objectAtIndex:0];
         UITextField *passField = [textFields objectAtIndex:1];
+        
+        __block NSString * username = userField.text;
         
         if ([userField.text isEqualToString:@""] || !userField.text || [passField.text isEqualToString:@""] || !passField.text) {
             [application.keyWindow.rootViewController presentViewController:controller animated:YES completion:nil];
@@ -196,7 +199,7 @@ static NSDictionary *_getEntitlementsPlist() {
                     if (error) {
                         // oh shit.
                         [application sendLocalNotification:@"Error" andBody:error.localizedDescription];
-                        completionHandler(NO);
+                        completionHandler(NO, nil);
                         return;
                     }
                     
@@ -218,7 +221,7 @@ static NSDictionary *_getEntitlementsPlist() {
                     // All done!
                     [application sendLocalNotification:@"Sign In" andBody:@"Successfully signed in."];
                     [application sendLocalNotification:@"Debug" andBody:[NSString stringWithFormat:@"Got Team ID: %@", teamId]];
-                    completionHandler(YES);
+                    completionHandler(YES, username);
                 }];
                 
                 return;
@@ -233,8 +236,6 @@ static NSDictionary *_getEntitlementsPlist() {
                 
                 if ([resultCode isEqualToString:@"-22938"]) {
                     controller.title = @"App Specific Password";
-                } else {
-                    controller.title = @"Error";
                 }
             } else {
                 controller.message = [NSString stringWithFormat:@"Error: %@", error.description];
@@ -248,7 +249,7 @@ static NSDictionary *_getEntitlementsPlist() {
     
     UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
         [controller dismissViewControllerAnimated:YES completion:nil];
-        completionHandler(NO);
+        completionHandler(NO, nil);
     }];
     
     [controller addAction:cancel];
@@ -296,7 +297,7 @@ static NSDictionary *_getEntitlementsPlist() {
 + (void)attemptToRevokeCertificateWithCallback:(void (^)(BOOL))completionHandler {
     if (![EEResources username]) {
         // User needs to sign in.
-        [EEResources signInWithCallback:^(BOOL success) {
+        [EEResources signInWithCallback:^(BOOL success, NSString *username) {
             if (success) {
                 [EEResources attemptToRevokeCertificateWithCallback:completionHandler];
             }
