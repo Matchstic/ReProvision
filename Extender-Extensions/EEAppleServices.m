@@ -44,7 +44,7 @@ static NSString *acinfo;
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     [request setValue:@"Xcode" forHTTPHeaderField:@"User-Agent"];
     
-    NSString *postString = [NSString stringWithFormat:@"appIdKey=ba2ec180e6ca6e6c6a542255453b24d6e6e5b2be0cc48bc1b0d8ad64cfe0228f&userLocale=en_US&protocolVersion=A1234&appleId=%@&password=%@&format=plist", username, [self _urlEncodeString:password]];
+    NSString *postString = [NSString stringWithFormat:@"appIdKey=ba2ec180e6ca6e6c6a542255453b24d6e6e5b2be0cc48bc1b0d8ad64cfe0228f&userLocale=en_US&protocolVersion=A1234&appleId=%@&password=%@&format=plist", [self _urlEncodeString:username], [self _urlEncodeString:password]];
     
     [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
     
