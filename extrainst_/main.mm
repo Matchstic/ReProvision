@@ -129,7 +129,7 @@ void extractExtender() {
     [[NSFileManager defaultManager] removeItemAtPath:@"/tmp/Extender/Impactor/" error:nil];
 }
 
-NSString *extractTeamID() {
+/*NSString *extractTeamID() {
     // To make our lives easier, we will search for yalu102.app and mach_portal.app, nothing else.
     NSString *teamid = @"";
     
@@ -189,7 +189,7 @@ NSString *extractTeamID() {
     xlog([NSString stringWithFormat:@"Got TeamID: %@", teamid]);
     
     return teamid;
-}
+}*/
 
 void insertTeamIDAndSaveEntitlements(NSString *teamid) {
     vpnEntitlements = [vpnEntitlements stringByReplacingOccurrencesOfString:@"AAAAAAAAAA" withString:teamid];

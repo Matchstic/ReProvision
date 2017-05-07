@@ -424,6 +424,9 @@ static EEPackageDatabase *sharedDatabase;
     
         // Clean up.
         [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
+        
+        // Let UI know there's updates to be had.
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidSignApplication" object:nil];
     });
     
     // Signal that we can continue to the next application, as we've signed this one and queued it for installation.

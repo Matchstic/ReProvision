@@ -79,7 +79,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class NSURLSession; @class SBApplication; @class UNUserNotificationCenter; @class Extender; @class NEVPNManager; @class NETunnelProviderManager; @class NEVPNConnection; @class CyextTabBarController; @class UIAlertController; @class NSFileManager; 
+@class NEVPNConnection; @class Extender; @class SBApplication; @class NSURLSession; @class UNUserNotificationCenter; @class NSFileManager; @class NETunnelProviderManager; @class UIAlertController; @class NEVPNManager; @class CyextTabBarController; 
 
 
 #line 60 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
@@ -214,7 +214,7 @@ static void _logos_method$Extender$Extender$userNotificationCenter$willPresentNo
 
 
 static void _logos_method$Extender$Extender$_requestAppleDeveloperLogin(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd) {
-    [EEResources signInWithCallback:^(BOOL result) {}];
+    [EEResources signInWithCallback:^(BOOL result, NSString *username) {}];
 }
 
 #pragma mark Callbacks for background execution
@@ -496,6 +496,11 @@ static UNUserNotificationCenter* _logos_method$Extender$UNUserNotificationCenter
 
 
 
+#pragma mark Hook Team ID into csops().
+
+
+
+
 
 
 
@@ -589,7 +594,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationB
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_8b300326(int argc, char **argv, char **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_18bc7afb(int argc, char **argv, char **envp) {
     {}
 
     

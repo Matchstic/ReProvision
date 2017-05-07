@@ -58,14 +58,22 @@
     self.navigationItem.leftBarButtonItem.enabled = [EEResources getTeamID] != nil;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     
     // We should reload each time we appear, as on-device files may have changed.
-    [self generateData];
+    [self generateData:nil];
     
     // If there is a Team ID saved, set the "Re-sign" button to enabled.
     self.navigationItem.leftBarButtonItem.enabled = [EEResources getTeamID] != nil;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(generateData:) name:@"EEDidSignApplication" object:nil];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -75,7 +83,7 @@
 
 #pragma mark - Table view data source
 
-- (void)generateData {
+- (void)generateData:(id)notification {
     [[EEPackageDatabase sharedInstance] rebuildDatabase];
     
     NSArray *identifiers = [[EEPackageDatabase sharedInstance] retrieveAllTeamIDApplications];
@@ -97,7 +105,7 @@
         BOOL hasCachedUser = [EEResources username] != nil;
         
         if (!hasCachedUser) {
-            [EEResources signInWithCallback:^(BOOL signedIn) {
+            [EEResources signInWithCallback:^(BOOL signedIn, NSString *username) {
                 if (signedIn) {
                     [self beginBackgroundResign];
                 } else {
