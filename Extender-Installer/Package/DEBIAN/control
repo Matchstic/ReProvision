@@ -1,7 +1,7 @@
 Package: com.matchstic.Extender-Installer
 Name: Extender: Reloaded
-Version: 0.3.1-3
-Description: A Cydia Extender installer, with modifications
+Version: 0.3.2
+Description: A Cydia Extender installer, with modifications.
 Section: System
 Depends: firmware (>= 10.0), mobilesubstrate, ldid, uikittools
 Priority: optional

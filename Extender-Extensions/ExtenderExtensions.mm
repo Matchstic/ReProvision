@@ -79,7 +79,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SBApplication; @class Extender; @class CyextTabBarController; @class UNUserNotificationCenter; @class NEVPNConnection; @class NEVPNManager; @class UIAlertController; @class NSURLSession; @class NSFileManager; @class NETunnelProviderManager; 
+@class CyextTabBarController; @class NEVPNManager; @class NETunnelProviderManager; @class SBApplication; @class NSFileManager; @class NSURLSession; @class UIAlertController; @class Extender; @class NEVPNConnection; @class UNUserNotificationCenter; 
 
 
 #line 60 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
@@ -352,20 +352,16 @@ static void _logos_method$Extender$UIAlertController$_logBeingPresented(_LOGOS_S
             }
             
             
-            void (^handler)(UIAlertAction*) = attemptAction.handler;
-            handler(attemptAction);
             [self _dismissWithAction:attemptAction];
         }
         
-    } else if ([self.title isEqualToString:@"Error"]) {
+    } else if ([self.title isEqualToString:[[NSBundle mainBundle] localizedStringForKey:@"ERROR" value:@"ERROR" table:nil]]) {
         [[EEPackageDatabase sharedInstance] errorDidOccur:self.message];
         
         
         UIAlertAction *closeAction = [self.actions firstObject];
         
         
-        void (^handler)(UIAlertAction*) = closeAction.handler;
-        handler(closeAction);
         [self _dismissWithAction:closeAction];
     } else {
         _logos_orig$Extender$UIAlertController$_logBeingPresented(self, _cmd);
@@ -594,7 +590,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationB
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_18bc7afb(int argc, char **argv, char **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_b940eb16(int argc, char **argv, char **envp) {
     {}
 
     

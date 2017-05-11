@@ -291,6 +291,9 @@ dispatch_queue_t resignQueue;
 
 %hook UIAlertController
 
+// TODO: We should be preventing this alert controller from showing in the first place
+// Currently, users are getting confused why the alert insta-hides without interaction.
+
 - (void)_logBeingPresented {
     
     BOOL hasCachedUser = [EEResources username] != nil;
@@ -325,21 +328,17 @@ dispatch_queue_t resignQueue;
                 }
             }
             
-            // XXX: Do we need to call it manually like this?
-            void (^handler)(UIAlertAction*) = attemptAction.handler;
-            handler(attemptAction);
+            // Dismiss, calling this action.
             [self _dismissWithAction:attemptAction];
         }
         // XXX: Handle errors.
-    } else if ([self.title isEqualToString:@"Error"]) {
+    } else if ([self.title isEqualToString:[[NSBundle mainBundle] localizedStringForKey:@"ERROR" value:@"ERROR" table:nil]]) {
         [[EEPackageDatabase sharedInstance] errorDidOccur:self.message];
         
         // There is only one action for an "error" alert.
         UIAlertAction *closeAction = [self.actions firstObject];
         
         // XXX: Do we need to call it manually like this?
-        void (^handler)(UIAlertAction*) = closeAction.handler;
-        handler(closeAction);
         [self _dismissWithAction:closeAction];
     } else {
         %orig;

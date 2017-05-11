@@ -279,7 +279,7 @@ static EEPackageDatabase *sharedDatabase;
     });
 }
 
-- (void)errorDidOccur:(NSString*)message {
+- (void)errorDidOccur:(NSString*)message {    
     // When any error occurs, clear the installation queue so we can try again later.
     [_installQueue removeAllObjects];
     
