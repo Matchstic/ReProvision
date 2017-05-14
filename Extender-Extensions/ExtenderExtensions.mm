@@ -79,7 +79,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class CyextTabBarController; @class NEVPNManager; @class NETunnelProviderManager; @class SBApplication; @class NSFileManager; @class NSURLSession; @class UIAlertController; @class Extender; @class NEVPNConnection; @class UNUserNotificationCenter; 
+@class UIAlertController; @class Extender; @class UNUserNotificationCenter; @class NSURLSession; @class NEVPNManager; @class SBApplication; @class CyextTabBarController; @class NEVPNConnection; @class NETunnelProviderManager; @class NSFileManager; 
 
 
 #line 60 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
@@ -314,6 +314,9 @@ static void _logos_method$Extender$Extender$beginResignRoutine$(_LOGOS_SELF_TYPE
 
 
 #pragma mark Auto-fill user Apple ID details.
+
+
+
 
 
 
@@ -590,7 +593,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationB
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_b940eb16(int argc, char **argv, char **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_5d17dcaa(int argc, char **argv, char **envp) {
     {}
 
     

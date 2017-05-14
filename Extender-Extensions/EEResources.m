@@ -428,6 +428,29 @@ static NSDictionary *_getEntitlementsPlist() {
     }];
 }
 
+/////////////////////////////////////////////////////////////////////
+#pragma mark Fix some damn annoying issues.
+
++ (BOOL)cleanupExpiredProvisioningCertificates {
+    /*
+     * Within /var/MobileDevice/ProvisioningProfiles are copies of embedded.mobileprovision for 
+     * applications.
+     *
+     * Testing has shown that Extender may crash when attempting to generate manifest.plist for 
+     * a given app if multiple (expired) certificates already are present here. My assumption is
+     * that it is assumed iOS will auto-clear these certificates. Though, as to why it crashes
+     * is anyone's guess.
+     *
+     * See: https://github.com/Matchstic/Extender-Installer/issues/ for a crash log.
+     *
+     * This problem becomes apparent if the user revoke certificates on device.
+     */
+    
+    
+    
+    return NO;
+}
+
 + (void)reloadSettings {
     
 }

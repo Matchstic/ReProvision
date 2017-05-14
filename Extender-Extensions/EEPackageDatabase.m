@@ -99,11 +99,7 @@ static EEPackageDatabase *sharedDatabase;
         return;
     }
     
-    // Clear current IPAs.
     NSString *inbox = [NSString stringWithFormat:@"%@/Unsigned", EXTENDER_DOCUMENTS];
-    [[NSFileManager defaultManager] removeItemAtPath:inbox error:nil];
-    
-    [[NSFileManager defaultManager] createDirectoryAtPath:inbox withIntermediateDirectories:YES attributes:nil error:nil];
     
     // Now, we cache the EEPackage for each IPA created.
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -123,7 +119,10 @@ static EEPackageDatabase *sharedDatabase;
 - (NSURL*)_buildIPAForExistingBundleIdentifier:(NSString*)bundleIdentifier {
     NSString *basePath = [NSString stringWithFormat:@"%@/Unsigned/%@/Payload", EXTENDER_DOCUMENTS, bundleIdentifier];
     
-    [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:YES attributes:nil error:nil];
+    // The attributes of ANY Extender folder should be write for ALL users and groups.
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+    [attributes setObject:[NSNumber numberWithShort:0777] forKey:NSFilePosixPermissions];
+    [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:YES attributes:attributes error:nil];
     
     LSApplicationProxy *proxy = [LSApplicationProxy applicationProxyForIdentifier:bundleIdentifier];
     NSString *dotAppName = [[proxy.bundleURL path] lastPathComponent];
@@ -140,7 +139,11 @@ static EEPackageDatabase *sharedDatabase;
     }
     
     // Compress into an ipa.
-    [SSZipArchive createZipFileAtPath:[NSString stringWithFormat:@"%@/Unsigned/%@.ipa", EXTENDER_DOCUMENTS, bundleIdentifier] withContentsOfDirectory:[NSString stringWithFormat:@"%@/Unsigned/%@", EXTENDER_DOCUMENTS, bundleIdentifier]];
+    BOOL success = [SSZipArchive createZipFileAtPath:[NSString stringWithFormat:@"%@/Unsigned/%@.ipa", EXTENDER_DOCUMENTS, bundleIdentifier] withContentsOfDirectory:[NSString stringWithFormat:@"%@/Unsigned/%@", EXTENDER_DOCUMENTS, bundleIdentifier]];
+    
+    if (!success) {
+        // Well shit.
+    }
     
     // Cleanup.
     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/Unsigned/%@", EXTENDER_DOCUMENTS, bundleIdentifier] error:nil];
@@ -213,11 +216,6 @@ static EEPackageDatabase *sharedDatabase;
         [_installQueue removeAllObjects];
     }
     
-    // Clear the installation queue for preventing multiple installations.
-    if (_currentInstallQueue) {
-        [_currentInstallQueue removeAllObjects];
-    }
-    
     if (check) {
         for (EEPackage *package in [self allPackages]) {
             NSDate *expirationDate = [package applicationExpireDate];
@@ -244,6 +242,16 @@ static EEPackageDatabase *sharedDatabase;
         Extender *application = (Extender*)[UIApplication sharedApplication];
         [application sendLocalNotification:nil andBody:@"No applications need re-signing at this time."];
     }
+    
+    // Clear current IPAs.
+    NSString *inbox = [NSString stringWithFormat:@"%@/Unsigned", EXTENDER_DOCUMENTS];
+    [[NSFileManager defaultManager] removeItemAtPath:inbox error:nil];
+    
+    // The attributes of ANY Extender folder should be write for ALL users and groups.
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+    [attributes setObject:[NSNumber numberWithShort:0777] forKey:NSFilePosixPermissions];
+    [[NSFileManager defaultManager] createDirectoryAtPath:inbox withIntermediateDirectories:YES attributes:attributes error:nil];
+    
     
     // Note that this WILL modify the queue, so any checks for count should be done before.
     [self _initiateNextInstallFromQueue];
@@ -300,6 +308,10 @@ static EEPackageDatabase *sharedDatabase;
     }
     
     NSString *errorMessage = [NSString stringWithFormat:@"%@\n(%@)", meat, [split objectAtIndex:1]];
+    
+    if (split.count == 2) {
+        errorMessage = [split lastObject];
+    }
     
     // We may be able to handle this ourselves.
     NSString *errorReason = [split objectAtIndex:1];
@@ -366,16 +378,6 @@ static EEPackageDatabase *sharedDatabase;
     NSString *bundleID = [metadata objectForKey:@"bundle-identifier"];
     NSString *title = [metadata objectForKey:@"title"];
     
-    // This is to avoid multiple installs from openURL:.
-    if (!_currentInstallQueue)
-        _currentInstallQueue = [NSMutableArray array];
-    
-    if ([_currentInstallQueue containsObject:bundleID]) {
-        // We've been called multiple times for this one.
-        return;
-    } else {
-        [_currentInstallQueue addObject:bundleID];
-    }
     
     // There is a possibility we may be called twice here!
     if ([url isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
@@ -384,9 +386,12 @@ static EEPackageDatabase *sharedDatabase;
     
     // Move this package to Documents/Extender/Signed/<uniquename>.ipa
     
+    // The attributes of ANY Extender folder should be write for ALL users and groups.
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+    [attributes setObject:[NSNumber numberWithShort:0777] forKey:NSFilePosixPermissions];
     [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/Signed/", EXTENDER_DOCUMENTS]
                               withIntermediateDirectories:YES
-                                               attributes:nil
+                                               attributes:attributes
                                                     error:nil];
     
     NSError *error1;
