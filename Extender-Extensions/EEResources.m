@@ -446,6 +446,14 @@ static NSDictionary *_getEntitlementsPlist() {
      * This problem becomes apparent if the user revoke certificates on device.
      */
     
+    // For each file in the provisioning certificates, we check:
+    // - AppIDName == "CY- <last_dns_name_bundle_id>"
+    // - CreationDate
+    
+    // For each application with the right Team ID, we do:
+    // Get each filename of certs, and order by CreationDate.
+    // Delete all bar latest.
+    
     
     
     return NO;

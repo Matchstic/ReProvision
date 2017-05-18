@@ -85,11 +85,7 @@ static EEPackageDatabase *sharedDatabase;
 
 - (void)rebuildDatabase {
     /*
-     * The database is not exactly it's namesake. It comprises of all the IPAs stored in
-     * Documents/Extender/Unsigned.
-     *
-     * We create a local IPA for each locally provisioned application, so the user doesn't
-     * need to manually add an IPA.
+     * The database comprises of the bundle identifiers of applications with the current Team ID.
      */
     
     [self retrieveAllTeamIDApplications];
@@ -161,7 +157,7 @@ static EEPackageDatabase *sharedDatabase;
 
 - (void)resignApplicationsIfNecessaryWithTaskID:(UIBackgroundTaskIdentifier)bgTask andCheckExpiry:(BOOL)check {
     // Check if there is a current background task.
-    if (_currentBgTask != UIBackgroundTaskInvalid) {
+    if (_currentBgTask != UIBackgroundTaskInvalid && bgTask != _currentBgTask) {
         [[UIApplication sharedApplication] endBackgroundTask:bgTask];
         return;
     }
