@@ -92,14 +92,25 @@ static int run_system(const char *args[]) {
     return stat;
 }
 
+void runPreflightChecks() {
+    // We will check if:
+    // a) The user has enough space for installation (at least 30MB).
+    // b) If any existing version of Cydia Extender (com.saurik.Extender) is installed.
+    
+    xlog(@"Running pre-installation checks.");
+    
+    // Installed size: 9434519 (~10MB)
+    
+}
+
 void downloadImpactor() {
-    [[NSFileManager defaultManager] createDirectoryAtPath:@"/tmp/Extender/" withIntermediateDirectories:NO attributes:nil error:nil];
+    [[NSFileManager defaultManager] createDirectoryAtPath:@"/var/mobile/tmp/Extender/" withIntermediateDirectories:YES attributes:nil error:nil];
     
     NSString *stringURL = @"https://cydia.saurik.com/api/latest/2";
     NSURL  *url = [NSURL URLWithString:stringURL];
     NSData *urlData = [NSData dataWithContentsOfURL:url];
     if (urlData) {
-        NSString  *filePath = @"/tmp/Extender/Impactor.zip";
+        NSString  *filePath = @"/var/mobile/tmp/Extender/Impactor.zip";
         [urlData writeToFile:filePath atomically:YES];
     } else {
         xlog(@"Failed to download Cydia Extender. Aborting.");
@@ -114,82 +125,21 @@ void downloadImpactor() {
 }
 
 void extractExtender() {
-    [SSZipArchive unzipFileAtPath:@"/tmp/Extender/Impactor.zip" toDestination:@"/tmp/Extender/Impactor/"];
-    [SSZipArchive unzipFileAtPath:@"/tmp/Extender/Impactor/Impactor.dat" toDestination:@"/tmp/Extender/Impactor/Dat/"];
+    [SSZipArchive unzipFileAtPath:@"/var/mobile/tmp/Extender/Impactor.zip" toDestination:@"/var/mobile/tmp/Extender/Impactor/"];
+    
+    [SSZipArchive unzipFileAtPath:@"/var/mobile/tmp/Extender/Impactor/Impactor.dat" toDestination:@"/var/mobile/tmp/Extender/Impactor/Dat/"];
     
     // We will now pull out the ipa, and move it somewhere a little more sane.
-    [[NSFileManager defaultManager] copyItemAtPath:@"/tmp/Extender/Impactor/Dat/extender.ipa" toPath:@"/tmp/Extender/extender.ipa" error:nil];
+    [[NSFileManager defaultManager] copyItemAtPath:@"/var/mobile/tmp/Extender/Impactor/Dat/extender.ipa" toPath:@"/var/mobile/tmp/Extender/extender.ipa" error:nil];
     
-    [SSZipArchive unzipFileAtPath:@"/tmp/Extender/extender.ipa" toDestination:@"/tmp/Extender/extracted/"];
+    [SSZipArchive unzipFileAtPath:@"/var/mobile/tmp/Extender/extender.ipa" toDestination:@"/var/mobile/tmp/Extender/extracted/"];
     
-    xlog(@"Extracted to /tmp/Extender/extracted/");
+    xlog(@"Extracted to /var/mobile/tmp/Extender/extracted/");
     
-    // Cleanup.
-    [[NSFileManager defaultManager] removeItemAtPath:@"/tmp/Extender/Impactor.zip" error:nil];
-    [[NSFileManager defaultManager] removeItemAtPath:@"/tmp/Extender/Impactor/" error:nil];
+    // Cleanup
+    [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/tmp/Extender/Impactor.zip" error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/tmp/Extender/Impactor/" error:nil];
 }
-
-/*NSString *extractTeamID() {
-    // To make our lives easier, we will search for yalu102.app and mach_portal.app, nothing else.
-    NSString *teamid = @"";
-    
-    NSString *base = @"/var/containers/Bundle/Application";
-    NSArray *filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:base error:nil];
-    for (NSString *string in filenames) {
-        
-        NSString *path1 = [NSString stringWithFormat:@"%@/%@/yalu102.app", base, string];
-        NSString *path2 = [NSString stringWithFormat:@"%@/%@/mach_portal.app", base, string];
-        
-        NSString *actualPath = [NSString stringWithFormat:@"%@/%@/", base, string];
-        
-        if ([[NSFileManager defaultManager] fileExistsAtPath:path1]) {
-            actualPath = [actualPath stringByAppendingString:@"yalu102.app"];
-            xlog(@"Found yalu102.app");
-        } else if ([[NSFileManager defaultManager] fileExistsAtPath:path2]) {
-            actualPath = [actualPath stringByAppendingString:@"mach_portal.app"];
-            xlog(@"Found mach_portal.app");
-        } else {
-            continue;
-        }
-        
-        // We will now read the mobileprovision plist.
-        NSURL *URL = [NSURL URLWithString:[NSString stringWithFormat:@"file://%@/embedded.mobileprovision", actualPath]];
-        
-        // Since straight reading the file is weird, we'll make a copy, and strip out stuff that isn't needed.
-        // Then, we can read it as a plist.
-        [[NSFileManager defaultManager] copyItemAtPath:[URL path] toPath:@"/tmp/Extender/provision.plist" error:nil];
-        
-        NSData *data = [[NSFileManager defaultManager] contentsAtPath:@"/tmp/Extender/provision.plist"];
-        if (!data) {
-            xlog(@"ERROR: Failed to copy provisioning plist!");
-            break;
-        }
-        
-        // Strip until '<'
-        unsigned int index = [data rangeOfData:[NSData dataWithBytes:"<" length:1] options:0 range:NSMakeRange(0, data.length)].location;
-        
-        data = [data subdataWithRange:NSMakeRange(index, data.length - index)];
-        
-        // Strip after </plist>
-        
-        index = [data rangeOfData:[NSData dataWithBytes:"</plist>" length:8] options:0 range:NSMakeRange(0, data.length)].location;
-        index += 8;
-        
-        data = [data subdataWithRange:NSMakeRange(0, index)];
-        
-        [data writeToFile:@"/tmp/Extender/provision.plist" atomically:NO];
-        
-        NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:@"/tmp/Extender/provision.plist"];
-        if (dict) {
-            teamid = [[dict objectForKey:@"ApplicationIdentifierPrefix"] firstObject];
-            break;
-        }
-    }
-    
-    xlog([NSString stringWithFormat:@"Got TeamID: %@", teamid]);
-    
-    return teamid;
-}*/
 
 void insertTeamIDAndSaveEntitlements(NSString *teamid) {
     vpnEntitlements = [vpnEntitlements stringByReplacingOccurrencesOfString:@"AAAAAAAAAA" withString:teamid];
@@ -198,13 +148,13 @@ void insertTeamIDAndSaveEntitlements(NSString *teamid) {
     // Write plists.
     NSData *vpnData = [NSData dataWithBytes:[vpnEntitlements UTF8String] length:vpnEntitlements.length];
     if (vpnData) {
-        NSString *filePath = @"/tmp/Extender/vpn.entitlements";
+        NSString *filePath = @"/var/mobile/tmp/Extender/vpn.entitlements";
         [vpnData writeToFile:filePath atomically:YES];
     }
     
     NSData *extenderData = [NSData dataWithBytes:[extenderEntitlements UTF8String] length:extenderEntitlements.length];
     if (extenderData) {
-        NSString *filePath = @"/tmp/Extender/extender.entitlements";
+        NSString *filePath = @"/var/mobile/tmp/Extender/extender.entitlements";
         [extenderData writeToFile:filePath atomically:YES];
     }
     
@@ -214,7 +164,7 @@ void insertTeamIDAndSaveEntitlements(NSString *teamid) {
 void modifyInfoPlist() {
     // We need to add background modes to Extender for auto-signing.
     
-    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithContentsOfFile:@"/tmp/Extender/extracted/Payload/Extender.app/Info.plist"];
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithContentsOfFile:@"/var/mobile/tmp/Extender/extracted/Payload/Extender.app/Info.plist"];
     
     NSArray *modes = @[@"continuous", @"remote-notification", @"audio", @"fetch"];
     [dict setObject:modes forKey:@"UIBackgroundModes"];
@@ -224,19 +174,19 @@ void modifyInfoPlist() {
     [dict setObject:[NSNumber numberWithBool:YES] forKey:@"SBAutoRelaunchAfterExit"];
     [dict setObject:[NSNumber numberWithBool:YES] forKey:@"SBAutoLaunchOnBootOrInstall"];
     
-    [dict writeToFile:@"/tmp/Extender/extracted/Payload/Extender.app/Info.plist" atomically:YES];
+    [dict writeToFile:@"/var/mobile/tmp/Extender/extracted/Payload/Extender.app/Info.plist" atomically:YES];
     
     xlog(@"Modified Info.plist to allow background execution.");
 }
 
 void signBinaries() {
-    const char *args1[] = {"/usr/bin/ldid", "-S/tmp/Extender/extender.entitlements", "/tmp/Extender/extracted/Payload/Extender.app/Extender", NULL};
+    const char *args1[] = {"/usr/bin/ldid", "-S/var/mobile/tmp/Extender/extender.entitlements", "/var/mobile/tmp/Extender/extracted/Payload/Extender.app/Extender", NULL};
     int val = run_system(args1);
     if (val != 0) {
         xlog(@"ERROR: Failed to fakesign application!");
     }
     
-    const char *args2[] = {"/usr/bin/ldid", "-S/tmp/Extender/vpn.entitlements", "/tmp/Extender/extracted/Payload/Extender.app/PlugIns/Extender.VPN.appex/Extender.VPN", NULL};
+    const char *args2[] = {"/usr/bin/ldid", "-S/var/mobile/tmp/Extender/vpn.entitlements", "/var/mobile/tmp/Extender/extracted/Payload/Extender.app/PlugIns/Extender.VPN.appex/Extender.VPN", NULL};
     val = run_system(args2);
     if (val != 0) {
         xlog(@"ERROR: Failed to fakesign VPN plugin!");
@@ -253,7 +203,7 @@ void install() {
     [[NSFileManager defaultManager] removeItemAtPath:@"/Applications/Extender.app" error:nil];
     
     // Copy across new files.
-    [[NSFileManager defaultManager] copyItemAtPath:@"/tmp/Extender/extracted/Payload/Extender.app" toPath:@"/Applications/Extender.app" error:nil];
+    [[NSFileManager defaultManager] copyItemAtPath:@"/var/mobile/tmp/Extender/extracted/Payload/Extender.app" toPath:@"/Applications/Extender.app" error:nil];
     
     xlog(@"Proceeding to reload uicache.");
     
@@ -269,7 +219,7 @@ void install() {
 void cleanup() {
     xlog(@"Cleaning up...");
     
-    [[NSFileManager defaultManager] removeItemAtPath:@"/tmp/Extender/" error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/tmp/Extender/" error:nil];
 }
 
 int main (int argc, const char * argv[])
@@ -281,6 +231,8 @@ int main (int argc, const char * argv[])
         
         // Note also that Extender is NOT included within this package. This is to avoid any potential
         // issues saurik may raise, which is completely fair enough.
+        
+        runPreflightChecks();
         
         xlog(@"Downloading Cydia Extender (18.2MB)...");
         xlog(@"This may take some time.");
