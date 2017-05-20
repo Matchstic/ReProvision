@@ -7,6 +7,8 @@ GO_EASY_ON_ME = 1
 TOOL_NAME = extrainst_
 extrainst__FILES = main.mm SSZipArchive/SSZipArchive.m SSZipArchive/minizip/ioapi.c SSZipArchive/minizip/mztools.c SSZipArchive/minizip/unzip.c SSZipArchive/minizip/zip.c SSZipArchive/aes/aescrypt.c SSZipArchive/aes/aeskey.c SSZipArchive/aes/aestab.c SSZipArchive/aes/entropy.c SSZipArchive/aes/fileenc.c SSZipArchive/aes/hmac.c SSZipArchive/aes/prng.c SSZipArchive/aes/pwd2key.c SSZipArchive/aes/sha1.c
 extrainst__LDFLAGS = -lz
+extrainst__PRIVATE_FRAMEWORKS = MobileCoreServices
+extrainst__CODESIGN_FLAGS = -Sentitlements.plist
 
 include $(THEOS_MAKE_PATH)/tool.mk
 

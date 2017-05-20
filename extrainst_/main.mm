@@ -8,7 +8,21 @@
 
 #import <Foundation/Foundation.h>
 #import "SSZipArchive/SSZipArchive.h"
+#import <objc/runtime.h>
 #include <spawn.h>
+
+@interface LSApplicationWorkspace : NSObject
++ (instancetype)defaultWorkspace;
+- (BOOL)uninstallApplication:(NSString*)arg1 withOptions:(NSDictionary*)arg2;
+- (BOOL)applicationIsInstalled:(NSString*)arg1;
+@end
+
+@interface LSApplicationProxy : NSObject
++ (instancetype)applicationProxyForIdentifier:(NSString*)arg1;
+- (BOOL)isSystemOrInternalApp;
+@end
+
+void cleanup();
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -95,12 +109,33 @@ static int run_system(const char *args[]) {
 void runPreflightChecks() {
     // We will check if:
     // a) The user has enough space for installation (at least 30MB).
-    // b) If any existing version of Cydia Extender (com.saurik.Extender) is installed.
+    // b) If any existing version of Cydia Extender (com.saurik.Extender) is installed. (We will do this when installation is known to be ready).
     
     xlog(@"Running pre-installation checks.");
     
-    // Installed size: 9434519 (~10MB)
+    // If Extender is already installed, logically there is enough space to overwrite it.
+    if (![[NSFileManager defaultManager] fileExistsAtPath:@"/Applications/Extender.app"]) {
+        // Installed size: 9434519 (~10MB: 10000000).
+        // No need to worry about download size, as we download to the user partition.
+        NSDictionary *dictionary = [[NSFileManager defaultManager] attributesOfFileSystemForPath:@"/Applications" error:nil];
     
+        if (dictionary) {
+            NSNumber *freeFileSystemSizeInBytes = [dictionary objectForKey:NSFileSystemFreeSize];
+            unsigned long totalFreeSpace = [freeFileSystemSizeInBytes unsignedLongLongValue];
+        
+            if (totalFreeSpace < 10000000) {
+                xlog(@"Not enough space free to install Cydia Extender. Aborting.");
+                xlog(@"*******************************************");
+                xlog(@"Please remove some tweaks and/or themes, or utilise stashing.");
+                xlog(@"*******************************************");
+                
+                exit(1);
+            }
+        } else {
+            xlog(@"Failed to read attributes of /Applications. Aborting.");
+            exit(1);
+        }
+    }
 }
 
 void downloadImpactor() {
@@ -114,9 +149,9 @@ void downloadImpactor() {
         [urlData writeToFile:filePath atomically:YES];
     } else {
         xlog(@"Failed to download Cydia Extender. Aborting.");
-        xlog(@"\n\n\n\n*******************************************");
+        xlog(@"*******************************************");
         xlog(@"Try installing again another time.");
-        xlog(@"*******************************************\n\n\n\n");
+        xlog(@"*******************************************");
         
         exit(1);
     }
@@ -184,26 +219,59 @@ void signBinaries() {
     int val = run_system(args1);
     if (val != 0) {
         xlog(@"ERROR: Failed to fakesign application!");
+        xlog(@"*******************************************");
+        xlog(@"Try reinstalling 'Link Identity Editor' in Cydia.");
+        xlog(@"*******************************************");
+        
+        cleanup();
+        
+        exit(1);
     }
     
     const char *args2[] = {"/usr/bin/ldid", "-S/var/mobile/tmp/Extender/vpn.entitlements", "/var/mobile/tmp/Extender/extracted/Payload/Extender.app/PlugIns/Extender.VPN.appex/Extender.VPN", NULL};
     val = run_system(args2);
     if (val != 0) {
         xlog(@"ERROR: Failed to fakesign VPN plugin!");
+        xlog(@"*******************************************");
+        xlog(@"Try reinstalling 'Link Identity Editor' in Cydia.");
+        xlog(@"*******************************************");
+        
+        cleanup();
+        
+        exit(1);
     }
     
     xlog(@"Signed binaries.");
 }
 
 void install() {
-    // We will copy Extender to /Applications. Might not be the best solution, but should avoid the need for
-    // App Installer (appinst).
+    // We will copy Extender to /Applications.
     
     // First, clear if already existing.
     [[NSFileManager defaultManager] removeItemAtPath:@"/Applications/Extender.app" error:nil];
     
     // Copy across new files.
     [[NSFileManager defaultManager] copyItemAtPath:@"/var/mobile/tmp/Extender/extracted/Payload/Extender.app" toPath:@"/Applications/Extender.app" error:nil];
+    
+    // We will now check for prior installations that are NOT system.
+    // This is to ensure we don't have anything weird going on by duplicating on the same bundle ID.
+    // Note: we MUST sign this extrainst_ with the entitlements needed to uninstall an application.
+    
+    if ([[objc_getClass("LSApplicationWorkspace") defaultWorkspace] applicationIsInstalled:@"com.cydia.Extender"] &&
+        ![[objc_getClass("LSApplicationProxy") applicationProxyForIdentifier:@"com.cydia.Extender"] isSystemOrInternalApp]) {
+        
+        // Not installed as a system app, so uninstall this older version.
+        BOOL success = [[objc_getClass("LSApplicationWorkspace") defaultWorkspace] uninstallApplication:@"com.cydia.Extender"withOptions:nil];
+        
+        if (!success) {
+            xlog(@"Failed to uninstall previous version of Cydia Extender. Aborting.");
+            xlog(@"*******************************************");
+            xlog(@"Please manually delete 'Extender' from your Homescreen and try again.");
+            xlog(@"*******************************************");
+            
+            exit(1);
+        }
+    }
     
     xlog(@"Proceeding to reload uicache.");
     
@@ -242,19 +310,6 @@ int main (int argc, const char * argv[])
         xlog(@"Extracting Cydia Extender...");
         
         extractExtender();
-        
-        //xlog(@"Finding TeamID...");
-        // TODO: Remove need to find the Team ID here.
-        
-        /*NSString *teamid = extractTeamID();
-        if (!teamid || [teamid isEqualToString:@""]) {
-            xlog(@"FATAL: Could not find TeamID. Aborting.");
-            xlog(@"Note this installation script only searches for 'mach_portal.app' and 'yalu102.app'.");
-            xlog(@"\n\n\n\n*******************************************");
-            xlog(@"This is a known issue, and will be fixed in a future update. Please keep an eye on my Twitter @_Matchstic for updates.");
-            xlog(@"*******************************************\n\n\n\n");
-            exit(1);
-        }*/
         
         NSString *teamid = @"AAAAAAAAAA";
         insertTeamIDAndSaveEntitlements(teamid);
