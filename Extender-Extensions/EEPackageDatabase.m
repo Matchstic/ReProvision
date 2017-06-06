@@ -316,6 +316,16 @@ static EEPackageDatabase *sharedDatabase;
         [application sendLocalNotification:nil andBody:@"No applications need re-signing at this time."];
     }
     
+    // Send out all the notifications needed to set UI to show 0% for re-signing applications.
+    for (NSString *identifier in _installQueue) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        [dict setObject:identifier forKey:@"identifier"];
+        [dict setObject:[NSNumber numberWithFloat:0.0] forKey:@"percent"];
+        [dict setObject:[NSNumber numberWithBool:NO] forKey:@"animated"];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidUpdateResignProgress" object:nil userInfo:dict];
+    }
+    
     // Clear current IPAs.
     NSString *inbox = [NSString stringWithFormat:@"%@/Unsigned", EXTENDER_DOCUMENTS];
     [[NSFileManager defaultManager] removeItemAtPath:inbox error:nil];
@@ -349,11 +359,27 @@ static EEPackageDatabase *sharedDatabase;
     // Note that we come into here on the global queue for async. We need a new queue on which to place
     // a resign request, else it'll block.
     
+    // Update progress percent in the UI.
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    [dict setObject:package.bundleIdentifier forKey:@"identifier"];
+    [dict setObject:[NSNumber numberWithFloat:10.0] forKey:@"percent"];
+    [dict setObject:[NSNumber numberWithBool:YES] forKey:@"animated"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidUpdateResignProgress" object:nil userInfo:dict];
+    
     // Build the IPA for this application now.
     [self _buildIPAForExistingBundleIdentifier:[package bundleIdentifier]];
     
     Extender *application = (Extender*)[UIApplication sharedApplication];
     [application sendLocalNotification:@"Debug" andBody:[NSString stringWithFormat:@"Requesting re-sign for: '%@'", [package applicationName]]];
+    
+    // Update progress percent in the UI.
+    dict = [NSMutableDictionary dictionary];
+    [dict setObject:package.bundleIdentifier forKey:@"identifier"];
+    [dict setObject:[NSNumber numberWithFloat:30.0] forKey:@"percent"];
+    [dict setObject:[NSNumber numberWithBool:YES] forKey:@"animated"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidUpdateResignProgress" object:nil userInfo:dict];
     
     dispatch_async(_queue, ^{
         [application application:application openURL:[package packageURL] sourceApplication:application annotation:nil];
@@ -363,6 +389,16 @@ static EEPackageDatabase *sharedDatabase;
 - (void)errorDidOccur:(NSString*)message {    
     // When any error occurs, clear the installation queue so we can try again later.
     [_installQueue removeAllObjects];
+    
+    // Send out all the notifications needed to set UI to hide progress bars.
+    for (NSString *identifier in _teamIDApplications) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        [dict setObject:identifier forKey:@"identifier"];
+        [dict setObject:[NSNumber numberWithFloat:-5.0] forKey:@"percent"];
+        [dict setObject:[NSNumber numberWithBool:NO] forKey:@"animated"];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidUpdateResignProgress" object:nil userInfo:dict];
+    }
     
     // The meat of the error message is 2x \n in.
     NSArray *split = [message componentsSeparatedByString:@"\n"];
@@ -451,11 +487,18 @@ static EEPackageDatabase *sharedDatabase;
     NSString *bundleID = [metadata objectForKey:@"bundle-identifier"];
     NSString *title = [metadata objectForKey:@"title"];
     
-    
     // There is a possibility we may be called twice here!
     if ([url isFileURL] && ![[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
         return;
     }
+    
+    // Update progress percent in the UI.
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    [dict setObject:bundleID forKey:@"identifier"];
+    [dict setObject:[NSNumber numberWithFloat:60.0] forKey:@"percent"];
+    [dict setObject:[NSNumber numberWithBool:YES] forKey:@"animated"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidUpdateResignProgress" object:nil userInfo:dict];
     
     // Move this package to Documents/Extender/Signed/<uniquename>.ipa
     
@@ -481,6 +524,14 @@ static EEPackageDatabase *sharedDatabase;
     
     url = [NSURL fileURLWithPath:toPath];
     
+    // Update progress percent in the UI.
+    dict = [NSMutableDictionary dictionary];
+    [dict setObject:bundleID forKey:@"identifier"];
+    [dict setObject:[NSNumber numberWithFloat:75.0] forKey:@"percent"];
+    [dict setObject:[NSNumber numberWithBool:YES] forKey:@"animated"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidUpdateResignProgress" object:nil userInfo:dict];
+    
     // We can now begin installation, and allow us to move onto the next application.
     dispatch_async(_queue, ^{
         NSError *error;
@@ -489,6 +540,14 @@ static EEPackageDatabase *sharedDatabase;
         BOOL result = [[LSApplicationWorkspace defaultWorkspace] installApplication:url
                                                       withOptions:options
                                                             error:&error];
+        
+        // Update progress percent in the UI.
+        NSMutableDictionary *dict2 = [NSMutableDictionary dictionary];
+        [dict2 setObject:bundleID forKey:@"identifier"];
+        [dict2 setObject:[NSNumber numberWithFloat:90.0] forKey:@"percent"];
+        [dict2 setObject:[NSNumber numberWithBool:YES] forKey:@"animated"];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidUpdateResignProgress" object:nil userInfo:dict2];
     
         if (!result) {
             [application sendLocalNotification:@"Failed" andBody:[NSString stringWithFormat:@"Failed to re-sign: '%@'.\nError: %@", title, error.localizedDescription]];
@@ -502,6 +561,14 @@ static EEPackageDatabase *sharedDatabase;
     
         // Clean up.
         [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
+        
+        // Update progress percent in the UI.
+        dict2 = [NSMutableDictionary dictionary];
+        [dict2 setObject:bundleID forKey:@"identifier"];
+        [dict2 setObject:[NSNumber numberWithFloat:100.0] forKey:@"percent"];
+        [dict2 setObject:[NSNumber numberWithBool:YES] forKey:@"animated"];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidUpdateResignProgress" object:nil userInfo:dict2];
         
         // Let UI know there's updates to be had.
         [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidSignApplication" object:nil];

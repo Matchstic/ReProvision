@@ -27,6 +27,35 @@
     // Initialization code
 }
 
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    
+    if (self) {
+        // Subscribe to progress updates.
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_didReceiveProgressNotification:) name:@"EEDidUpdateResignProgress" object:nil];
+    }
+    
+    return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+     
+- (void)_didReceiveProgressNotification:(NSNotification*)notification {
+    NSDictionary *userinfo = notification.userInfo;
+    
+    NSString *identifier = [userinfo objectForKey:@"identifier"];
+    CGFloat percent = [[userinfo objectForKey:@"percent"] floatValue];
+    BOOL animated = [[userinfo objectForKey:@"animated"] boolValue];
+    
+    if ([identifier isEqualToString:[_proxy applicationIdentifier]]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateWithPercentage:percent animated:animated];
+        });
+    }
+}
+
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 
@@ -70,6 +99,27 @@
         self.lastSignedLabel.text = @"Signed: x ago";
         
         [self.contentView addSubview:self.lastSignedLabel];
+    }
+    
+    if (!self.percentLabel) {
+        self.percentLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        self.percentLabel.textColor = [UIColor darkGrayColor];
+        self.percentLabel.textAlignment = NSTextAlignmentLeft;
+        self.percentLabel.font = [UIFont systemFontOfSize:14];
+        self.percentLabel.numberOfLines = 1;
+        self.percentLabel.text = @"0%";
+        self.percentLabel.hidden = YES;
+        
+        [self.contentView addSubview:self.percentLabel];
+    }
+    
+    if (!self.progressView) {
+        self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+        self.progressView.frame = CGRectZero;
+        [self.progressView setProgress:0.0 animated:NO];
+        self.progressView.hidden = YES;
+        
+        [self.contentView addSubview:self.progressView];
     }
     
     if (!_calendar) {
@@ -132,6 +182,26 @@
     self.lastSignedLabel.text = str;
 }
 
+- (void)updateWithPercentage:(CGFloat)percent animated:(BOOL)animated {
+    // State management.
+    if (percent >= 0.0) {
+        _isResigning = YES;
+    }
+    
+    if (percent == 100.0 || percent < 0.0) {
+        _isResigning = NO;
+    }
+    
+    // Update views as needed.
+    self.lastSignedLabel.hidden = _isResigning;
+    self.percentLabel.hidden = !_isResigning;
+    self.progressView.hidden = !_isResigning;
+    
+    // Update progress bar and the percent label.
+    self.percentLabel.text = [NSString stringWithFormat:@"%d%%", (int)percent];
+    [self.progressView setProgress:percent/100.0 animated:animated];
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
     
@@ -149,6 +219,9 @@
     yOrigin += 18;
     
     self.lastSignedLabel.frame = CGRectMake(xOrigin, yOrigin, self.contentView.frame.size.width - xOrigin - 5, 20);
+    
+    self.percentLabel.frame = CGRectMake(xOrigin, yOrigin, 35, 20);
+    self.progressView.frame = CGRectMake(xOrigin + 35 + 5, yOrigin + 9, self.contentView.frame.size.width - xOrigin - 50, 9);
 }
 
 @end

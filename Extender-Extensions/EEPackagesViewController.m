@@ -95,7 +95,14 @@
         [self.proxies addObject:proxy];
     }
     
-    [self.tableView reloadData];
+    // We now need to order the proxies based upon localised display name.
+    self.proxies = [[[self.proxies copy] sortedArrayUsingComparator:^NSComparisonResult(LSApplicationProxy *obj1, LSApplicationProxy *obj2) {
+        return [[obj1 localizedName] compare:[obj2 localizedName] options:NSNumericSearch];
+    }] mutableCopy];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView reloadData];
+    });
 }
 
 - (void)_resignApplicationsClicked:(id)sender {
