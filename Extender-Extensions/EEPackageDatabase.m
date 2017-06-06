@@ -13,10 +13,15 @@
 #import <objc/runtime.h>
 #include <unistd.h>
 
+#import <notify.h>
+
+#define kNotificationNameDidChangeDisplayStatus @"com.apple.iokit.hid.displayStatus"
+
 @interface Extender : UIApplication
 - (void)sendLocalNotification:(NSString*)title andBody:(NSString*)body;
 -(void)sendLocalNotification:(NSString*)title body:(NSString*)body withID:(NSString*)identifier;
 - (_Bool)application:(id)arg1 openURL:(id)arg2 sourceApplication:(id)arg3 annotation:(id)arg4;
+- (void)beginResignRoutine:(int)location;
 @end
 
 @interface LSApplicationProxy : NSObject
@@ -56,9 +61,68 @@ static EEPackageDatabase *sharedDatabase;
     if (self) {
         _queue = dispatch_queue_create("com.cydia.Extender.resignQueue", NULL);
         _currentBgTask = UIBackgroundTaskInvalid;
+        
+        _isLockedTaskQueued = NO;
+        
+        // TODO: Set _isLocked correctly for if we're currently UI locked.
+        
+        
+        // Setup notifications for un/locking of the device.
+        __weak EEPackageDatabase *weakSelf = self;
+        
+        uint32_t result = notify_register_dispatch("com.apple.springboard.lockstate",
+                                                   &_notifyTokenForDidChangeDisplayStatus,
+                                                   dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0l),
+                                                   ^(int info) {
+
+            __strong EEPackageDatabase *strongSelf = weakSelf;
+            if (strongSelf) {
+                uint64_t state = UINT64_MAX;
+                notify_get_state(_notifyTokenForDidChangeDisplayStatus, &state);
+                
+                if (state == 0) {
+                    [strongSelf _didReceiveUnlockedNotification];
+                } else {
+                    [strongSelf _didReceiveLockedNotification];
+                }
+            }
+            
+        });
+        
+        if (result != NOTIFY_STATUS_OK) {
+            // TODO: Handle error.
+        }
+        
+        uint64_t state = UINT64_MAX;
+        notify_get_state(_notifyTokenForDidChangeDisplayStatus, &state);
+        
+        _isLocked = state != 0;
     }
     
     return self;
+}
+
+- (void)dealloc {
+    uint32_t result = notify_cancel(_notifyTokenForDidChangeDisplayStatus);
+    
+    if (result != NOTIFY_STATUS_OK) {
+        // TODO: Handle error.
+    }
+}
+
+- (void)_didReceiveLockedNotification {
+    _isLocked = YES;
+}
+
+- (void)_didReceiveUnlockedNotification {
+    _isLocked = NO;
+    
+    if (_isLockedTaskQueued) {
+        _isLockedTaskQueued = NO;
+        
+        // Run queued task.
+        [(Extender*)[UIApplication sharedApplication] beginResignRoutine:1];
+    }
 }
 
 - (NSArray *)retrieveAllTeamIDApplications {
@@ -158,6 +222,19 @@ static EEPackageDatabase *sharedDatabase;
 - (void)resignApplicationsIfNecessaryWithTaskID:(UIBackgroundTaskIdentifier)bgTask andCheckExpiry:(BOOL)check {
     // Check if there is a current background task.
     if (_currentBgTask != UIBackgroundTaskInvalid && bgTask != _currentBgTask) {
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+        return;
+    }
+    
+    if (_isLocked) {
+        // The device is locked, so cannot run until unlocked.
+        _isLockedTaskQueued = YES;
+        
+        // Send an alert stating for the user to unlock if they want to re-sign.
+        Extender *application = (Extender*)[UIApplication sharedApplication];
+        [application sendLocalNotification:@"Unlock Device" body:@"A re-sign will occur when you next unlock your device." withID:@"unlock-pls"];
+        
+        // End the incoming task early, as we will spawn another when we receive an unlocked notification.
         [[UIApplication sharedApplication] endBackgroundTask:bgTask];
         return;
     }

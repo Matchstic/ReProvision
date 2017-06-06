@@ -11,6 +11,8 @@
 #import <objc/runtime.h>
 #include <spawn.h>
 
+#import "SAMKeychain/SAMKeychain.h"
+
 @interface LSApplicationWorkspace : NSObject
 + (instancetype)defaultWorkspace;
 - (BOOL)uninstallApplication:(NSString*)arg1 withOptions:(NSDictionary*)arg2;
@@ -153,6 +155,8 @@ void downloadImpactor() {
         xlog(@"Try installing again another time.");
         xlog(@"*******************************************");
         
+        cleanup();
+        
         exit(1);
     }
     
@@ -290,6 +294,37 @@ void cleanup() {
     [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/tmp/Extender/" error:nil];
 }
 
+void postInstallMigrations() {
+    // We need to check if:
+    // - We are migrating between 0.3.3 -> 0.3.4 for the Keychain accessibility value.
+    // - ?
+    
+    NSMutableDictionary *defaults = [NSMutableDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.cydia.Extender.plist"];
+    
+    id value = [defaults objectForKey:@"migratedFrom033"];
+    BOOL migrated = value ? [value boolValue] : NO;
+    
+    if (!migrated) {
+        // Get the password from Keychain.
+        
+        NSString *username = [defaults objectForKey:@"cachedUsername2"];
+        NSString *password = [SAMKeychain passwordForService:@"com.cydia.Extender" account:username];
+        
+        // Change accessibility.
+        [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlock];
+        
+        if (password && ![password isEqualToString:@""]) {
+            [SAMKeychain setPassword:password forService:@"com.cydia.Extender" account:username];
+            
+            xlog(@"Migrated Keychain data.");
+        }
+        
+        // Done.
+        [defaults setObject:[NSNumber numberWithBool:YES] forKey:@"migratedFrom033"];
+        [defaults writeToFile:@"/var/mobile/Library/Preferences/com.cydia.Extender.plist" atomically:YES];
+    }
+}
+
 int main (int argc, const char * argv[])
 {
 
@@ -319,6 +354,8 @@ int main (int argc, const char * argv[])
         signBinaries();
         
         install();
+        
+        postInstallMigrations();
         
         cleanup();
     }

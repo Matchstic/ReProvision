@@ -22,6 +22,10 @@
     int _currentCycleCount;
     BOOL _isRevoking;
     NSMutableArray *_currentInstallQueue;
+    
+    BOOL _isLocked;
+    BOOL _isLockedTaskQueued;
+    int _notifyTokenForDidChangeDisplayStatus;
 }
 
 + (instancetype)sharedInstance;

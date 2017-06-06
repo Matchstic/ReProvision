@@ -15,6 +15,8 @@
 #import <UserNotifications/UserNotifications.h>
 #import <objc/runtime.h>
 
+#import "SAMKeychain.h"
+
 /////////////////////////////////////////////////////////////////////
 // Interface declarations
 
@@ -220,6 +222,10 @@ dispatch_queue_t resignQueue;
              // Failure to register for notifications.
          }
      }];
+    
+    // Setup Keychain accessibility for when locked.
+    // (prevents not being able to correctly read the passcode when the device is locked)
+    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlock];
 }
 
 %new

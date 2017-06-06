@@ -16,6 +16,8 @@
 #import <UserNotifications/UserNotifications.h>
 #import <objc/runtime.h>
 
+#import "SAMKeychain.h"
+
 
 
 
@@ -79,10 +81,10 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class CyextTabBarController; @class NEVPNConnection; @class NETunnelProviderManager; @class Extender; @class NSURLSession; @class NEVPNManager; @class UNUserNotificationCenter; @class UIAlertController; @class SBApplication; @class NSFileManager; 
+@class NETunnelProviderManager; @class NSURLSession; @class NSFileManager; @class CyextTabBarController; @class UNUserNotificationCenter; @class NEVPNManager; @class NEVPNConnection; @class SBApplication; @class UIAlertController; @class Extender; 
 
 
-#line 60 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
+#line 62 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Extensions/ExtenderExtensions.xm"
 static NSArray* (*_logos_orig$Extender$Extender$defaultStartPages)(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL); static NSArray* _logos_method$Extender$Extender$defaultStartPages(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL); static UIViewController * (*_logos_orig$Extender$Extender$pageForURL$forExternal$withReferrer$)(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, NSURL *, BOOL, NSString *); static UIViewController * _logos_method$Extender$Extender$pageForURL$forExternal$withReferrer$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, NSURL *, BOOL, NSString *); static void _logos_method$Extender$Extender$sendLocalNotification$body$withID$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, NSString*, NSString*, NSString*); static void _logos_method$Extender$Extender$sendLocalNotification$andBody$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, NSString*, NSString*); static void _logos_method$Extender$Extender$userNotificationCenter$didReceiveNotificationResponse$withCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, UNUserNotificationCenter *, UNNotificationResponse *, void (^)(void)); static void _logos_method$Extender$Extender$userNotificationCenter$willPresentNotification$withCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, UNUserNotificationCenter *, UNNotification *, void (^)(UNNotificationPresentationOptions options)); static void _logos_method$Extender$Extender$_requestAppleDeveloperLogin(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$Extender$Extender$application$didFinishLaunchingWithOptions$)(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, UIApplication *, id); static void _logos_method$Extender$Extender$application$didFinishLaunchingWithOptions$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, UIApplication *, id); static void _logos_method$Extender$Extender$applicationDidEnterBackground$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, UIApplication *); static void _logos_method$Extender$Extender$application$performFetchWithCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, UIApplication *, void (^)(UIBackgroundFetchResult)); static void _logos_method$Extender$Extender$_reloadHeartbeatTimer(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL); static void _logos_method$Extender$Extender$_resignTimerCallback$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$Extender$Extender$beginResignRoutine$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, int); static _Bool (*_logos_orig$Extender$Extender$application$openURL$sourceApplication$annotation$)(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, UIApplication*, NSURL*, UIApplication*, id); static _Bool _logos_method$Extender$Extender$application$openURL$sourceApplication$annotation$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, UIApplication*, NSURL*, UIApplication*, id); static BOOL (*_logos_orig$Extender$Extender$openURL$)(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, NSURL*); static BOOL _logos_method$Extender$Extender$openURL$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST, SEL, NSURL*); static void (*_logos_orig$Extender$CyextTabBarController$setViewControllers$)(_LOGOS_SELF_TYPE_NORMAL CyextTabBarController* _LOGOS_SELF_CONST, SEL, NSArray*); static void _logos_method$Extender$CyextTabBarController$setViewControllers$(_LOGOS_SELF_TYPE_NORMAL CyextTabBarController* _LOGOS_SELF_CONST, SEL, NSArray*); static void (*_logos_orig$Extender$UIAlertController$_logBeingPresented)(_LOGOS_SELF_TYPE_NORMAL UIAlertController* _LOGOS_SELF_CONST, SEL); static void _logos_method$Extender$UIAlertController$_logBeingPresented(_LOGOS_SELF_TYPE_NORMAL UIAlertController* _LOGOS_SELF_CONST, SEL); static NSURL * (*_logos_orig$Extender$NSFileManager$containerURLForSecurityApplicationGroupIdentifier$)(_LOGOS_SELF_TYPE_NORMAL NSFileManager* _LOGOS_SELF_CONST, SEL, NSString *); static NSURL * _logos_method$Extender$NSFileManager$containerURLForSecurityApplicationGroupIdentifier$(_LOGOS_SELF_TYPE_NORMAL NSFileManager* _LOGOS_SELF_CONST, SEL, NSString *); static BOOL (*_logos_orig$Extender$NEVPNConnection$startVPNTunnelAndReturnError$)(_LOGOS_SELF_TYPE_NORMAL NEVPNConnection* _LOGOS_SELF_CONST, SEL, NSError **); static BOOL _logos_method$Extender$NEVPNConnection$startVPNTunnelAndReturnError$(_LOGOS_SELF_TYPE_NORMAL NEVPNConnection* _LOGOS_SELF_CONST, SEL, NSError **); static int (*_logos_orig$Extender$NEVPNConnection$status)(_LOGOS_SELF_TYPE_NORMAL NEVPNConnection* _LOGOS_SELF_CONST, SEL); static int _logos_method$Extender$NEVPNConnection$status(_LOGOS_SELF_TYPE_NORMAL NEVPNConnection* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$Extender$NEVPNManager$saveToPreferencesWithCompletionHandler$)(_LOGOS_SELF_TYPE_NORMAL NEVPNManager* _LOGOS_SELF_CONST, SEL, void (^)(NSError *error)); static void _logos_method$Extender$NEVPNManager$saveToPreferencesWithCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL NEVPNManager* _LOGOS_SELF_CONST, SEL, void (^)(NSError *error)); static void (*_logos_meta_orig$Extender$NETunnelProviderManager$loadAllFromPreferencesWithCompletionHandler$)(_LOGOS_SELF_TYPE_NORMAL Class _LOGOS_SELF_CONST, SEL, void (^)(NSArray *managers, NSError *error)); static void _logos_meta_method$Extender$NETunnelProviderManager$loadAllFromPreferencesWithCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Class _LOGOS_SELF_CONST, SEL, void (^)(NSArray *managers, NSError *error)); static NSURLSessionDataTask * (*_logos_orig$Extender$NSURLSession$dataTaskWithURL$completionHandler$)(_LOGOS_SELF_TYPE_NORMAL NSURLSession* _LOGOS_SELF_CONST, SEL, NSURL *, void (^)(NSData *data, NSURLResponse *response, NSError *error)); static NSURLSessionDataTask * _logos_method$Extender$NSURLSession$dataTaskWithURL$completionHandler$(_LOGOS_SELF_TYPE_NORMAL NSURLSession* _LOGOS_SELF_CONST, SEL, NSURL *, void (^)(NSData *data, NSURLResponse *response, NSError *error)); static UNUserNotificationCenter* (*_logos_orig$Extender$UNUserNotificationCenter$initWithBundleIdentifier$)(_LOGOS_SELF_TYPE_INIT UNUserNotificationCenter*, SEL, NSString*) _LOGOS_RETURN_RETAINED; static UNUserNotificationCenter* _logos_method$Extender$UNUserNotificationCenter$initWithBundleIdentifier$(_LOGOS_SELF_TYPE_INIT UNUserNotificationCenter*, SEL, NSString*) _LOGOS_RETURN_RETAINED; 
 
 
@@ -246,6 +248,10 @@ static void _logos_method$Extender$Extender$application$didFinishLaunchingWithOp
              
          }
      }];
+    
+    
+    
+    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlock];
 }
 
 
@@ -593,7 +599,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationB
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_5d17dcaa(int argc, char **argv, char **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_e2bac904(int argc, char **argv, char **envp) {
     {}
 
     
