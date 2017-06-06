@@ -90,8 +90,8 @@
     PSSpecifier *threshold = [PSSpecifier preferenceSpecifierNamed:@"Re-sign Applications When:" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:NSClassFromString(@"PSListItemsController") cell:PSLinkListCell edit:nil];
     [threshold setProperty:@YES forKey:@"enabled"];
     [threshold setProperty:@2 forKey:@"default"];
-    threshold.values = [NSArray arrayWithObjects:@1, @2, @3, @4, @5, @6, nil];
-    threshold.titleDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"1 Day Left", @"2 Days Left", @"3 Days Left", @"4 Days Left", @"5 Days Left", @"6 Days Left", nil] forKeys:threshold.values];
+    threshold.values = [NSArray arrayWithObjects:@1, @2, @3, @4, @5, @6, @7, nil];
+    threshold.titleDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"1 Day Left", @"2 Days Left", @"3 Days Left", @"4 Days Left", @"5 Days Left", @"6 Days Left", @"7 Days Left (DEBUG ONLY)", nil] forKeys:threshold.values];
     threshold.shortTitleDictionary = threshold.titleDictionary;
     [threshold setProperty:@"thresholdForResigning" forKey:@"key"];
     [threshold setProperty:@"For example, setting \"2 Days Left\" will cause an application to get re-signed when it is 2 days away from expiring." forKey:@"staticTextMessage"];

@@ -15,8 +15,6 @@
 
 #import <notify.h>
 
-#define kNotificationNameDidChangeDisplayStatus @"com.apple.iokit.hid.displayStatus"
-
 @interface Extender : UIApplication
 - (void)sendLocalNotification:(NSString*)title andBody:(NSString*)body;
 -(void)sendLocalNotification:(NSString*)title body:(NSString*)body withID:(NSString*)identifier;
@@ -122,6 +120,9 @@ static EEPackageDatabase *sharedDatabase;
         
         // Run queued task.
         [(Extender*)[UIApplication sharedApplication] beginResignRoutine:1];
+        
+        Extender *application = (Extender*)[UIApplication sharedApplication];
+        [application sendLocalNotification:@"Queued Re-sign" andBody:@"The re-sign queued when your device was locked is now running."];
     }
 }
 
@@ -224,17 +225,8 @@ static EEPackageDatabase *sharedDatabase;
     if (_currentBgTask != UIBackgroundTaskInvalid && bgTask != _currentBgTask) {
         [[UIApplication sharedApplication] endBackgroundTask:bgTask];
         return;
-    }
-    
-    if (_isLocked) {
-        // The device is locked, so cannot run until unlocked.
-        _isLockedTaskQueued = YES;
-        
-        // Send an alert stating for the user to unlock if they want to re-sign.
-        Extender *application = (Extender*)[UIApplication sharedApplication];
-        [application sendLocalNotification:@"Unlock Device" body:@"A re-sign will occur when you next unlock your device." withID:@"unlock-pls"];
-        
-        // End the incoming task early, as we will spawn another when we receive an unlocked notification.
+    } else if (_isLockedTaskQueued) {
+        // We already have a task queued.
         [[UIApplication sharedApplication] endBackgroundTask:bgTask];
         return;
     }
@@ -314,6 +306,23 @@ static EEPackageDatabase *sharedDatabase;
     if (_installQueue.count == 0 && [EEResources shouldShowNonUrgentAlerts]) {
         Extender *application = (Extender*)[UIApplication sharedApplication];
         [application sendLocalNotification:nil andBody:@"No applications need re-signing at this time."];
+    }
+    
+    if (_installQueue.count > 0 && _isLocked) {
+        // The device is locked, so cannot run until unlocked.
+        _isLockedTaskQueued = YES;
+            
+        // Send an alert stating for the user to unlock if they want to re-sign.
+        Extender *application = (Extender*)[UIApplication sharedApplication];
+        [application sendLocalNotification:@"Unlock Device" body:@"A re-sign will occur when you next unlock your device." withID:@"unlock-pls"];
+            
+        // End the incoming task early, as we will spawn another when we receive an unlocked notification.
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+        _currentBgTask = UIBackgroundTaskInvalid;
+        
+        [_installQueue removeAllObjects];
+        
+        return;
     }
     
     // Send out all the notifications needed to set UI to show 0% for re-signing applications.
