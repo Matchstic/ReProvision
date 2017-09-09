@@ -344,9 +344,11 @@ static EEPackageDatabase *sharedDatabase;
     [attributes setObject:[NSNumber numberWithShort:0777] forKey:NSFilePosixPermissions];
     [[NSFileManager defaultManager] createDirectoryAtPath:inbox withIntermediateDirectories:YES attributes:attributes error:nil];
     
-    
-    // Note that this WILL modify the queue, so any checks for count should be done before.
-    [self _initiateNextInstallFromQueue];
+    // Cleanup any expired or old certificates that are no longer in use.
+    [EEResources cleanupExpiredProvisioningCertificatesWithCompletionHandler:^(BOOL success) {
+        // Note that this WILL modify the queue, so any checks for count should be done before.
+        [self _initiateNextInstallFromQueue];
+    }];
 }
 
 - (void)_initiateNextInstallFromQueue {
@@ -390,9 +392,17 @@ static EEPackageDatabase *sharedDatabase;
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"EEDidUpdateResignProgress" object:nil userInfo:dict];
     
-    dispatch_async(_queue, ^{
-        [application application:application openURL:[package packageURL] sourceApplication:application annotation:nil];
-    });
+    // Clear any existing provisioning profile for this application, if available.
+    
+    [EEResources removeExistingProvisioningProfileForApplication:[package bundleIdentifier] withCallback:^(BOOL success) {
+        if (success) {
+            [application sendLocalNotification:@"Debug" andBody:[NSString stringWithFormat:@"Removed profile for: '%@'", [package applicationName]]];
+        }
+        
+        dispatch_async(_queue, ^{
+            [application application:application openURL:[package packageURL] sourceApplication:application annotation:nil];
+        });
+    }];
 }
 
 - (void)errorDidOccur:(NSString*)message {    

@@ -294,6 +294,48 @@ static NSDictionary *_getEntitlementsPlist() {
     return plist;
 }
 
++ (void)removeExistingProvisioningProfileForApplication:(NSString*)bundleIdentifier withCallback:(void (^)(BOOL))completionHandler {
+    
+    [EEAppleServices signInWithUsername:[EEResources username] password:[EEResources password] andCompletionHandler:^(NSError *error, NSDictionary *plist) {
+        if (error) {
+            // Oh shit.
+            completionHandler(NO);
+            return;
+        }
+        
+        // We also want to pull the Team ID for this user, rather than find it on installation.
+        [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+            if (error) {
+                completionHandler(NO);
+                return;
+            }
+            
+            NSArray *teams = [plist objectForKey:@"teams"];
+            NSString *teamId;
+            
+            // We don't want to be working off a group cert if we can help it.
+            for (NSDictionary *team in teams) {
+                NSString *type = [team objectForKey:@"type"];
+                
+                if ([type isEqualToString:@"Individual"]) {
+                    teamId = [team objectForKey:@"teamId"];
+                    break;
+                }
+            }
+            
+            [EEAppleServices deleteProvisioningProfileForApplication:bundleIdentifier andTeamID:teamId withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                if (error) {
+                    completionHandler(NO);
+                    return;
+                }
+
+                // Done!
+                completionHandler(YES);
+            }];
+        }];
+    }];
+}
+
 + (void)attemptToRevokeCertificateWithCallback:(void (^)(BOOL))completionHandler {
     if (![EEResources username]) {
         // User needs to sign in.
@@ -389,7 +431,7 @@ static NSDictionary *_getEntitlementsPlist() {
                     completionHandler(YES);
                     
                     if (controller) {
-                        UIAlertController *endcontroller = [UIAlertController alertControllerWithTitle:@"Revoke Certificates" message:[NSString stringWithFormat:@"%d certificate%@ revoked, and you should receive an email shortly stating that certificates were revoked.\n\nYou will need to manually re-sign applications by pressing 'Re-sign' in the Installed tab.\n\nThe next re-sign may give a 'Could not extract archive' error; this is fine, and can be ignored.", revoked, revoked == 1 ? @" was" : @"s were"] preferredStyle:UIAlertControllerStyleAlert];
+                        UIAlertController *endcontroller = [UIAlertController alertControllerWithTitle:@"Revoke Certificates" message:[NSString stringWithFormat:@"%d certificate%@ revoked.\n\nYou will need to manually re-sign applications by pressing 'Re-sign' in the Installed tab.", revoked, revoked == 1 ? @" was" : @"s were"] preferredStyle:UIAlertControllerStyleAlert];
                     
                         UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
                             [controller dismissViewControllerAnimated:YES completion:nil];
@@ -431,7 +473,7 @@ static NSDictionary *_getEntitlementsPlist() {
 /////////////////////////////////////////////////////////////////////
 #pragma mark Fix some damn annoying issues.
 
-+ (BOOL)cleanupExpiredProvisioningCertificates {
++ (void)cleanupExpiredProvisioningCertificatesWithCompletionHandler:(void(^)(BOOL))completionHandler {
     /*
      * Within /var/MobileDevice/ProvisioningProfiles are copies of embedded.mobileprovision for 
      * applications.
@@ -446,17 +488,69 @@ static NSDictionary *_getEntitlementsPlist() {
      * This problem becomes apparent if the user revoke certificates on device.
      */
     
-    // For each file in the provisioning certificates, we check:
-    // - AppIDName == "CY- <last_dns_name_bundle_id>"
-    // - CreationDate
-    
-    // For each application with the right Team ID, we do:
-    // Get each filename of certs, and order by CreationDate.
-    // Delete all bar latest.
-    
-    
-    
-    return NO;
+    // Each file in this directory is the UUID of a provisioning profile.
+    [EEAppleServices signInWithUsername:[EEResources username] password:[EEResources password] andCompletionHandler:^(NSError *error, NSDictionary *plist) {
+        if (error) {
+            NSLog(@"Error: %@", error);
+            completionHandler(NO);
+            return;
+        }
+        
+        // We also want to pull the Team ID for this user, rather than find it on installation.
+        [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+            if (error) {
+                NSLog(@"Error: %@", error);
+                completionHandler(NO);
+                return;
+            }
+            
+            NSArray *teams = [plist objectForKey:@"teams"];
+            NSString *teamId;
+            
+            // We don't want to be working off a group cert if we can help it.
+            for (NSDictionary *team in teams) {
+                NSString *type = [team objectForKey:@"type"];
+                
+                if ([type isEqualToString:@"Individual"]) {
+                    teamId = [team objectForKey:@"teamId"];
+                    break;
+                }
+            }
+            
+            [EEAppleServices listAllProvisioningProfilesForTeamID:teamId withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                if (error) {
+                    NSLog(@"Error: %@", error);
+                    completionHandler(NO);
+                    return;
+                }
+                
+                // Generate an array of currently valid provisioning certificates.
+                
+                NSMutableArray *uuids = [NSMutableArray array];
+                
+                NSArray *provisioningProfiles = [plist objectForKey:@"provisioningProfiles"];
+                for (NSDictionary *profile in provisioningProfiles) {
+                    NSString *UUID = [profile objectForKey:@"UUID"];
+                    
+                    if (UUID) {
+                        [uuids addObject:UUID];
+                    }
+                }
+                
+                // Now, run through the directory and delete whatever filename isn't in that array
+                NSString *basePath = @"/var/MobileDevice/ProvisioningProfiles/";
+                for (NSString *filename in [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:basePath error:nil] copy]) {
+                    
+                    if (![uuids containsObject:filename]) {
+                        NSError *error;
+                        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", basePath, filename] error:&error];
+                    }
+                }
+                
+                completionHandler(YES);
+            }];
+        }];
+    }];
 }
 
 + (void)reloadSettings {

@@ -29,8 +29,11 @@
 + (void)signInWithCallback:(void (^)(BOOL, NSString*))completionHandler;
 
 + (NSDictionary *)provisioningProfileAtPath:(NSString *)path;
++ (void)removeExistingProvisioningProfileForApplication:(NSString*)bundleIdentifier withCallback:(void (^)(BOOL))completionHandler;
 + (void)attemptToRevokeCertificateWithCallback:(void (^)(BOOL))completionHandler;
 + (void)_actuallyRevokeCertificatesWithAlert:(id)controller andCallback:(void (^)(BOOL))completionHandler;
+
++ (void)cleanupExpiredProvisioningCertificatesWithCompletionHandler:(void(^)(BOOL))completionHandler;
 
 + (void)reloadSettings;
 
