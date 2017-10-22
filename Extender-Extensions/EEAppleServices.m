@@ -9,7 +9,7 @@
 #import "EEAppleServices.h"
 #import "NSData+GZIP.h"
 
-static NSString *acinfo;
+static NSString *acinfo = @"";
 
 @implementation EEAppleServices
 

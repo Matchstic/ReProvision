@@ -488,7 +488,7 @@ static NSDictionary *_getEntitlementsPlist() {
      * This problem becomes apparent if the user revoke certificates on device.
      */
     
-    // Each file in this directory is the UUID of a provisioning profile.
+    // Each filename in this directory is the UUID of a provisioning profile.
     [EEAppleServices signInWithUsername:[EEResources username] password:[EEResources password] andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             NSLog(@"Error: %@", error);
@@ -496,6 +496,8 @@ static NSDictionary *_getEntitlementsPlist() {
             return;
         }
         
+        // Why tho.
+        @try {
         // We also want to pull the Team ID for this user, rather than find it on installation.
         [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
             if (error) {
@@ -504,17 +506,25 @@ static NSDictionary *_getEntitlementsPlist() {
                 return;
             }
             
-            NSArray *teams = [plist objectForKey:@"teams"];
             NSString *teamId;
             
-            // We don't want to be working off a group cert if we can help it.
-            for (NSDictionary *team in teams) {
-                NSString *type = [team objectForKey:@"type"];
+            // Why tho.
+            @try {
+                NSArray *teams = [plist objectForKey:@"teams"];
                 
-                if ([type isEqualToString:@"Individual"]) {
-                    teamId = [team objectForKey:@"teamId"];
-                    break;
+                // We don't want to be working off a group cert if we can help it.
+                for (NSDictionary *team in teams) {
+                    NSString *type = [team objectForKey:@"type"];
+                    
+                    if ([type isEqualToString:@"Individual"]) {
+                        teamId = [team objectForKey:@"teamId"];
+                        break;
+                    }
                 }
+            } @catch (NSException *e) {
+                // wtf.
+                NSLog(@"Error: %@", e);
+                return;
             }
             
             [EEAppleServices listAllProvisioningProfilesForTeamID:teamId withCompletionHandler:^(NSError *error, NSDictionary *plist) {
@@ -523,6 +533,9 @@ static NSDictionary *_getEntitlementsPlist() {
                     completionHandler(NO);
                     return;
                 }
+                
+                // Why tho.
+                @try {
                 
                 // Generate an array of currently valid provisioning certificates.
                 
@@ -548,8 +561,22 @@ static NSDictionary *_getEntitlementsPlist() {
                 }
                 
                 completionHandler(YES);
+                    
+                } @catch (NSException *e) {
+                    // wtf.
+                    NSLog(@"Error: %@", e);
+                    return;
+                }
             }];
         }];
+        } @catch (NSException *e) {
+            // I am beyond the point of caring with this issue, and quite frankly I don't want to update this
+            // project again. You can judge me on the excessive try/catch all you want, I know it's not a sensible
+            // resolution and shouldn't be in production code.
+            
+            NSLog(@"Error: %@", e);
+            return;
+        }
     }];
 }
 

@@ -1,4 +1,4 @@
-#line 1 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Installer/Extender_Installer.xm"
+#line 1 "/Users/matt/iOS/Projects/Extender-Installer/Extender-Installer/Extender_Installer.xm"
 
 
 
@@ -25,7 +25,7 @@
 @class MIInstallableBundle; 
 static id (*_logos_orig$_ungrouped$MIInstallableBundle$_validateBundle$validatingResources$performingOnlineAuthorization$verifyingForMigrator$allowingFreeProfileValidation$error$)(_LOGOS_SELF_TYPE_NORMAL MIInstallableBundle* _LOGOS_SELF_CONST, SEL, id, BOOL, BOOL, BOOL, BOOL, id *); static id _logos_method$_ungrouped$MIInstallableBundle$_validateBundle$validatingResources$performingOnlineAuthorization$verifyingForMigrator$allowingFreeProfileValidation$error$(_LOGOS_SELF_TYPE_NORMAL MIInstallableBundle* _LOGOS_SELF_CONST, SEL, id, BOOL, BOOL, BOOL, BOOL, id *); 
 
-#line 3 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Installer/Extender_Installer.xm"
+#line 3 "/Users/matt/iOS/Projects/Extender-Installer/Extender-Installer/Extender_Installer.xm"
 
 
 static id _logos_method$_ungrouped$MIInstallableBundle$_validateBundle$validatingResources$performingOnlineAuthorization$verifyingForMigrator$allowingFreeProfileValidation$error$(_LOGOS_SELF_TYPE_NORMAL MIInstallableBundle* _LOGOS_SELF_CONST self, SEL _cmd, id bundle, BOOL maybe1, BOOL maybe2, BOOL maybe3, BOOL maybe4, id * error) {
@@ -37,4 +37,4 @@ return _logos_orig$_ungrouped$MIInstallableBundle$_validateBundle$validatingReso
 
 static __attribute__((constructor)) void _logosLocalInit() {
 {Class _logos_class$_ungrouped$MIInstallableBundle = objc_getClass("MIInstallableBundle"); if (_logos_class$_ungrouped$MIInstallableBundle) {MSHookMessageEx(_logos_class$_ungrouped$MIInstallableBundle, @selector(_validateBundle:validatingResources:performingOnlineAuthorization:verifyingForMigrator:allowingFreeProfileValidation:error:), (IMP)&_logos_method$_ungrouped$MIInstallableBundle$_validateBundle$validatingResources$performingOnlineAuthorization$verifyingForMigrator$allowingFreeProfileValidation$error$, (IMP*)&_logos_orig$_ungrouped$MIInstallableBundle$_validateBundle$validatingResources$performingOnlineAuthorization$verifyingForMigrator$allowingFreeProfileValidation$error$);} else {HBLogError(@"logos: nil class %s", "MIInstallableBundle");}} }
-#line 12 "/Users/Matt/iOS/Projects/Extender-Installer/Extender-Installer/Extender_Installer.xm"
+#line 12 "/Users/matt/iOS/Projects/Extender-Installer/Extender-Installer/Extender_Installer.xm"
