@@ -474,6 +474,10 @@ static NSDictionary *_getEntitlementsPlist() {
 #pragma mark Fix some damn annoying issues.
 
 + (void)cleanupExpiredProvisioningCertificatesWithCompletionHandler:(void(^)(BOOL))completionHandler {
+    // Due to annoyances, this has been removed.
+    completionHandler(YES);
+    return;
+    
     /*
      * Within /var/MobileDevice/ProvisioningProfiles are copies of embedded.mobileprovision for 
      * applications.
