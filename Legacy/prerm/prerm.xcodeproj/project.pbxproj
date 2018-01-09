@@ -38,7 +38,7 @@
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = "/Users/Matt/iOS/Projects/Extender-Installer/prerm";
+			buildWorkingDirectory = ./;
 			dependencies = (
 			);
 			name = prerm;
@@ -51,6 +51,7 @@
 		C9F3E7D11EA3F9B9001A09D1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0910;
 			};
 			buildConfigurationList = C9F3E7D41EA3F9B9001A09D1 /* Build configuration list for PBXProject "prerm" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -76,6 +77,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx10.6;
 			};
@@ -88,6 +90,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				SDKROOT = macosx10.6;
 			};
 			name = Release;
