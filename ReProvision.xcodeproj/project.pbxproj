@@ -10,16 +10,20 @@
 		0BA671B5481B8584C4CBDEAD /* libPods-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6128985EC92357E21F928222 /* libPods-macOS.a */; };
 		8F6C6C6A581562A14415C53B /* libPods-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 752E9A9CE1D776522A582DBF /* libPods-iOS.a */; };
 		C9313C052005277E000AD4C3 /* Preferences.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9313C042005277E000AD4C3 /* Preferences.tbd */; };
-		C9313C1A2005292F000AD4C3 /* RPVTroubleshootController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C152005292F000AD4C3 /* RPVTroubleshootController.m */; };
 		C9313C1B2005292F000AD4C3 /* RPVSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C182005292F000AD4C3 /* RPVSettingsController.m */; };
 		C9313C1C2005292F000AD4C3 /* RPVAdvancedController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C192005292F000AD4C3 /* RPVAdvancedController.m */; };
+		C9313C1F20052B13000AD4C3 /* RPVResources.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C1E20052B13000AD4C3 /* RPVResources.m */; };
+		C96B0CC02005354C00F713AF /* RPVInstalledCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CBF2005354C00F713AF /* RPVInstalledCollectionViewCell.m */; };
+		C96B0CC320053FD300F713AF /* RPVInstalledCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CC220053FD300F713AF /* RPVInstalledCollectionViewLayout.m */; };
+		C96B0CC6200545D100F713AF /* RPVInstalledCollectionMainHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CC5200545D100F713AF /* RPVInstalledCollectionMainHeaderView.m */; };
+		C96B0CC9200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CC7200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.m */; };
 		C9C6EA6C2004261300211FDD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA602004261300211FDD /* AppDelegate.m */; };
 		C9C6EA6D2004261300211FDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA612004261300211FDD /* Assets.xcassets */; };
 		C9C6EA6E2004261300211FDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA622004261300211FDD /* LaunchScreen.storyboard */; };
 		C9C6EA6F2004261300211FDD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA642004261300211FDD /* Main.storyboard */; };
-		C9C6EA702004261300211FDD /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA672004261300211FDD /* FirstViewController.m */; };
+		C9C6EA702004261300211FDD /* RPVInstalledCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA672004261300211FDD /* RPVInstalledCollectionViewController.m */; };
 		C9C6EA722004261300211FDD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA692004261300211FDD /* main.m */; };
-		C9C6EA732004261300211FDD /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA6B2004261300211FDD /* SecondViewController.m */; };
+		C9C6EA732004261300211FDD /* RPVSettingsNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA6B2004261300211FDD /* RPVSettingsNavigationViewController.m */; };
 		C9C6EAF62004280A00211FDD /* EEAppleServices.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA782004280A00211FDD /* EEAppleServices.m */; };
 		C9C6EAF72004280A00211FDD /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA7A2004280A00211FDD /* NSData+GZIP.m */; };
 		C9C6EAF82004280A00211FDD /* apple-dev.pem in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA7C2004280A00211FDD /* apple-dev.pem */; };
@@ -141,24 +145,47 @@
 		B809A0BC7D3B055DCE0E28C4 /* Pods-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-macOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-macOS/Pods-macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		BA8B6832F905206352FC8D1C /* Pods-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-macOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-macOS/Pods-macOS.release.xcconfig"; sourceTree = "<group>"; };
 		C9313C042005277E000AD4C3 /* Preferences.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = Preferences.tbd; path = iOS/Preferences.tbd; sourceTree = "<group>"; };
-		C9313C142005292E000AD4C3 /* RPVTroubleshootController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVTroubleshootController.h; sourceTree = "<group>"; };
-		C9313C152005292F000AD4C3 /* RPVTroubleshootController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVTroubleshootController.m; sourceTree = "<group>"; };
 		C9313C162005292F000AD4C3 /* RPVAdvancedController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVAdvancedController.h; sourceTree = "<group>"; };
 		C9313C172005292F000AD4C3 /* RPVSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVSettingsController.h; sourceTree = "<group>"; };
 		C9313C182005292F000AD4C3 /* RPVSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVSettingsController.m; sourceTree = "<group>"; };
 		C9313C192005292F000AD4C3 /* RPVAdvancedController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVAdvancedController.m; sourceTree = "<group>"; };
+		C9313C1D20052B13000AD4C3 /* RPVResources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVResources.h; path = "/Users/matt/iOS/Projects/Extender-Installer/iOS/RPVResources.h"; sourceTree = "<absolute>"; };
+		C9313C1E20052B13000AD4C3 /* RPVResources.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RPVResources.m; path = "/Users/matt/iOS/Projects/Extender-Installer/iOS/RPVResources.m"; sourceTree = "<absolute>"; };
+		C9313C2320052C29000AD4C3 /* PreferencesAppController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesAppController.h; sourceTree = "<group>"; };
+		C9313C2420052C29000AD4C3 /* PSBundleController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSBundleController.h; sourceTree = "<group>"; };
+		C9313C2520052C29000AD4C3 /* PSControlTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSControlTableCell.h; sourceTree = "<group>"; };
+		C9313C2620052C29000AD4C3 /* PSDiscreteSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSDiscreteSlider.h; sourceTree = "<group>"; };
+		C9313C2720052C29000AD4C3 /* PSEditableTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSEditableTableCell.h; sourceTree = "<group>"; };
+		C9313C2820052C29000AD4C3 /* PSHeaderFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSHeaderFooterView.h; sourceTree = "<group>"; };
+		C9313C2920052C29000AD4C3 /* PSListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSListController.h; sourceTree = "<group>"; };
+		C9313C2A20052C29000AD4C3 /* PSListItemsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSListItemsController.h; sourceTree = "<group>"; };
+		C9313C2B20052C29000AD4C3 /* PSRootController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSRootController.h; sourceTree = "<group>"; };
+		C9313C2C20052C29000AD4C3 /* PSSliderTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSliderTableCell.h; sourceTree = "<group>"; };
+		C9313C2D20052C29000AD4C3 /* PSSpecifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSpecifier.h; sourceTree = "<group>"; };
+		C9313C2E20052C29000AD4C3 /* PSSwitchTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSwitchTableCell.h; sourceTree = "<group>"; };
+		C9313C2F20052C29000AD4C3 /* PSSystemPolicyForApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSystemPolicyForApp.h; sourceTree = "<group>"; };
+		C9313C3020052C29000AD4C3 /* PSTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTableCell.h; sourceTree = "<group>"; };
+		C9313C3120052C29000AD4C3 /* PSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSViewController.h; sourceTree = "<group>"; };
+		C96B0CBE2005354C00F713AF /* RPVInstalledCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionViewCell.h; sourceTree = "<group>"; };
+		C96B0CBF2005354C00F713AF /* RPVInstalledCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionViewCell.m; sourceTree = "<group>"; };
+		C96B0CC120053FD300F713AF /* RPVInstalledCollectionViewLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionViewLayout.h; sourceTree = "<group>"; };
+		C96B0CC220053FD300F713AF /* RPVInstalledCollectionViewLayout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionViewLayout.m; sourceTree = "<group>"; };
+		C96B0CC4200545D100F713AF /* RPVInstalledCollectionMainHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionMainHeaderView.h; sourceTree = "<group>"; };
+		C96B0CC5200545D100F713AF /* RPVInstalledCollectionMainHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionMainHeaderView.m; sourceTree = "<group>"; };
+		C96B0CC7200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RPVInstalledCollectionSectionHeaderView.m; path = "/Users/matt/iOS/Projects/Extender-Installer/iOS/Installed Panes/RPVInstalledCollectionSectionHeaderView.m"; sourceTree = "<absolute>"; };
+		C96B0CC8200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVInstalledCollectionSectionHeaderView.h; path = "/Users/matt/iOS/Projects/Extender-Installer/iOS/Installed Panes/RPVInstalledCollectionSectionHeaderView.h"; sourceTree = "<absolute>"; };
 		C9C6EA422004257E00211FDD /* ReProvision.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReProvision.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9C6EA5F2004261300211FDD /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		C9C6EA602004261300211FDD /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		C9C6EA612004261300211FDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C9C6EA632004261300211FDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C9C6EA652004261300211FDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		C9C6EA662004261300211FDD /* FirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
-		C9C6EA672004261300211FDD /* FirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
+		C9C6EA662004261300211FDD /* RPVInstalledCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionViewController.h; sourceTree = "<group>"; };
+		C9C6EA672004261300211FDD /* RPVInstalledCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionViewController.m; sourceTree = "<group>"; };
 		C9C6EA682004261300211FDD /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9C6EA692004261300211FDD /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C9C6EA6A2004261300211FDD /* SecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
-		C9C6EA6B2004261300211FDD /* SecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
+		C9C6EA6A2004261300211FDD /* RPVSettingsNavigationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVSettingsNavigationViewController.h; sourceTree = "<group>"; };
+		C9C6EA6B2004261300211FDD /* RPVSettingsNavigationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVSettingsNavigationViewController.m; sourceTree = "<group>"; };
 		C9C6EA772004280A00211FDD /* EEAppleServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EEAppleServices.h; sourceTree = "<group>"; };
 		C9C6EA782004280A00211FDD /* EEAppleServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EEAppleServices.m; sourceTree = "<group>"; };
 		C9C6EA792004280A00211FDD /* NSData+GZIP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GZIP.h"; sourceTree = "<group>"; };
@@ -314,17 +341,74 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		C90C2218200533B300255B08 /* Installed Panes */ = {
+			isa = PBXGroup;
+			children = (
+				C9C6EA662004261300211FDD /* RPVInstalledCollectionViewController.h */,
+				C9C6EA672004261300211FDD /* RPVInstalledCollectionViewController.m */,
+				C96B0CBE2005354C00F713AF /* RPVInstalledCollectionViewCell.h */,
+				C96B0CBF2005354C00F713AF /* RPVInstalledCollectionViewCell.m */,
+				C96B0CC120053FD300F713AF /* RPVInstalledCollectionViewLayout.h */,
+				C96B0CC220053FD300F713AF /* RPVInstalledCollectionViewLayout.m */,
+				C96B0CC4200545D100F713AF /* RPVInstalledCollectionMainHeaderView.h */,
+				C96B0CC5200545D100F713AF /* RPVInstalledCollectionMainHeaderView.m */,
+				C96B0CC8200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.h */,
+				C96B0CC7200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.m */,
+			);
+			path = "Installed Panes";
+			sourceTree = "<group>";
+		};
 		C9313C1320052912000AD4C3 /* Settings Panes */ = {
 			isa = PBXGroup;
 			children = (
+				C9C6EA6A2004261300211FDD /* RPVSettingsNavigationViewController.h */,
+				C9C6EA6B2004261300211FDD /* RPVSettingsNavigationViewController.m */,
 				C9313C162005292F000AD4C3 /* RPVAdvancedController.h */,
 				C9313C192005292F000AD4C3 /* RPVAdvancedController.m */,
 				C9313C172005292F000AD4C3 /* RPVSettingsController.h */,
 				C9313C182005292F000AD4C3 /* RPVSettingsController.m */,
-				C9313C142005292E000AD4C3 /* RPVTroubleshootController.h */,
-				C9313C152005292F000AD4C3 /* RPVTroubleshootController.m */,
 			);
 			path = "Settings Panes";
+			sourceTree = "<group>";
+		};
+		C9313C2020052B1D000AD4C3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C9313C2120052C29000AD4C3 /* Headers */,
+				C9313C1D20052B13000AD4C3 /* RPVResources.h */,
+				C9313C1E20052B13000AD4C3 /* RPVResources.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		C9313C2120052C29000AD4C3 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				C9313C2220052C29000AD4C3 /* Preferences */,
+			);
+			path = Headers;
+			sourceTree = "<group>";
+		};
+		C9313C2220052C29000AD4C3 /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				C9313C2320052C29000AD4C3 /* PreferencesAppController.h */,
+				C9313C2420052C29000AD4C3 /* PSBundleController.h */,
+				C9313C2520052C29000AD4C3 /* PSControlTableCell.h */,
+				C9313C2620052C29000AD4C3 /* PSDiscreteSlider.h */,
+				C9313C2720052C29000AD4C3 /* PSEditableTableCell.h */,
+				C9313C2820052C29000AD4C3 /* PSHeaderFooterView.h */,
+				C9313C2920052C29000AD4C3 /* PSListController.h */,
+				C9313C2A20052C29000AD4C3 /* PSListItemsController.h */,
+				C9313C2B20052C29000AD4C3 /* PSRootController.h */,
+				C9313C2C20052C29000AD4C3 /* PSSliderTableCell.h */,
+				C9313C2D20052C29000AD4C3 /* PSSpecifier.h */,
+				C9313C2E20052C29000AD4C3 /* PSSwitchTableCell.h */,
+				C9313C2F20052C29000AD4C3 /* PSSystemPolicyForApp.h */,
+				C9313C3020052C29000AD4C3 /* PSTableCell.h */,
+				C9313C3120052C29000AD4C3 /* PSViewController.h */,
+			);
+			path = Preferences;
 			sourceTree = "<group>";
 		};
 		C9C6EA392004257E00211FDD = {
@@ -356,12 +440,10 @@
 				C9C6EA612004261300211FDD /* Assets.xcassets */,
 				C9C6EA622004261300211FDD /* LaunchScreen.storyboard */,
 				C9C6EA642004261300211FDD /* Main.storyboard */,
-				C9C6EA662004261300211FDD /* FirstViewController.h */,
-				C9C6EA672004261300211FDD /* FirstViewController.m */,
+				C90C2218200533B300255B08 /* Installed Panes */,
 				C9C6EA682004261300211FDD /* Info.plist */,
 				C9C6EA692004261300211FDD /* main.m */,
-				C9C6EA6A2004261300211FDD /* SecondViewController.h */,
-				C9C6EA6B2004261300211FDD /* SecondViewController.m */,
+				C9313C2020052B1D000AD4C3 /* Supporting Files */,
 				C9313C1320052912000AD4C3 /* Settings Panes */,
 			);
 			path = iOS;
@@ -839,11 +921,13 @@
 				C9C6EB072004280A00211FDD /* Dictionary.cpp in Sources */,
 				C9C6EB0F2004280A00211FDD /* node_iterator.c in Sources */,
 				C9C6EB1C2004280A00211FDD /* SAMKeychain.m in Sources */,
-				C9C6EA702004261300211FDD /* FirstViewController.m in Sources */,
+				C9C6EA702004261300211FDD /* RPVInstalledCollectionViewController.m in Sources */,
 				C9C6EB172004280A00211FDD /* time64.c in Sources */,
 				C9C6EB0D2004280A00211FDD /* list.c in Sources */,
 				C9C6EB012004280A00211FDD /* base64.c in Sources */,
 				C9C6EB2A2004280A00211FDD /* ioapi_buf.c in Sources */,
+				C96B0CC320053FD300F713AF /* RPVInstalledCollectionViewLayout.m in Sources */,
+				C96B0CC02005354C00F713AF /* RPVInstalledCollectionViewCell.m in Sources */,
 				C9C6EAF62004280A00211FDD /* EEAppleServices.m in Sources */,
 				C9C6EB0E2004280A00211FDD /* node.c in Sources */,
 				C9C6EB2F2004280A00211FDD /* SSZipArchive.m in Sources */,
@@ -853,8 +937,9 @@
 				C9C6EB152004280A00211FDD /* String.cpp in Sources */,
 				C9C6EB2B2004280A00211FDD /* ioapi_mem.c in Sources */,
 				C9C6EB242004280A00211FDD /* hmac.c in Sources */,
+				C96B0CC9200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.m in Sources */,
 				C9C6EB2D2004280A00211FDD /* unzip.c in Sources */,
-				C9C6EA732004261300211FDD /* SecondViewController.m in Sources */,
+				C9C6EA732004261300211FDD /* RPVSettingsNavigationViewController.m in Sources */,
 				C9C6EB022004280A00211FDD /* Boolean.cpp in Sources */,
 				C9C6EB1D2004280A00211FDD /* EESigning.mm in Sources */,
 				C9C6EB182004280A00211FDD /* Uid.cpp in Sources */,
@@ -868,18 +953,19 @@
 				C9C6EB192004280A00211FDD /* xplist.c in Sources */,
 				C9C6EB2C2004280A00211FDD /* minishared.c in Sources */,
 				C9313C1C2005292F000AD4C3 /* RPVAdvancedController.m in Sources */,
+				C9313C1F20052B13000AD4C3 /* RPVResources.m in Sources */,
 				C9C6EB062004280A00211FDD /* Date.cpp in Sources */,
 				C9C6EB2E2004280A00211FDD /* zip.c in Sources */,
 				C9C6EAFF2004280A00211FDD /* lookup2.c in Sources */,
 				C9C6EB0C2004280A00211FDD /* iterator.c in Sources */,
 				C9C6EAF72004280A00211FDD /* NSData+GZIP.m in Sources */,
 				C9C6EB052004280A00211FDD /* Data.cpp in Sources */,
+				C96B0CC6200545D100F713AF /* RPVInstalledCollectionMainHeaderView.m in Sources */,
 				C9C6EB132004280A00211FDD /* ptrarray.c in Sources */,
 				C9C6EB222004280A00211FDD /* aestab.c in Sources */,
 				C9C6EB232004280A00211FDD /* fileenc.c in Sources */,
 				C9313C1B2005292F000AD4C3 /* RPVSettingsController.m in Sources */,
 				C9C6EB042004280A00211FDD /* bytearray.c in Sources */,
-				C9313C1A2005292F000AD4C3 /* RPVTroubleshootController.m in Sources */,
 				C9C6EB272004280A00211FDD /* sha1.c in Sources */,
 				C9C6EA6C2004261300211FDD /* AppDelegate.m in Sources */,
 				C9C6EB102004280A00211FDD /* node_list.c in Sources */,
@@ -1096,8 +1182,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MWMJ98X6F2;
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/iOS/Headers/**",
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/OpenSSL-Universal\"",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1105,6 +1197,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.matchstic.reprovision.ios;
 				PRODUCT_NAME = ReProvision;
+				SDKROOT = iphoneos;
+				SYSTEM_HEADER_SEARCH_PATHS = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1116,8 +1210,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MWMJ98X6F2;
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/iOS/Headers/**",
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/OpenSSL-Universal\"",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1125,6 +1225,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.matchstic.reprovision.ios;
 				PRODUCT_NAME = ReProvision;
+				SDKROOT = iphoneos;
+				SYSTEM_HEADER_SEARCH_PATHS = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

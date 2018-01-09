@@ -7,9 +7,9 @@
 //
 
 #import "RPVSettingsController.h"
-#import "EETroubleshootController.h"
+//#import "RPVTroubleshootController.h"
 #import "RPVAdvancedController.h"
-#import "EEResources.h"
+#import "RPVResources.h"
 
 @interface PSSpecifier (Private)
 - (void)setButtonAction:(SEL)arg1;
@@ -20,7 +20,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [[self navigationItem] setTitle:@"More"];
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
+    }
+    
+    [[self navigationItem] setTitle:@"Settings"];
 }
 
 -(id)specifiers {
@@ -30,7 +34,6 @@
         // Create specifiers!
         [testingSpecs addObjectsFromArray:[self _appleIDSpecifiers]];
         [testingSpecs addObjectsFromArray:[self _alertSpecifiers]];
-        [testingSpecs addObjectsFromArray:[self _troubleshootSpecifiers]];
         
         _specifiers = testingSpecs;
     }
@@ -49,7 +52,9 @@
     
     // Logged in
     
-    NSString *title = [NSString stringWithFormat:@"Apple ID: %@", [EEResources username]];
+    // TODO: Update for ReProvision
+    //NSString *title = [NSString stringWithFormat:@"Apple ID: %@", [EEResources username]];
+    NSString *title = @"";
     _loggedInSpec = [PSSpecifier preferenceSpecifierNamed:title target:self set:nil get:nil detail:nil cell:PSStaticTextCell edit:nil];
     [_loggedInSpec setProperty:@"appleid" forKey:@"key"];
     
@@ -70,7 +75,9 @@
     _loggedInAppleSpecifiers = loggedIn;
     _loggedOutAppleSpecifiers = loggedOut;
     
-    _hasCachedUser = [EEResources username] != nil;
+    // TODO: Update for ReProvision
+    //_hasCachedUser = [EEResources username] != nil;
+    _hasCachedUser = NO;
     return _hasCachedUser ? _loggedInAppleSpecifiers : _loggedOutAppleSpecifiers;
 }
 
@@ -120,7 +127,7 @@
                                                                target:self
                                                                   set:NULL
                                                                   get:NULL
-                                                               detail:[EEAdvancedController class]
+                                                               detail:[RPVAdvancedController class]
                                                                  cell:PSLinkCell
                                                                  edit:Nil];
     
@@ -129,30 +136,10 @@
     return array;
 }
 
-- (NSArray*)_troubleshootSpecifiers {
-    NSMutableArray *array = [NSMutableArray array];
-    
-    PSSpecifier *group = [PSSpecifier groupSpecifierWithName:@""];
-    [array addObject:group];
-    
-    PSSpecifier* troubleshoot = [PSSpecifier preferenceSpecifierNamed:@"Troubleshooting"
-                                                            target:self
-                                                               set:NULL
-                                                               get:NULL
-                                                            detail:[EETroubleshootController class]
-                                                              cell:PSLinkCell
-                                                              edit:Nil];
-    
-    [array addObject:troubleshoot];
-    
-    PSSpecifier *spacer = [PSSpecifier groupSpecifierWithName:@""];
-    [array addObject:spacer];
-    
-    return array;
-}
-
 - (void)updateSpecifiersForAppleID:(NSString*)username {
-    BOOL hasCachedUser = [EEResources username] != nil;
+    // TODO: Update for ReProvision
+    //BOOL hasCachedUser = [EEResources username] != nil;
+    BOOL hasCachedUser = NO;
     
     if (hasCachedUser == _hasCachedUser) {
         // Do nothing.
@@ -176,17 +163,19 @@
 }
 
 - (void)didClickSignOut:(id)sender {
-    [EEResources signOut];
+    // TODO: Update for ReProvision
+    //[EEResources signOut];
     
     [self updateSpecifiersForAppleID:@""];
 }
 
 - (void)didClickSignIn:(id)sender {
-    [EEResources signInWithCallback:^(BOOL result, NSString *username) {
+    // TODO: Update for ReProvision
+    /*[EEResources signInWithCallback:^(BOOL result, NSString *username) {
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self updateSpecifiersForAppleID:username];
         });
-    }];
+    }];*/
 }
 
 - (id)readPreferenceValue:(PSSpecifier*)value {

@@ -1,5 +1,5 @@
 //
-//  FirstViewController.h
+//  RPVSettingsNavigationViewController.h
 //  ReProvision
 //
 //  Created by Matt Clarke on 08/01/2018.
@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FirstViewController : UIViewController
+@interface RPVSettingsNavigationViewController : UINavigationController
+
 
 
 @end

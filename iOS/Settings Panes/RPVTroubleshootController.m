@@ -7,15 +7,15 @@
 //
 
 #import "RPVTroubleshootController.h"
-#import "EEResources.h"
+#import "RPVResources.h"
 
-@interface EETroubleshootController ()
+@interface RPVTroubleshootController ()
 
 @end
 
 #define REUSE @"troubleshoot.cell"
 
-@implementation EETroubleshootController
+@implementation RPVTroubleshootController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -159,7 +159,7 @@
         
         switch (indexPath.section) {
             case 0:
-                [EEResources attemptToRevokeCertificateWithCallback:^(BOOL success) {}];
+                [RPVResources attemptToRevokeCertificateWithCallback:^(BOOL success) {}];
                 break;
                 
             default:

@@ -7,7 +7,7 @@
 //
 
 #import "RPVAdvancedController.h"
-#import "EEResources.h"
+#import "RPVResources.h"
 
 @interface RPVAdvancedController ()
 
@@ -17,6 +17,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+    }
     
     [[self navigationItem] setTitle:@"Advanced"];
 }
@@ -106,7 +110,8 @@
     
     NSString *key = [specifier propertyForKey:@"key"];
     if ([key isEqualToString:@"heartbeatTimerInterval"]) {
-        [EEResources reloadHeartbeatTimer];
+        // [RPVResources reloadHeartbeatTimer];
+        // TODO: IMPLEMENT!
     }
 }
 
