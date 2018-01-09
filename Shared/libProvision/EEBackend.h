@@ -34,10 +34,8 @@
 /**
  Signs the IPA specified at the inputPath, then outputs it to the outputPath. *simple*.
  
- TODO: Actually implement this method.
- 
  @param inputPath The path the IPA to sign is currently available at.
- @param outputPath The path to write the signed IPA to. CHECKME: Can this be the same as the inputPath?
+ @param outputPath The path to write the signed IPA to. This can be the same as the inputPath
  @param username The username of the Apple ID used to sign with
  @param password The password of the Apple ID used to sign with.
  @param teamId If the user's Apple ID is associated with multiple developer accounts, this is the Team ID that should be used.
