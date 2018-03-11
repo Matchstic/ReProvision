@@ -44,6 +44,24 @@
 + (void)signIpaAtPath:(NSString*)inputPath outputPath:(NSString*)outputPath username:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId withCompletionHandler:(void (^)(NSError *))completionHandler;
 
 /**
+ Unpacks the contents of the specified IPA into a directory.
+ @param ipaPath Path to the IPA to unpack
+ @param outputDirectory A pointer that will be updated to the directory the IPA is unpacked to
+ @param error A pointer will be updated with any errors that occurred.
+ @return Success or failure
+ */
++ (BOOL)unpackIpaAtPath:(NSString*)ipaPath outDirectory:(NSString**)outputDirectory error:(NSError**)error;
+
+/**
+ Repacks the contents of the IPA directory structure into an IPA file.
+ @param extractedPath Path to the IPA directory structure to repack
+ @param outputPath Path where the IPA should be written
+ @param error A pointer will be updated with any errors that occurred.
+ @return Success or failure
+ */
++ (BOOL)repackIpaAtPath:(NSString*)extractedPath toPath:(NSString*)outputPath error:(NSError**)error;
+
+/**
  Asks sandboxing APIs for a temporary directory to use.
  @return The temporary directory the current application can utilise.
  */

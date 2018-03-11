@@ -221,7 +221,7 @@ dispatch_queue_t resignQueue;
          if (error) {
              // Failure to register for notifications.
          }
-     }];
+    }];
     
     // Setup Keychain accessibility for when locked.
     // (prevents not being able to correctly read the passcode when the device is locked)

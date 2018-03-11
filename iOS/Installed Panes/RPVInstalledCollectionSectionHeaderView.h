@@ -10,6 +10,7 @@
 @protocol RPVInstalledCollectionSectionHeaderDelegate <NSObject>
 
 - (void)didRecieveHeaderButtonInputWithSection:(NSInteger)section;
+- (BOOL)isButtonEnabledForSection:(NSInteger)section;
 
 @end
 

@@ -81,7 +81,7 @@ dispatch_queue_t resignQueue;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class NSFileManager; @class CyextTabBarController; @class NEVPNConnection; @class SBApplication; @class Extender; @class NETunnelProviderManager; @class NSURLSession; @class UNUserNotificationCenter; @class NEVPNManager; @class UIAlertController; 
+@class NSFileManager; @class UIAlertController; @class NEVPNConnection; @class NEVPNManager; @class Extender; @class NSURLSession; @class NETunnelProviderManager; @class UNUserNotificationCenter; @class CyextTabBarController; @class SBApplication; 
 
 
 #line 62 "/Users/matt/iOS/Projects/Extender-Installer/Legacy/Extender-Extensions/ExtenderExtensions.xm"
@@ -99,7 +99,7 @@ static NSArray* (*_logos_orig$Extender$Extender$defaultStartPages)(_LOGOS_SELF_T
 
 
 
-static NSArray* _logos_method$Extender$Extender$defaultStartPages(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd) {
+static NSArray* _logos_method$Extender$Extender$defaultStartPages(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     NSArray *original = _logos_orig$Extender$Extender$defaultStartPages(self, _cmd);
     
     NSMutableArray *additions = [original mutableCopy];
@@ -108,7 +108,7 @@ static NSArray* _logos_method$Extender$Extender$defaultStartPages(_LOGOS_SELF_TY
     return additions;
 }
 
-static UIViewController * _logos_method$Extender$Extender$pageForURL$forExternal$withReferrer$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, NSURL * url, BOOL external, NSString * referrer) {
+static UIViewController * _logos_method$Extender$Extender$pageForURL$forExternal$withReferrer$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, NSURL * url, BOOL external, NSString * referrer) {
     if (url) {
         NSString *scheme = [[url scheme] lowercaseString];
         
@@ -138,7 +138,7 @@ static UIViewController * _logos_method$Extender$Extender$pageForURL$forExternal
 
 
 
-static void _logos_method$Extender$CyextTabBarController$setViewControllers$(_LOGOS_SELF_TYPE_NORMAL CyextTabBarController* _LOGOS_SELF_CONST self, SEL _cmd, NSArray* arg1) {
+static void _logos_method$Extender$CyextTabBarController$setViewControllers$(_LOGOS_SELF_TYPE_NORMAL CyextTabBarController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, NSArray* arg1) {
     
     NSMutableArray *controllers([arg1 mutableCopy]);
     
@@ -157,7 +157,7 @@ static void _logos_method$Extender$CyextTabBarController$setViewControllers$(_LO
 
 
 
-static void _logos_method$Extender$Extender$sendLocalNotification$body$withID$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, NSString* title, NSString* body, NSString* identifier) {
+static void _logos_method$Extender$Extender$sendLocalNotification$body$withID$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, NSString* title, NSString* body, NSString* identifier) {
     
     
     
@@ -189,14 +189,14 @@ static void _logos_method$Extender$Extender$sendLocalNotification$body$withID$(_
 }
 
 
-static void _logos_method$Extender$Extender$sendLocalNotification$andBody$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, NSString* title, NSString* body) {
+static void _logos_method$Extender$Extender$sendLocalNotification$andBody$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, NSString* title, NSString* body) {
     [self sendLocalNotification:title body:body withID:[NSString stringWithFormat:@"notif_%f", [[NSDate date] timeIntervalSince1970]]];
 }
 
 #pragma mark Request user Apple ID from opening relevant notification.
 
 
-static void _logos_method$Extender$Extender$userNotificationCenter$didReceiveNotificationResponse$withCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, UNUserNotificationCenter * center, UNNotificationResponse * response, void (^completionHandler)(void)) {
+static void _logos_method$Extender$Extender$userNotificationCenter$didReceiveNotificationResponse$withCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, UNUserNotificationCenter * center, UNNotificationResponse * response, void (^completionHandler)(void)) {
     
     NSString *identifier = response.notification.request.identifier;
     
@@ -209,19 +209,19 @@ static void _logos_method$Extender$Extender$userNotificationCenter$didReceiveNot
 }
 
 
-static void _logos_method$Extender$Extender$userNotificationCenter$willPresentNotification$withCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, UNUserNotificationCenter * center, UNNotification * notification, void (^completionHandler)(UNNotificationPresentationOptions options)) {
+static void _logos_method$Extender$Extender$userNotificationCenter$willPresentNotification$withCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, UNUserNotificationCenter * center, UNNotification * notification, void (^completionHandler)(UNNotificationPresentationOptions options)) {
     
     completionHandler(UNNotificationPresentationOptionAlert);
 }
 
 
-static void _logos_method$Extender$Extender$_requestAppleDeveloperLogin(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd) {
+static void _logos_method$Extender$Extender$_requestAppleDeveloperLogin(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     [EEResources signInWithCallback:^(BOOL result, NSString *username) {}];
 }
 
 #pragma mark Callbacks for background execution
 
-static void _logos_method$Extender$Extender$application$didFinishLaunchingWithOptions$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, UIApplication * application, id options) {
+static void _logos_method$Extender$Extender$application$didFinishLaunchingWithOptions$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, UIApplication * application, id options) {
     _logos_orig$Extender$Extender$application$didFinishLaunchingWithOptions$(self, _cmd, application, options);
     
     resignQueue = dispatch_queue_create("com.cydia.Extender.queue", NULL);
@@ -247,7 +247,7 @@ static void _logos_method$Extender$Extender$application$didFinishLaunchingWithOp
          if (error) {
              
          }
-     }];
+    }];
     
     
     
@@ -255,7 +255,7 @@ static void _logos_method$Extender$Extender$application$didFinishLaunchingWithOp
 }
 
 
-static void _logos_method$Extender$Extender$applicationDidEnterBackground$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, UIApplication * application) {
+static void _logos_method$Extender$Extender$applicationDidEnterBackground$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, UIApplication * application) {
     
     
     
@@ -264,7 +264,7 @@ static void _logos_method$Extender$Extender$applicationDidEnterBackground$(_LOGO
 }
 
 
-static void _logos_method$Extender$Extender$application$performFetchWithCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, UIApplication * application, void (^completionHandler)(UIBackgroundFetchResult)) {
+static void _logos_method$Extender$Extender$application$performFetchWithCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, UIApplication * application, void (^completionHandler)(UIBackgroundFetchResult)) {
     
     [self beginResignRoutine:2];
     
@@ -272,7 +272,7 @@ static void _logos_method$Extender$Extender$application$performFetchWithCompleti
 }
 
 
-static void _logos_method$Extender$Extender$_reloadHeartbeatTimer(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd) {
+static void _logos_method$Extender$Extender$_reloadHeartbeatTimer(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     NSTimeInterval interval = [EEResources heartbeatTimerInterval];
     
     if (heartbeatTimer) {
@@ -287,12 +287,12 @@ static void _logos_method$Extender$Extender$_reloadHeartbeatTimer(_LOGOS_SELF_TY
 }
 
 
-static void _logos_method$Extender$Extender$_resignTimerCallback$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, id sender) {
+static void _logos_method$Extender$Extender$_resignTimerCallback$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, id sender) {
     [self beginResignRoutine:3];
 }
 
 
-static void _logos_method$Extender$Extender$beginResignRoutine$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, int location) {
+static void _logos_method$Extender$Extender$beginResignRoutine$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, int location) {
     
     if (![EEResources shouldAutomaticallyResign]) {
         return;
@@ -326,7 +326,7 @@ static void _logos_method$Extender$Extender$beginResignRoutine$(_LOGOS_SELF_TYPE
 
 
 
-static void _logos_method$Extender$UIAlertController$_logBeingPresented(_LOGOS_SELF_TYPE_NORMAL UIAlertController* _LOGOS_SELF_CONST self, SEL _cmd) {
+static void _logos_method$Extender$UIAlertController$_logBeingPresented(_LOGOS_SELF_TYPE_NORMAL UIAlertController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     
     BOOL hasCachedUser = [EEResources username] != nil;
     
@@ -383,7 +383,7 @@ static void _logos_method$Extender$UIAlertController$_logBeingPresented(_LOGOS_S
 
 
 
-static _Bool _logos_method$Extender$Extender$application$openURL$sourceApplication$annotation$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, UIApplication* arg1, NSURL* url, UIApplication* arg3, id arg4) {
+static _Bool _logos_method$Extender$Extender$application$openURL$sourceApplication$annotation$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, UIApplication* arg1, NSURL* url, UIApplication* arg3, id arg4) {
     if (arg3 != self) {
         
         
@@ -403,7 +403,7 @@ static _Bool _logos_method$Extender$Extender$application$openURL$sourceApplicati
 
 
 
-static NSURL * _logos_method$Extender$NSFileManager$containerURLForSecurityApplicationGroupIdentifier$(_LOGOS_SELF_TYPE_NORMAL NSFileManager* _LOGOS_SELF_CONST self, SEL _cmd, NSString * groupIdentifier) {
+static NSURL * _logos_method$Extender$NSFileManager$containerURLForSecurityApplicationGroupIdentifier$(_LOGOS_SELF_TYPE_NORMAL NSFileManager* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, NSString * groupIdentifier) {
     return [NSURL fileURLWithPath:EXTENDER_DOCUMENTS];
 }
 
@@ -411,7 +411,7 @@ static NSURL * _logos_method$Extender$NSFileManager$containerURLForSecurityAppli
 
 
 
-static BOOL _logos_method$Extender$Extender$openURL$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST self, SEL _cmd, NSURL* url) {
+static BOOL _logos_method$Extender$Extender$openURL$(_LOGOS_SELF_TYPE_NORMAL Extender* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, NSURL* url) {
     if ([[url absoluteString] rangeOfString:@"itms-services"].location != NSNotFound) {
         
         
@@ -435,11 +435,11 @@ static BOOL _logos_method$Extender$Extender$openURL$(_LOGOS_SELF_TYPE_NORMAL Ext
 
 
 
-static BOOL _logos_method$Extender$NEVPNConnection$startVPNTunnelAndReturnError$(_LOGOS_SELF_TYPE_NORMAL NEVPNConnection* _LOGOS_SELF_CONST self, SEL _cmd, NSError ** error) {
+static BOOL _logos_method$Extender$NEVPNConnection$startVPNTunnelAndReturnError$(_LOGOS_SELF_TYPE_NORMAL NEVPNConnection* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, NSError ** error) {
     return YES; 
 }
 
-static int _logos_method$Extender$NEVPNConnection$status(_LOGOS_SELF_TYPE_NORMAL NEVPNConnection* _LOGOS_SELF_CONST self, SEL _cmd) {
+static int _logos_method$Extender$NEVPNConnection$status(_LOGOS_SELF_TYPE_NORMAL NEVPNConnection* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     
     return 3;
 }
@@ -448,7 +448,7 @@ static int _logos_method$Extender$NEVPNConnection$status(_LOGOS_SELF_TYPE_NORMAL
 
 
 
-static void _logos_method$Extender$NEVPNManager$saveToPreferencesWithCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL NEVPNManager* _LOGOS_SELF_CONST self, SEL _cmd, void (^completionHandler)(NSError *error)) {
+static void _logos_method$Extender$NEVPNManager$saveToPreferencesWithCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL NEVPNManager* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, void (^completionHandler)(NSError *error)) {
     completionHandler(nil);
     return; 
 }
@@ -457,7 +457,7 @@ static void _logos_method$Extender$NEVPNManager$saveToPreferencesWithCompletionH
 
 
 
-static void _logos_meta_method$Extender$NETunnelProviderManager$loadAllFromPreferencesWithCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Class _LOGOS_SELF_CONST self, SEL _cmd, void (^completionHandler)(NSArray *managers, NSError *error)) {
+static void _logos_meta_method$Extender$NETunnelProviderManager$loadAllFromPreferencesWithCompletionHandler$(_LOGOS_SELF_TYPE_NORMAL Class _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, void (^completionHandler)(NSArray *managers, NSError *error)) {
     completionHandler([NSArray array], nil); 
 }
 
@@ -467,7 +467,7 @@ static void _logos_meta_method$Extender$NETunnelProviderManager$loadAllFromPrefe
 
 
 
-static NSURLSessionDataTask * _logos_method$Extender$NSURLSession$dataTaskWithURL$completionHandler$(_LOGOS_SELF_TYPE_NORMAL NSURLSession* _LOGOS_SELF_CONST self, SEL _cmd, NSURL * url, void (^completionHandler)(NSData *data, NSURLResponse *response, NSError *error)) {
+static NSURLSessionDataTask * _logos_method$Extender$NSURLSession$dataTaskWithURL$completionHandler$(_LOGOS_SELF_TYPE_NORMAL NSURLSession* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, NSURL * url, void (^completionHandler)(NSData *data, NSURLResponse *response, NSError *error)) {
     
     if ([[url path] rangeOfString:@"debug.txt"].location != NSNotFound) {
         completionHandler([NSData dataWithBytes:"hello" length:6], nil, nil);
@@ -483,7 +483,7 @@ static NSURLSessionDataTask * _logos_method$Extender$NSURLSession$dataTaskWithUR
 
 
 
-static UNUserNotificationCenter* _logos_method$Extender$UNUserNotificationCenter$initWithBundleIdentifier$(_LOGOS_SELF_TYPE_INIT UNUserNotificationCenter* self, SEL _cmd, NSString* bundleID) _LOGOS_RETURN_RETAINED {
+static UNUserNotificationCenter* _logos_method$Extender$UNUserNotificationCenter$initWithBundleIdentifier$(_LOGOS_SELF_TYPE_INIT UNUserNotificationCenter* __unused self, SEL __unused _cmd, NSString* bundleID) _LOGOS_RETURN_RETAINED {
     id result;
     
     if (!bundleID) {
@@ -515,7 +515,7 @@ static UNUserNotificationCenter* _logos_method$Extender$UNUserNotificationCenter
 
 
 
-_disused static size_t (*_logos_orig$Extender$strlen)(const char *str); static size_t _logos_function$Extender$strlen(const char *str) {
+__unused static size_t (*_logos_orig$Extender$strlen)(const char *str); __unused static size_t _logos_function$Extender$strlen(const char *str) {
     size_t len = _logos_orig$Extender$strlen(str);
     
     if (strncmp(str, "AAAAAAAAAA", 10) == 0 && len == 10) {
@@ -538,7 +538,7 @@ static _Bool (*_logos_orig$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrIns
 
 
 
-static _Bool _logos_method$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrInstall(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST self, SEL _cmd) {
+static _Bool _logos_method$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrInstall(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     if ([[self bundleIdentifier] isEqualToString:@"com.cydia.Extender"]) {
         return YES;
     }
@@ -546,7 +546,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrIns
     return _logos_orig$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrInstall(self, _cmd);
 }
 
-static _Bool _logos_method$SpringBoard$SBApplication$_shouldAutoLaunchOnBootOrInstall$(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST self, SEL _cmd, _Bool arg1) {
+static _Bool _logos_method$SpringBoard$SBApplication$_shouldAutoLaunchOnBootOrInstall$(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, _Bool arg1) {
     if ([[self bundleIdentifier] isEqualToString:@"com.cydia.Extender"]) {
         return YES;
     }
@@ -554,7 +554,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$_shouldAutoLaunchOnBootOrIn
     return _logos_orig$SpringBoard$SBApplication$_shouldAutoLaunchOnBootOrInstall$(self, _cmd, arg1);
 }
 
-static _Bool _logos_method$SpringBoard$SBApplication$_shouldAutoLaunchForVoIP(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST self, SEL _cmd) {
+static _Bool _logos_method$SpringBoard$SBApplication$_shouldAutoLaunchForVoIP(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     if ([[self bundleIdentifier] isEqualToString:@"com.cydia.Extender"]) {
         return YES;
     }
@@ -562,7 +562,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$_shouldAutoLaunchForVoIP(_L
     return _logos_orig$SpringBoard$SBApplication$_shouldAutoLaunchForVoIP(self, _cmd);
 }
 
-static _Bool _logos_method$SpringBoard$SBApplication$shouldAutoRelaunchAfterExit(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST self, SEL _cmd) {
+static _Bool _logos_method$SpringBoard$SBApplication$shouldAutoRelaunchAfterExit(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     if ([[self bundleIdentifier] isEqualToString:@"com.cydia.Extender"]) {
         return YES;
     }
@@ -570,7 +570,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$shouldAutoRelaunchAfterExit
     return _logos_orig$SpringBoard$SBApplication$shouldAutoRelaunchAfterExit(self, _cmd);
 }
 
-static _Bool _logos_method$SpringBoard$SBApplication$supportsFetchBackgroundMode(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST self, SEL _cmd) {
+static _Bool _logos_method$SpringBoard$SBApplication$supportsFetchBackgroundMode(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     if ([[self bundleIdentifier] isEqualToString:@"com.cydia.Extender"]) {
         return YES;
     }
@@ -578,7 +578,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsFetchBackgroundMode
     return _logos_orig$SpringBoard$SBApplication$supportsFetchBackgroundMode(self, _cmd);
 }
 
-static _Bool _logos_method$SpringBoard$SBApplication$supportsBackgroundAppRefresh(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST self, SEL _cmd) {
+static _Bool _logos_method$SpringBoard$SBApplication$supportsBackgroundAppRefresh(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     if ([[self bundleIdentifier] isEqualToString:@"com.cydia.Extender"]) {
         return YES;
     }
@@ -586,7 +586,7 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsBackgroundAppRefres
     return _logos_orig$SpringBoard$SBApplication$supportsBackgroundAppRefresh(self, _cmd);
 }
 
-static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationBackgroundMode(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST self, SEL _cmd) {
+static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationBackgroundMode(_LOGOS_SELF_TYPE_NORMAL SBApplication* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
     if ([[self bundleIdentifier] isEqualToString:@"com.cydia.Extender"]) {
         return YES;
     }
@@ -599,15 +599,15 @@ static _Bool _logos_method$SpringBoard$SBApplication$supportsRemoteNotificationB
 
 
 
-static __attribute__((constructor)) void _logosLocalCtor_e2bac904(int argc, char **argv, char **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_e2bac904(int __unused argc, char __unused **argv, char __unused **envp) {
     {}
 
     
     BOOL sb = [[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"];
     
     if (sb) {
-        {Class _logos_class$SpringBoard$SBApplication = objc_getClass("SBApplication"); if (_logos_class$SpringBoard$SBApplication) {MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(shouldAutoLaunchOnBootOrInstall), (IMP)&_logos_method$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrInstall, (IMP*)&_logos_orig$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrInstall);} else {HBLogError(@"logos: nil class %s", "SBApplication");}if (_logos_class$SpringBoard$SBApplication) {MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(_shouldAutoLaunchOnBootOrInstall:), (IMP)&_logos_method$SpringBoard$SBApplication$_shouldAutoLaunchOnBootOrInstall$, (IMP*)&_logos_orig$SpringBoard$SBApplication$_shouldAutoLaunchOnBootOrInstall$);} else {HBLogError(@"logos: nil class %s", "SBApplication");}if (_logos_class$SpringBoard$SBApplication) {MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(_shouldAutoLaunchForVoIP), (IMP)&_logos_method$SpringBoard$SBApplication$_shouldAutoLaunchForVoIP, (IMP*)&_logos_orig$SpringBoard$SBApplication$_shouldAutoLaunchForVoIP);} else {HBLogError(@"logos: nil class %s", "SBApplication");}if (_logos_class$SpringBoard$SBApplication) {MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(shouldAutoRelaunchAfterExit), (IMP)&_logos_method$SpringBoard$SBApplication$shouldAutoRelaunchAfterExit, (IMP*)&_logos_orig$SpringBoard$SBApplication$shouldAutoRelaunchAfterExit);} else {HBLogError(@"logos: nil class %s", "SBApplication");}if (_logos_class$SpringBoard$SBApplication) {MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(supportsFetchBackgroundMode), (IMP)&_logos_method$SpringBoard$SBApplication$supportsFetchBackgroundMode, (IMP*)&_logos_orig$SpringBoard$SBApplication$supportsFetchBackgroundMode);} else {HBLogError(@"logos: nil class %s", "SBApplication");}if (_logos_class$SpringBoard$SBApplication) {MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(supportsBackgroundAppRefresh), (IMP)&_logos_method$SpringBoard$SBApplication$supportsBackgroundAppRefresh, (IMP*)&_logos_orig$SpringBoard$SBApplication$supportsBackgroundAppRefresh);} else {HBLogError(@"logos: nil class %s", "SBApplication");}if (_logos_class$SpringBoard$SBApplication) {MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(supportsRemoteNotificationBackgroundMode), (IMP)&_logos_method$SpringBoard$SBApplication$supportsRemoteNotificationBackgroundMode, (IMP*)&_logos_orig$SpringBoard$SBApplication$supportsRemoteNotificationBackgroundMode);} else {HBLogError(@"logos: nil class %s", "SBApplication");}}
+        {Class _logos_class$SpringBoard$SBApplication = objc_getClass("SBApplication"); MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(shouldAutoLaunchOnBootOrInstall), (IMP)&_logos_method$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrInstall, (IMP*)&_logos_orig$SpringBoard$SBApplication$shouldAutoLaunchOnBootOrInstall);MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(_shouldAutoLaunchOnBootOrInstall:), (IMP)&_logos_method$SpringBoard$SBApplication$_shouldAutoLaunchOnBootOrInstall$, (IMP*)&_logos_orig$SpringBoard$SBApplication$_shouldAutoLaunchOnBootOrInstall$);MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(_shouldAutoLaunchForVoIP), (IMP)&_logos_method$SpringBoard$SBApplication$_shouldAutoLaunchForVoIP, (IMP*)&_logos_orig$SpringBoard$SBApplication$_shouldAutoLaunchForVoIP);MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(shouldAutoRelaunchAfterExit), (IMP)&_logos_method$SpringBoard$SBApplication$shouldAutoRelaunchAfterExit, (IMP*)&_logos_orig$SpringBoard$SBApplication$shouldAutoRelaunchAfterExit);MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(supportsFetchBackgroundMode), (IMP)&_logos_method$SpringBoard$SBApplication$supportsFetchBackgroundMode, (IMP*)&_logos_orig$SpringBoard$SBApplication$supportsFetchBackgroundMode);MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(supportsBackgroundAppRefresh), (IMP)&_logos_method$SpringBoard$SBApplication$supportsBackgroundAppRefresh, (IMP*)&_logos_orig$SpringBoard$SBApplication$supportsBackgroundAppRefresh);MSHookMessageEx(_logos_class$SpringBoard$SBApplication, @selector(supportsRemoteNotificationBackgroundMode), (IMP)&_logos_method$SpringBoard$SBApplication$supportsRemoteNotificationBackgroundMode, (IMP*)&_logos_orig$SpringBoard$SBApplication$supportsRemoteNotificationBackgroundMode);}
     } else {
-        {Class _logos_class$Extender$Extender = objc_getClass("Extender"); if (_logos_class$Extender$Extender) {MSHookMessageEx(_logos_class$Extender$Extender, @selector(defaultStartPages), (IMP)&_logos_method$Extender$Extender$defaultStartPages, (IMP*)&_logos_orig$Extender$Extender$defaultStartPages);} else {HBLogError(@"logos: nil class %s", "Extender");}if (_logos_class$Extender$Extender) {MSHookMessageEx(_logos_class$Extender$Extender, @selector(pageForURL:forExternal:withReferrer:), (IMP)&_logos_method$Extender$Extender$pageForURL$forExternal$withReferrer$, (IMP*)&_logos_orig$Extender$Extender$pageForURL$forExternal$withReferrer$);} else {HBLogError(@"logos: nil class %s", "Extender");}{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(NSString*), strlen(@encode(NSString*))); i += strlen(@encode(NSString*)); memcpy(_typeEncoding + i, @encode(NSString*), strlen(@encode(NSString*))); i += strlen(@encode(NSString*)); memcpy(_typeEncoding + i, @encode(NSString*), strlen(@encode(NSString*))); i += strlen(@encode(NSString*)); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(sendLocalNotification:body:withID:), (IMP)&_logos_method$Extender$Extender$sendLocalNotification$body$withID$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(NSString*), strlen(@encode(NSString*))); i += strlen(@encode(NSString*)); memcpy(_typeEncoding + i, @encode(NSString*), strlen(@encode(NSString*))); i += strlen(@encode(NSString*)); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(sendLocalNotification:andBody:), (IMP)&_logos_method$Extender$Extender$sendLocalNotification$andBody$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(UNUserNotificationCenter *), strlen(@encode(UNUserNotificationCenter *))); i += strlen(@encode(UNUserNotificationCenter *)); memcpy(_typeEncoding + i, @encode(UNNotificationResponse *), strlen(@encode(UNNotificationResponse *))); i += strlen(@encode(UNNotificationResponse *)); memcpy(_typeEncoding + i, @encode(void (^)(void)), strlen(@encode(void (^)(void)))); i += strlen(@encode(void (^)(void))); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:), (IMP)&_logos_method$Extender$Extender$userNotificationCenter$didReceiveNotificationResponse$withCompletionHandler$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(UNUserNotificationCenter *), strlen(@encode(UNUserNotificationCenter *))); i += strlen(@encode(UNUserNotificationCenter *)); memcpy(_typeEncoding + i, @encode(UNNotification *), strlen(@encode(UNNotification *))); i += strlen(@encode(UNNotification *)); memcpy(_typeEncoding + i, @encode(void (^)(UNNotificationPresentationOptions options)), strlen(@encode(void (^)(UNNotificationPresentationOptions options)))); i += strlen(@encode(void (^)(UNNotificationPresentationOptions options))); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(userNotificationCenter:willPresentNotification:withCompletionHandler:), (IMP)&_logos_method$Extender$Extender$userNotificationCenter$willPresentNotification$withCompletionHandler$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(_requestAppleDeveloperLogin), (IMP)&_logos_method$Extender$Extender$_requestAppleDeveloperLogin, _typeEncoding); }if (_logos_class$Extender$Extender) {MSHookMessageEx(_logos_class$Extender$Extender, @selector(application:didFinishLaunchingWithOptions:), (IMP)&_logos_method$Extender$Extender$application$didFinishLaunchingWithOptions$, (IMP*)&_logos_orig$Extender$Extender$application$didFinishLaunchingWithOptions$);} else {HBLogError(@"logos: nil class %s", "Extender");}{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(UIApplication *), strlen(@encode(UIApplication *))); i += strlen(@encode(UIApplication *)); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(applicationDidEnterBackground:), (IMP)&_logos_method$Extender$Extender$applicationDidEnterBackground$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(UIApplication *), strlen(@encode(UIApplication *))); i += strlen(@encode(UIApplication *)); memcpy(_typeEncoding + i, @encode(void (^)(UIBackgroundFetchResult)), strlen(@encode(void (^)(UIBackgroundFetchResult)))); i += strlen(@encode(void (^)(UIBackgroundFetchResult))); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(application:performFetchWithCompletionHandler:), (IMP)&_logos_method$Extender$Extender$application$performFetchWithCompletionHandler$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(_reloadHeartbeatTimer), (IMP)&_logos_method$Extender$Extender$_reloadHeartbeatTimer, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(_resignTimerCallback:), (IMP)&_logos_method$Extender$Extender$_resignTimerCallback$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = 'i'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(beginResignRoutine:), (IMP)&_logos_method$Extender$Extender$beginResignRoutine$, _typeEncoding); }if (_logos_class$Extender$Extender) {MSHookMessageEx(_logos_class$Extender$Extender, @selector(application:openURL:sourceApplication:annotation:), (IMP)&_logos_method$Extender$Extender$application$openURL$sourceApplication$annotation$, (IMP*)&_logos_orig$Extender$Extender$application$openURL$sourceApplication$annotation$);} else {HBLogError(@"logos: nil class %s", "Extender");}if (_logos_class$Extender$Extender) {MSHookMessageEx(_logos_class$Extender$Extender, @selector(openURL:), (IMP)&_logos_method$Extender$Extender$openURL$, (IMP*)&_logos_orig$Extender$Extender$openURL$);} else {HBLogError(@"logos: nil class %s", "Extender");}Class _logos_class$Extender$CyextTabBarController = objc_getClass("CyextTabBarController"); if (_logos_class$Extender$CyextTabBarController) {MSHookMessageEx(_logos_class$Extender$CyextTabBarController, @selector(setViewControllers:), (IMP)&_logos_method$Extender$CyextTabBarController$setViewControllers$, (IMP*)&_logos_orig$Extender$CyextTabBarController$setViewControllers$);} else {HBLogError(@"logos: nil class %s", "CyextTabBarController");}Class _logos_class$Extender$UIAlertController = objc_getClass("UIAlertController"); if (_logos_class$Extender$UIAlertController) {MSHookMessageEx(_logos_class$Extender$UIAlertController, @selector(_logBeingPresented), (IMP)&_logos_method$Extender$UIAlertController$_logBeingPresented, (IMP*)&_logos_orig$Extender$UIAlertController$_logBeingPresented);} else {HBLogError(@"logos: nil class %s", "UIAlertController");}Class _logos_class$Extender$NSFileManager = objc_getClass("NSFileManager"); if (_logos_class$Extender$NSFileManager) {MSHookMessageEx(_logos_class$Extender$NSFileManager, @selector(containerURLForSecurityApplicationGroupIdentifier:), (IMP)&_logos_method$Extender$NSFileManager$containerURLForSecurityApplicationGroupIdentifier$, (IMP*)&_logos_orig$Extender$NSFileManager$containerURLForSecurityApplicationGroupIdentifier$);} else {HBLogError(@"logos: nil class %s", "NSFileManager");}Class _logos_class$Extender$NEVPNConnection = objc_getClass("NEVPNConnection"); if (_logos_class$Extender$NEVPNConnection) {MSHookMessageEx(_logos_class$Extender$NEVPNConnection, @selector(startVPNTunnelAndReturnError:), (IMP)&_logos_method$Extender$NEVPNConnection$startVPNTunnelAndReturnError$, (IMP*)&_logos_orig$Extender$NEVPNConnection$startVPNTunnelAndReturnError$);} else {HBLogError(@"logos: nil class %s", "NEVPNConnection");}if (_logos_class$Extender$NEVPNConnection) {MSHookMessageEx(_logos_class$Extender$NEVPNConnection, @selector(status), (IMP)&_logos_method$Extender$NEVPNConnection$status, (IMP*)&_logos_orig$Extender$NEVPNConnection$status);} else {HBLogError(@"logos: nil class %s", "NEVPNConnection");}Class _logos_class$Extender$NEVPNManager = objc_getClass("NEVPNManager"); if (_logos_class$Extender$NEVPNManager) {MSHookMessageEx(_logos_class$Extender$NEVPNManager, @selector(saveToPreferencesWithCompletionHandler:), (IMP)&_logos_method$Extender$NEVPNManager$saveToPreferencesWithCompletionHandler$, (IMP*)&_logos_orig$Extender$NEVPNManager$saveToPreferencesWithCompletionHandler$);} else {HBLogError(@"logos: nil class %s", "NEVPNManager");}Class _logos_class$Extender$NETunnelProviderManager = objc_getClass("NETunnelProviderManager"); Class _logos_metaclass$Extender$NETunnelProviderManager = object_getClass(_logos_class$Extender$NETunnelProviderManager); if (_logos_metaclass$Extender$NETunnelProviderManager) {MSHookMessageEx(_logos_metaclass$Extender$NETunnelProviderManager, @selector(loadAllFromPreferencesWithCompletionHandler:), (IMP)&_logos_meta_method$Extender$NETunnelProviderManager$loadAllFromPreferencesWithCompletionHandler$, (IMP*)&_logos_meta_orig$Extender$NETunnelProviderManager$loadAllFromPreferencesWithCompletionHandler$);} else {HBLogError(@"logos: nil class %s", "NETunnelProviderManager");}Class _logos_class$Extender$NSURLSession = objc_getClass("NSURLSession"); if (_logos_class$Extender$NSURLSession) {MSHookMessageEx(_logos_class$Extender$NSURLSession, @selector(dataTaskWithURL:completionHandler:), (IMP)&_logos_method$Extender$NSURLSession$dataTaskWithURL$completionHandler$, (IMP*)&_logos_orig$Extender$NSURLSession$dataTaskWithURL$completionHandler$);} else {HBLogError(@"logos: nil class %s", "NSURLSession");}Class _logos_class$Extender$UNUserNotificationCenter = objc_getClass("UNUserNotificationCenter"); if (_logos_class$Extender$UNUserNotificationCenter) {MSHookMessageEx(_logos_class$Extender$UNUserNotificationCenter, @selector(initWithBundleIdentifier:), (IMP)&_logos_method$Extender$UNUserNotificationCenter$initWithBundleIdentifier$, (IMP*)&_logos_orig$Extender$UNUserNotificationCenter$initWithBundleIdentifier$);} else {HBLogError(@"logos: nil class %s", "UNUserNotificationCenter");} MSHookFunction((void *)strlen, (void *)&_logos_function$Extender$strlen, (void **)&_logos_orig$Extender$strlen);}
+        {Class _logos_class$Extender$Extender = objc_getClass("Extender"); MSHookMessageEx(_logos_class$Extender$Extender, @selector(defaultStartPages), (IMP)&_logos_method$Extender$Extender$defaultStartPages, (IMP*)&_logos_orig$Extender$Extender$defaultStartPages);MSHookMessageEx(_logos_class$Extender$Extender, @selector(pageForURL:forExternal:withReferrer:), (IMP)&_logos_method$Extender$Extender$pageForURL$forExternal$withReferrer$, (IMP*)&_logos_orig$Extender$Extender$pageForURL$forExternal$withReferrer$);{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(NSString*), strlen(@encode(NSString*))); i += strlen(@encode(NSString*)); memcpy(_typeEncoding + i, @encode(NSString*), strlen(@encode(NSString*))); i += strlen(@encode(NSString*)); memcpy(_typeEncoding + i, @encode(NSString*), strlen(@encode(NSString*))); i += strlen(@encode(NSString*)); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(sendLocalNotification:body:withID:), (IMP)&_logos_method$Extender$Extender$sendLocalNotification$body$withID$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(NSString*), strlen(@encode(NSString*))); i += strlen(@encode(NSString*)); memcpy(_typeEncoding + i, @encode(NSString*), strlen(@encode(NSString*))); i += strlen(@encode(NSString*)); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(sendLocalNotification:andBody:), (IMP)&_logos_method$Extender$Extender$sendLocalNotification$andBody$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(UNUserNotificationCenter *), strlen(@encode(UNUserNotificationCenter *))); i += strlen(@encode(UNUserNotificationCenter *)); memcpy(_typeEncoding + i, @encode(UNNotificationResponse *), strlen(@encode(UNNotificationResponse *))); i += strlen(@encode(UNNotificationResponse *)); memcpy(_typeEncoding + i, @encode(void (^)(void)), strlen(@encode(void (^)(void)))); i += strlen(@encode(void (^)(void))); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:), (IMP)&_logos_method$Extender$Extender$userNotificationCenter$didReceiveNotificationResponse$withCompletionHandler$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(UNUserNotificationCenter *), strlen(@encode(UNUserNotificationCenter *))); i += strlen(@encode(UNUserNotificationCenter *)); memcpy(_typeEncoding + i, @encode(UNNotification *), strlen(@encode(UNNotification *))); i += strlen(@encode(UNNotification *)); memcpy(_typeEncoding + i, @encode(void (^)(UNNotificationPresentationOptions options)), strlen(@encode(void (^)(UNNotificationPresentationOptions options)))); i += strlen(@encode(void (^)(UNNotificationPresentationOptions options))); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(userNotificationCenter:willPresentNotification:withCompletionHandler:), (IMP)&_logos_method$Extender$Extender$userNotificationCenter$willPresentNotification$withCompletionHandler$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(_requestAppleDeveloperLogin), (IMP)&_logos_method$Extender$Extender$_requestAppleDeveloperLogin, _typeEncoding); }MSHookMessageEx(_logos_class$Extender$Extender, @selector(application:didFinishLaunchingWithOptions:), (IMP)&_logos_method$Extender$Extender$application$didFinishLaunchingWithOptions$, (IMP*)&_logos_orig$Extender$Extender$application$didFinishLaunchingWithOptions$);{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(UIApplication *), strlen(@encode(UIApplication *))); i += strlen(@encode(UIApplication *)); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(applicationDidEnterBackground:), (IMP)&_logos_method$Extender$Extender$applicationDidEnterBackground$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(UIApplication *), strlen(@encode(UIApplication *))); i += strlen(@encode(UIApplication *)); memcpy(_typeEncoding + i, @encode(void (^)(UIBackgroundFetchResult)), strlen(@encode(void (^)(UIBackgroundFetchResult)))); i += strlen(@encode(void (^)(UIBackgroundFetchResult))); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(application:performFetchWithCompletionHandler:), (IMP)&_logos_method$Extender$Extender$application$performFetchWithCompletionHandler$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(_reloadHeartbeatTimer), (IMP)&_logos_method$Extender$Extender$_reloadHeartbeatTimer, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(_resignTimerCallback:), (IMP)&_logos_method$Extender$Extender$_resignTimerCallback$, _typeEncoding); }{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = 'i'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$Extender$Extender, @selector(beginResignRoutine:), (IMP)&_logos_method$Extender$Extender$beginResignRoutine$, _typeEncoding); }MSHookMessageEx(_logos_class$Extender$Extender, @selector(application:openURL:sourceApplication:annotation:), (IMP)&_logos_method$Extender$Extender$application$openURL$sourceApplication$annotation$, (IMP*)&_logos_orig$Extender$Extender$application$openURL$sourceApplication$annotation$);MSHookMessageEx(_logos_class$Extender$Extender, @selector(openURL:), (IMP)&_logos_method$Extender$Extender$openURL$, (IMP*)&_logos_orig$Extender$Extender$openURL$);Class _logos_class$Extender$CyextTabBarController = objc_getClass("CyextTabBarController"); MSHookMessageEx(_logos_class$Extender$CyextTabBarController, @selector(setViewControllers:), (IMP)&_logos_method$Extender$CyextTabBarController$setViewControllers$, (IMP*)&_logos_orig$Extender$CyextTabBarController$setViewControllers$);Class _logos_class$Extender$UIAlertController = objc_getClass("UIAlertController"); MSHookMessageEx(_logos_class$Extender$UIAlertController, @selector(_logBeingPresented), (IMP)&_logos_method$Extender$UIAlertController$_logBeingPresented, (IMP*)&_logos_orig$Extender$UIAlertController$_logBeingPresented);Class _logos_class$Extender$NSFileManager = objc_getClass("NSFileManager"); MSHookMessageEx(_logos_class$Extender$NSFileManager, @selector(containerURLForSecurityApplicationGroupIdentifier:), (IMP)&_logos_method$Extender$NSFileManager$containerURLForSecurityApplicationGroupIdentifier$, (IMP*)&_logos_orig$Extender$NSFileManager$containerURLForSecurityApplicationGroupIdentifier$);Class _logos_class$Extender$NEVPNConnection = objc_getClass("NEVPNConnection"); MSHookMessageEx(_logos_class$Extender$NEVPNConnection, @selector(startVPNTunnelAndReturnError:), (IMP)&_logos_method$Extender$NEVPNConnection$startVPNTunnelAndReturnError$, (IMP*)&_logos_orig$Extender$NEVPNConnection$startVPNTunnelAndReturnError$);MSHookMessageEx(_logos_class$Extender$NEVPNConnection, @selector(status), (IMP)&_logos_method$Extender$NEVPNConnection$status, (IMP*)&_logos_orig$Extender$NEVPNConnection$status);Class _logos_class$Extender$NEVPNManager = objc_getClass("NEVPNManager"); MSHookMessageEx(_logos_class$Extender$NEVPNManager, @selector(saveToPreferencesWithCompletionHandler:), (IMP)&_logos_method$Extender$NEVPNManager$saveToPreferencesWithCompletionHandler$, (IMP*)&_logos_orig$Extender$NEVPNManager$saveToPreferencesWithCompletionHandler$);Class _logos_class$Extender$NETunnelProviderManager = objc_getClass("NETunnelProviderManager"); Class _logos_metaclass$Extender$NETunnelProviderManager = object_getClass(_logos_class$Extender$NETunnelProviderManager); MSHookMessageEx(_logos_metaclass$Extender$NETunnelProviderManager, @selector(loadAllFromPreferencesWithCompletionHandler:), (IMP)&_logos_meta_method$Extender$NETunnelProviderManager$loadAllFromPreferencesWithCompletionHandler$, (IMP*)&_logos_meta_orig$Extender$NETunnelProviderManager$loadAllFromPreferencesWithCompletionHandler$);Class _logos_class$Extender$NSURLSession = objc_getClass("NSURLSession"); MSHookMessageEx(_logos_class$Extender$NSURLSession, @selector(dataTaskWithURL:completionHandler:), (IMP)&_logos_method$Extender$NSURLSession$dataTaskWithURL$completionHandler$, (IMP*)&_logos_orig$Extender$NSURLSession$dataTaskWithURL$completionHandler$);Class _logos_class$Extender$UNUserNotificationCenter = objc_getClass("UNUserNotificationCenter"); MSHookMessageEx(_logos_class$Extender$UNUserNotificationCenter, @selector(initWithBundleIdentifier:), (IMP)&_logos_method$Extender$UNUserNotificationCenter$initWithBundleIdentifier$, (IMP*)&_logos_orig$Extender$UNUserNotificationCenter$initWithBundleIdentifier$); MSHookFunction((void *)strlen, (void *)&_logos_function$Extender$strlen, (void **)&_logos_orig$Extender$strlen);}
     }
 }

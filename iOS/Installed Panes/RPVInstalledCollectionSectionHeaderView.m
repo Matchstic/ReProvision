@@ -14,6 +14,7 @@
 @property (nonatomic, strong) UIView *seperatorLine;
 
 @property (nonatomic, readwrite) NSInteger section;
+@property (nonatomic, weak) id<RPVInstalledCollectionSectionHeaderDelegate> delegate;
 
 @end
 
@@ -23,7 +24,7 @@
     if (!self.titleLabel) {
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         self.titleLabel.text = @"TITLE";
-        self.titleLabel.font = [UIFont systemFontOfSize:18.6 weight:UIFontWeightHeavy];
+        self.titleLabel.font = [UIFont systemFontOfSize:18.6 weight:UIFontWeightBold];
         self.titleLabel.backgroundColor = [UIColor clearColor];
         
         [self addSubview:self.titleLabel];
@@ -56,7 +57,7 @@
 }
 
 - (void)_buttonWasTapped:(id)sender {
-    
+    [self.delegate didRecieveHeaderButtonInputWithSection:self.section];
 }
 
 - (void)configureWithTitle:(NSString*)title buttonLabel:(NSString*)buttonLabel section:(NSInteger)section andDelegate:(id<RPVInstalledCollectionSectionHeaderDelegate>)delegate {
@@ -67,10 +68,13 @@
     // Set title
     self.titleLabel.text = title;
     
-    // Set button title
+    // Set button title and enabled state
     [self.button setTitle:buttonLabel forState:UIControlStateNormal];
+    self.button.enabled = [self.delegate isButtonEnabledForSection:section];
+    self.button.alpha = self.button.enabled ? 1.0 : 0.5;
     
-    // TODO: Set delegate
+    // Set delegate
+    self.delegate = delegate;
 }
 
 - (void)layoutSubviews {

@@ -248,6 +248,10 @@
     if (!tempDir)
         tempDir = @"/tmp";
     
+    if (![[NSFileManager defaultManager] fileExistsAtPath:tempDir]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:tempDir withIntermediateDirectories:NO attributes:nil error:nil];
+    }
+    
     return tempDir;
 }
 

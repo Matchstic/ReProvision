@@ -28,14 +28,14 @@ typedef NS_ENUM(NSInteger, SSZipArchiveErrorCode) {
 
 // Password check
 + (BOOL)isFilePasswordProtectedAtPath:(NSString *)path;
-+ (BOOL)isPasswordValidForArchiveAtPath:(NSString *)path password:(NSString *)pw error:(NSError * __nullable * __nullable)error NS_SWIFT_NOTHROW;
++ (BOOL)isPasswordValidForArchiveAtPath:(NSString *)path password:(NSString *)pw error:(NSError * __nullable * __nullable)error;
 
 // Unzip
 + (BOOL)unzipFileAtPath:(NSString *)path toDestination:(NSString *)destination;
 + (BOOL)unzipFileAtPath:(NSString *)path toDestination:(NSString *)destination delegate:(nullable id<SSZipArchiveDelegate>)delegate;
 
 + (BOOL)unzipFileAtPath:(NSString *)path toDestination:(NSString *)destination overwrite:(BOOL)overwrite password:(nullable NSString *)password error:(NSError * *)error;
-+ (BOOL)unzipFileAtPath:(NSString *)path toDestination:(NSString *)destination overwrite:(BOOL)overwrite password:(nullable NSString *)password error:(NSError * *)error delegate:(nullable id<SSZipArchiveDelegate>)delegate NS_REFINED_FOR_SWIFT;
++ (BOOL)unzipFileAtPath:(NSString *)path toDestination:(NSString *)destination overwrite:(BOOL)overwrite password:(nullable NSString *)password error:(NSError * *)error delegate:(nullable id<SSZipArchiveDelegate>)delegate;
 
 + (BOOL)unzipFileAtPath:(NSString *)path
           toDestination:(NSString *)destination

@@ -60,6 +60,7 @@
     threshold.shortTitleDictionary = threshold.titleDictionary;
     [threshold setProperty:@"heartbeatTimerInterval" forKey:@"key"];
     [threshold setProperty:@"A longer time between checks uses less battery, but has more risk that applications won't be re-signed before a reboot." forKey:@"staticTextMessage"];
+    [threshold setProperty:@"RPVReloadBackgroundAppRefreshTime" forKey:@"PostNotification"];
     
     [array addObject:threshold];
     
@@ -84,7 +85,8 @@
 }
 
 - (id)readPreferenceValue:(PSSpecifier*)value {
-    id val = [[NSUserDefaults standardUserDefaults] objectForKey:[value propertyForKey:@"key"]];
+    NSString *key = [value propertyForKey:@"key"];
+    id val = [RPVResources preferenceValueForKey:key];
     
     if (!val) {
         // Defaults.
@@ -106,13 +108,10 @@
 }
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
-    [[NSUserDefaults standardUserDefaults] setObject:value forKey:[specifier propertyForKey:@"key"]];
-    
     NSString *key = [specifier propertyForKey:@"key"];
-    if ([key isEqualToString:@"heartbeatTimerInterval"]) {
-        // [RPVResources reloadHeartbeatTimer];
-        // TODO: IMPLEMENT!
-    }
+    NSString *notification = specifier.properties[@"PostNotification"];
+    
+    [RPVResources setPreferenceValue:value forKey:key withNotification:notification];
 }
 
 @end

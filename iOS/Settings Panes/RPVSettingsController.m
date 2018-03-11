@@ -7,7 +7,6 @@
 //
 
 #import "RPVSettingsController.h"
-//#import "RPVTroubleshootController.h"
 #import "RPVAdvancedController.h"
 #import "RPVResources.h"
 
@@ -25,6 +24,13 @@
     }
     
     [[self navigationItem] setTitle:@"Settings"];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    // Reload Apple ID stuff
+    [self updateSpecifiersForAppleID:[RPVResources getUsername]];
 }
 
 -(id)specifiers {
@@ -52,9 +58,7 @@
     
     // Logged in
     
-    // TODO: Update for ReProvision
-    //NSString *title = [NSString stringWithFormat:@"Apple ID: %@", [EEResources username]];
-    NSString *title = @"";
+    NSString *title = [NSString stringWithFormat:@"Apple ID: %@", [RPVResources getUsername]];;
     _loggedInSpec = [PSSpecifier preferenceSpecifierNamed:title target:self set:nil get:nil detail:nil cell:PSStaticTextCell edit:nil];
     [_loggedInSpec setProperty:@"appleid" forKey:@"key"];
     
@@ -74,10 +78,8 @@
     
     _loggedInAppleSpecifiers = loggedIn;
     _loggedOutAppleSpecifiers = loggedOut;
-    
-    // TODO: Update for ReProvision
-    //_hasCachedUser = [EEResources username] != nil;
-    _hasCachedUser = NO;
+
+    _hasCachedUser = [RPVResources getUsername] != nil;
     return _hasCachedUser ? _loggedInAppleSpecifiers : _loggedOutAppleSpecifiers;
 }
 
@@ -137,9 +139,7 @@
 }
 
 - (void)updateSpecifiersForAppleID:(NSString*)username {
-    // TODO: Update for ReProvision
-    //BOOL hasCachedUser = [EEResources username] != nil;
-    BOOL hasCachedUser = NO;
+    BOOL hasCachedUser = [RPVResources getUsername] != nil;
     
     if (hasCachedUser == _hasCachedUser) {
         // Do nothing.
@@ -163,28 +163,21 @@
 }
 
 - (void)didClickSignOut:(id)sender {
-    // TODO: Update for ReProvision
-    //[EEResources signOut];
+    [RPVResources userDidRequestAccountSignOut];
     
     [self updateSpecifiersForAppleID:@""];
 }
 
 - (void)didClickSignIn:(id)sender {
-    // TODO: Update for ReProvision
-    /*[EEResources signInWithCallback:^(BOOL result, NSString *username) {
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            [self updateSpecifiersForAppleID:username];
-        });
-    }];*/
+    [RPVResources userDidRequestAccountSignIn];
 }
 
 - (id)readPreferenceValue:(PSSpecifier*)value {
-    id val = [[NSUserDefaults standardUserDefaults] objectForKey:[value propertyForKey:@"key"]];
+    NSString *key = [value propertyForKey:@"key"];
+    id val = [RPVResources preferenceValueForKey:key];
     
     if (!val) {
         // Defaults.
-        
-        NSString *key = [value propertyForKey:@"key"];
         
         if ([key isEqualToString:@"thresholdForResigning"]) {
             return [NSNumber numberWithInt:2];
@@ -203,7 +196,10 @@
 }
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
-    [[NSUserDefaults standardUserDefaults] setObject:value forKey:[specifier propertyForKey:@"key"]];
+    NSString *key = [specifier propertyForKey:@"key"];
+    NSString *notification = specifier.properties[@"PostNotification"];
+    
+    [RPVResources setPreferenceValue:value forKey:key withNotification:notification];
 }
 
 @end

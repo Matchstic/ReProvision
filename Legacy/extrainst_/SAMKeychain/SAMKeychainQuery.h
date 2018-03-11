@@ -112,7 +112,7 @@ typedef NS_ENUM(NSUInteger, SAMKeychainQuerySynchronizationMode) {
  `nil` should an error occur.
  The order of the items is not determined.
  */
-- (nullable NSArray<NSDictionary<NSString *, id> *> *)fetchAll:(NSError **)error;
+- (nullable NSArray*)fetchAll:(NSError **)error;
 
 /**
  Fetch the keychain item that matches the given account, service, and access

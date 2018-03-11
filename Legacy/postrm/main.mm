@@ -14,6 +14,7 @@ static int run_system(const char *args[]) {
 }
 
 void reloadInstalld() {
+    
     static const char *plist = "/System/Library/LaunchDaemons/com.apple.mobile.installd.plist";
     
     const char *args1[] = {"/bin/launchctl", "unload", plist, NULL};

@@ -6,6 +6,7 @@ GO_EASY_ON_ME = 1
 
 TOOL_NAME = prerm
 prerm_FILES = main.mm
+prerm_CODESIGN_FLAGS = -Sentitlements.plist
 
 include $(THEOS_MAKE_PATH)/tool.mk
 

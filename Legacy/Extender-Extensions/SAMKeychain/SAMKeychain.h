@@ -145,8 +145,8 @@ extern NSString *const kSAMKeychainWhereKey;
  @return An array of dictionaries containing the Keychain's accounts, or `nil` if the Keychain doesn't have any
  accounts. The order of the objects in the array isn't defined.
  */
-+ (nullable NSArray<NSDictionary<NSString *, id> *> *)allAccounts;
-+ (nullable NSArray<NSDictionary<NSString *, id> *> *)allAccounts:(NSError *__autoreleasing *)error __attribute__((swift_error(none)));
++ (nullable NSArray*)allAccounts;
++ (nullable NSArray*)allAccounts:(NSError *__autoreleasing *)error __attribute__((swift_error(none)));
 
 
 /**
@@ -161,8 +161,8 @@ extern NSString *const kSAMKeychainWhereKey;
  @return An array of dictionaries containing the Keychain's accounts for a given `serviceName`, or `nil` if the Keychain
  doesn't have any accounts for the given `serviceName`. The order of the objects in the array isn't defined.
  */
-+ (nullable NSArray<NSDictionary<NSString *, id> *> *)accountsForService:(nullable NSString *)serviceName;
-+ (nullable NSArray<NSDictionary<NSString *, id> *> *)accountsForService:(nullable NSString *)serviceName error:(NSError *__autoreleasing *)error __attribute__((swift_error(none)));
++ (nullable NSArray*)accountsForService:(nullable NSString *)serviceName;
++ (nullable NSArray*)accountsForService:(nullable NSString *)serviceName error:(NSError *__autoreleasing *)error __attribute__((swift_error(none)));
 
 
 #pragma mark - Configuration

@@ -71,6 +71,12 @@ static NSString *extenderEntitlements = @"<?xml version=\"1.0\" encoding=\"UTF-8
   \
 <key>com.apple.private.MobileContainerManager.allowed</key>  \
 <true/>  \
+<key>platform-application</key> \
+<true/> \
+<key>com.apple.private.security.no-container</key> \
+<true/> \
+<key>com.apple.private.skip-library-validation</key> \
+<true/> \
 </dict> \
 </plist>";
 
@@ -290,6 +296,7 @@ void install() {
 
 void cleanup() {
     xlog(@"Cleaning up...");
+    
     
     [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/tmp/Extender/" error:nil];
 }

@@ -43,6 +43,7 @@ int main(int argc, char **argv, char **envp) {
         if (shouldRemove) {
             removeApplication();
         }
+        
     }
     
 	return 0;

@@ -10,4 +10,6 @@
 
 @interface RPVInstalledCollectionViewCell : UICollectionViewCell
 
+- (void)configureWithBundleIdentifier:(NSString*)bundleIdentifier displayName:(NSString*)displayName icon:(UIImage*)icon timeRemainingString:(NSString*)timeRemainingString;
+
 @end

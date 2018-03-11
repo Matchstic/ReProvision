@@ -11,7 +11,9 @@
 @interface RPVInstalledCollectionMainHeaderView ()
 
 @property (nonatomic, strong) UILabel *titleLabel;
+
 @property (nonatomic, strong) UILabel *dateLabel;
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
 
 @end
 
@@ -25,7 +27,7 @@ static CGFloat inset = 20;
     if (!self.titleLabel) {
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         self.titleLabel.text = @"TITLE";
-        self.titleLabel.font = [UIFont systemFontOfSize:33 weight:UIFontWeightHeavy];
+        self.titleLabel.font = [UIFont systemFontOfSize:33 weight:UIFontWeightBold];
         self.titleLabel.backgroundColor = [UIColor clearColor];
         
         [self addSubview:self.titleLabel];
@@ -33,12 +35,21 @@ static CGFloat inset = 20;
 
     if (!self.dateLabel) {
         self.dateLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-        self.dateLabel.text = @"DATE";
         self.dateLabel.font = [UIFont boldSystemFontOfSize:12];
         self.dateLabel.textColor = [UIColor colorWithRed:142.0/255.0 green:142.0/255.0 blue:147.0/255.0 alpha:1.0];
         
         [self addSubview:self.dateLabel];
+        
+        self.dateFormatter = [[NSDateFormatter alloc] init];
+        [self.dateFormatter setDateFormat:@"EEEE d MMMM"];
+        
+        self.dateLabel.text = [self _formattedDateForNow];
     }
+}
+
+- (NSString*)_formattedDateForNow {
+    NSDate *now = [NSDate date];
+    return [[self.dateFormatter stringFromDate:now] uppercaseString];
 }
 
 - (void)configureWithTitle:(NSString*)title {
