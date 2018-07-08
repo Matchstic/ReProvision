@@ -13,6 +13,7 @@
 @property (nonatomic, readonly) NSString *teamID;
 @property (nonatomic, readonly) NSString *applicationIdentifier;
 @property (nonatomic, readonly) NSURL *bundleURL;
+@property (nonatomic, readonly) BOOL isAdHocCodeSigned;
 + (instancetype)applicationProxyForIdentifier:(NSString*)arg1;
 @end
 
@@ -63,6 +64,57 @@ static RPVApplicationDatabase *sharedDatabase;
 
 - (NSArray*)getAllApplicationsForTeamID:(NSString*)teamID {
     return [self _retrieveAllApplicationsForTeamID:teamID];
+}
+
+- (RPVApplication*)getApplicationWithBundleIdentifier:(NSString*)bundleIdentifier {
+    LSApplicationProxy *proxy = [LSApplicationProxy applicationProxyForIdentifier:bundleIdentifier];
+    return [[RPVApplication alloc] initWithApplicationProxy:proxy];
+}
+
+- (NSArray*)getAllSideloadedApplicationsNotMatchingTeamID:(NSString*)teamID {
+    NSMutableArray *applications = [NSMutableArray array];
+    
+    // Parse the currently installed profiles.
+    // If the profile has a non-matching Team ID, perfect.
+    
+    for (LSApplicationProxy *proxy in [[LSApplicationWorkspace defaultWorkspace] allApplications]) {
+        if (![[proxy teamID] isEqualToString:@"0000000000"]) {
+            // First sanity check passed for system apps, check for embedded profile.
+            
+            NSString *provisionPath = [[proxy.bundleURL path] stringByAppendingString:@"/embedded.mobileprovision"];
+            
+            if ([[NSFileManager defaultManager] fileExistsAtPath:provisionPath]) {
+                // Yep, definitely sideloaded!
+                
+                // Load profile from disk.
+                NSError *err;
+                NSString *stringContent = [NSString stringWithContentsOfFile:provisionPath encoding:NSASCIIStringEncoding error:&err];
+                stringContent = [stringContent componentsSeparatedByString:@"<plist version=\"1.0\">"][1];
+                stringContent = [NSString stringWithFormat:@"%@%@", @"<plist version=\"1.0\">", stringContent];
+                stringContent = [stringContent componentsSeparatedByString:@"</plist>"][0];
+                stringContent = [NSString stringWithFormat:@"%@%@", stringContent, @"</plist>"];
+                
+                NSData *stringData = [stringContent dataUsingEncoding:NSASCIIStringEncoding];
+                
+                NSError *error;
+                NSPropertyListFormat format;
+                
+                NSDictionary *plist = [NSPropertyListSerialization propertyListWithData:stringData options:NSPropertyListImmutable format:&format error:&error];
+                
+                // Check Team ID.
+                NSString *teamIDToCheck = [[plist objectForKey:@"TeamIdentifier"] firstObject];
+                
+                if (![teamIDToCheck isEqualToString:teamID]) {
+                    // Success!
+                    RPVApplication *application = [[RPVApplication alloc] initWithApplicationProxy:proxy];
+                    
+                    [applications addObject:application];
+                }
+            }
+        }
+    }
+    
+    return applications;
 }
 
 /**

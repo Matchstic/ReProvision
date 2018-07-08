@@ -20,6 +20,9 @@ static NSString *_teamid = @"";
 
 // From: http://stackoverflow.com/a/8088484
 + (NSString*)_urlEncodeString:(NSString*)string {
+    if (!string) {
+        return @"";
+    }
     NSMutableString *output = [NSMutableString string];
     const unsigned char *source = (const unsigned char *)[string UTF8String];
     int sourceLen = (int)strlen((const char *)source);

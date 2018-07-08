@@ -9,6 +9,10 @@
 #import "RPVSettingsNavigationViewController.h"
 #import "RPVSettingsController.h"
 
+@interface UINavigationBar (iOS11)
+@property (nonatomic, readwrite) BOOL prefersLargeTitles;
+@end
+
 @interface RPVSettingsNavigationViewController ()
 
 @end
@@ -21,7 +25,7 @@
     if (self) {
 
         if (@available(iOS 11.0, *)) {
-            self.navigationBar.prefersLargeTitles = YES;
+            self.navigationBar.prefersLargeTitles = UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad ? YES : NO;
         }
         
         // Create root controller

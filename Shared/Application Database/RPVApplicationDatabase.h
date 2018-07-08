@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class RPVApplication;
+
 @interface RPVApplicationDatabase : NSObject
 
 /**
@@ -20,6 +22,13 @@
  @return An array of RPVApplication
  */
 - (NSArray*)getAllApplicationsForTeamID:(NSString*)teamID;
+
+/**
+ Creates a new RPVApplication object for the given bundle identifier.
+ @param bundleIdentifier Bundle identifier of the application
+ @return New abstract object for the application.
+ */
+- (RPVApplication*)getApplicationWithBundleIdentifier:(NSString*)bundleIdentifier;
 
 /**
  beforeApplications will end up containing all applications that expire before the given date, and
@@ -35,5 +44,7 @@
  @return Success indicator
  */
 - (BOOL)getApplicationsWithExpiryDateBefore:(NSMutableArray**)beforeApplications andAfter:(NSMutableArray**)afterApplications date:(NSDate*)cutoffDate forTeamID:(NSString*)teamID;
+
+- (NSArray*)getAllSideloadedApplicationsNotMatchingTeamID:(NSString*)teamID;
 
 @end

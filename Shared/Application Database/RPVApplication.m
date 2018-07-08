@@ -51,7 +51,7 @@
     UIImage *icon;
     
     if (self.proxy != nil) {
-        icon = [UIImage _applicationIconImageForBundleIdentifier:[self bundleIdentifier] format:0 scale:[UIScreen mainScreen].scale];
+        icon = [UIImage _applicationIconImageForBundleIdentifier:[self bundleIdentifier] format:2 scale:[UIScreen mainScreen].scale];
     } else {
         icon = [UIImage imageNamed:@"AppIcon40x40"];
     }
@@ -65,9 +65,14 @@
         return [NSDate dateWithTimeIntervalSinceNow:172800];
     }
     
-    //LSApplicationProxy *proxy = [LSApplicationProxy applicationProxyForIdentifier:[self bundleIdentifier]];
     NSString *provisionPath = [[self.proxy.bundleURL path] stringByAppendingString:@"/embedded.mobileprovision"];
-    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:provisionPath]) {
+        NSLog(@"*** [ReProvision] :: ERROR :: No embedded.mobileprovision at %@, given bundleURL is %@", provisionPath, self.proxy.bundleURL);
+        
+        // Date that is 2 days away.
+        return [NSDate dateWithTimeIntervalSinceNow:172800];
+    }
+
     NSDictionary *provision = [self _provisioningProfileAtPath:provisionPath];
     
     return [provision objectForKey:@"ExpirationDate"];

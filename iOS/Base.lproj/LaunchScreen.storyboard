@@ -21,14 +21,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchIcon" translatesAutoresizingMaskIntoConstraints="NO" id="BJq-b1-IaG">
-                                <rect key="frame" x="173" y="319" width="29" height="29"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchIcon2" translatesAutoresizingMaskIntoConstraints="NO" id="f5C-Bl-4BL">
+                                <rect key="frame" x="145.5" y="291.5" width="83" height="83"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="BJq-b1-IaG" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="378-Oz-CS6"/>
-                            <constraint firstItem="BJq-b1-IaG" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="Z81-xL-Hh6"/>
+                            <constraint firstItem="f5C-Bl-4BL" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="ami-Bq-uyv"/>
+                            <constraint firstItem="f5C-Bl-4BL" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="amj-w4-4YE"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -38,6 +38,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchIcon" width="29" height="29"/>
+        <image name="LaunchIcon2" width="83" height="83"/>
     </resources>
 </document>

@@ -53,5 +53,8 @@
 		<string>AAAAAAAAAA.com.matchstic.reprovision.ios</string> 
 	</array>  
 
+	<key>com.apple.localnotification.schedulingproxy</key>
+	<true/>
+
 </dict>
 </plist>

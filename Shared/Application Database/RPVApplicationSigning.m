@@ -16,6 +16,7 @@
 +(instancetype)defaultWorkspace;
 -(BOOL)installApplication:(NSURL*)arg1 withOptions:(NSDictionary*)arg2 error:(NSError**)arg3;
 - (NSArray*)allApplications;
+- (BOOL)uninstallApplication:(id)arg1 withOptions:(id)arg2;
 @end
 
 
@@ -23,6 +24,9 @@
 
 @property (nonatomic, strong) NSMutableArray *installQueue;
 @property (nonatomic, readwrite) BOOL undertakingResignPipeline;
+@property (nonatomic, readwrite) UIBackgroundTaskIdentifier currentBackgroundTaskIdentifier;
+
+@property (nonatomic, strong) NSMutableArray *observers;
 
 @end
 
@@ -40,11 +44,36 @@ static RPVApplicationSigning *sharedInstance;
     return sharedInstance;
 }
 
-- (void)resignApplications:(BOOL)onlyExpiringApplications thresholdForExpiration:(int)thresholdForExpiration withTeamID:(NSString*)teamID username:(NSString*)username password:(NSString*)password progressUpdateHandler:(void (^)(NSString*, int))progressUpdateHandler errorHandler:(void (^)(NSError*, NSString*))errorHandler andCompletionHandler:(void (^)(NSError*))completionHandler {
+- (instancetype)init {
+    self = [super init];
+    
+    if (self) {
+        self.observers = [NSMutableArray array];
+    }
+    
+    return self;
+}
+
+- (void)addSigningUpdatesObserver:(id<RPVApplicationSigningProtocol>)observer {
+    [self.observers addObject:observer];
+}
+
+- (void)removeSigningUpdatesObserver:(id<RPVApplicationSigningProtocol>)observer {
+    [self.observers removeObject:observer];
+}
+
+- (void)_resignApplicationsArray:(NSArray*)applications withTeamID:(NSString*)teamID username:(NSString*)username password:(NSString*)password {
+    
+    for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+        [observer applicationSigningDidStart];
+    }
     
     if (self.undertakingResignPipeline) {
         NSError *error = [self _errorFromString:@"Already undertaking the re-sign pipeline!" errorCode:RPVErrorAlreadyUndertakingPipeline];
-        completionHandler(error);
+        
+        for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+            [observer applicationSigningCompleteWithError:error];
+        }
         return;
     } else {
         self.undertakingResignPipeline = YES;
@@ -56,51 +85,80 @@ static RPVApplicationSigning *sharedInstance;
     
     // TODO: Network connectivity.
     
-    //////////////////////////////////////////////////////////////////////////////////////
-    // 2. Iterate over all the applications available in RPVApplicationDatabase.
-    //////////////////////////////////////////////////////////////////////////////////////
-    
-    // Get list of applications from RPVApplicationDatabase
-    NSMutableArray *applications;
-    if (onlyExpiringApplications) {
-        
-        NSDate *now = [NSDate date];
-        NSDate *expirationDate = [now dateByAddingTimeInterval:60 * 60 * 24 * thresholdForExpiration];
-        
-        [[RPVApplicationDatabase sharedInstance] getApplicationsWithExpiryDateBefore:&applications andAfter:nil date:expirationDate forTeamID:teamID];
-        
-    } else {
-        
-        applications = [[[RPVApplicationDatabase sharedInstance] getAllApplicationsForTeamID:teamID] mutableCopy];
-    }
-    
     // Update install queue with new applications list
-    self.installQueue = applications;
+    self.installQueue = [applications mutableCopy];
     
     //////////////////////////////////////////////////////////////////////////////////////
-    // 3. Initiate signing for applications if applicable.
+    // 2. Initiate signing for applications if applicable.
     //////////////////////////////////////////////////////////////////////////////////////
     
     // If no signing needed, just exit.
     if (self.installQueue.count == 0) {
         self.undertakingResignPipeline = NO;
         NSError *error = [self _errorFromString:@"No applications need re-signing" errorCode:RPVErrorNoSigningRequired];
-        completionHandler(error);
+        for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+            [observer applicationSigningCompleteWithError:error];
+        }
         return;
     }
     
+    // Move to a background task!
+    UIApplication *application = [UIApplication sharedApplication];
+    UIBackgroundTaskIdentifier __block bgTask = [application beginBackgroundTaskWithName:@"ReProvision Application Signing" expirationHandler:^{
+        
+        // Clean up any unfinished task business by marking where you
+        // stopped or ending the task outright.
+        
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }];
+    
+    self.currentBackgroundTaskIdentifier = bgTask;
+    
     // Update progress handler to 0% for all applications.
     for (RPVApplication *app in self.installQueue) {
-        progressUpdateHandler(app.bundleIdentifier, 0);
+        for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+            [observer applicationSigningUpdateProgress:0 forBundleIdentifier:app.bundleIdentifier];
+        }
     }
     
     // Start signing.
     [self _initiateNextInstallFromQueueWithTeamID:teamID
                                          username:username
-                                           password:password
-                              progressUpdateHandler:progressUpdateHandler
-                                       errorHandler:errorHandler
-                               andCompletionHandler:completionHandler];
+                                         password:password];
+}
+
+- (void)resignSpecificApplications:(NSArray*)applications withTeamID:(NSString*)teamID username:(NSString*)username password:(NSString*)password {
+    
+    [self _resignApplicationsArray:applications withTeamID:teamID username:username password:password];
+}
+
+- (void)resignApplications:(BOOL)onlyExpiringApplications thresholdForExpiration:(int)thresholdForExpiration withTeamID:(NSString*)teamID username:(NSString*)username password:(NSString*)password {
+    //////////////////////////////////////////////////////////////////////////////////////
+    // 0. Iterate over all the applications available in RPVApplicationDatabase.
+    //////////////////////////////////////////////////////////////////////////////////////
+    
+    // Get list of applications from RPVApplicationDatabase
+    NSMutableArray *applications = [NSMutableArray array];
+    if (onlyExpiringApplications) {
+        
+        NSDate *now = [NSDate date];
+        NSDate *expirationDate = [now dateByAddingTimeInterval:60 * 60 * 24 * thresholdForExpiration];
+        
+        if (![[RPVApplicationDatabase sharedInstance] getApplicationsWithExpiryDateBefore:&applications andAfter:nil date:expirationDate forTeamID:teamID]) {
+            // sad times.
+            self.undertakingResignPipeline = NO;
+            NSError *error = [self _errorFromString:@"Failed to get applications within expiry date" errorCode:-1337];
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningCompleteWithError:error];
+            }
+            return;
+        }
+    } else {
+        applications = [[[RPVApplicationDatabase sharedInstance] getAllApplicationsForTeamID:teamID] mutableCopy];
+    }
+    
+    [self _resignApplicationsArray:applications withTeamID:teamID username:username password:password];
 }
 
 /**
@@ -124,6 +182,9 @@ static RPVApplicationSigning *sharedInstance;
     NSString *parentPath = [toPath stringByDeletingLastPathComponent];
     if (![[NSFileManager defaultManager] fileExistsAtPath:parentPath]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:parentPath withIntermediateDirectories:YES attributes:nil error:nil];
+    // Delete any existing .app if needed too.
+    } else if ([[NSFileManager defaultManager] fileExistsAtPath:toPath]) {
+        [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
     }
     
     NSError *err;
@@ -154,12 +215,11 @@ static RPVApplicationSigning *sharedInstance;
     return error;
 }
 
-- (void)_initiateNextInstallFromQueueWithTeamID:(NSString*)teamID username:(NSString*)username password:(NSString*)password progressUpdateHandler:(void (^)(NSString*, int))progressUpdateHandler errorHandler:(void (^)(NSError*, NSString*))errorHandler andCompletionHandler:(void (^)(NSError*))completionHandler {
+- (void)_initiateNextInstallFromQueueWithTeamID:(NSString*)teamID username:(NSString*)username password:(NSString*)password {
     
     if ([self.installQueue count] == 0) {
         // We can exit now.
         self.undertakingResignPipeline = NO;
-        completionHandler(nil);
     } else {
         // Pull next off the front of the array.
         RPVApplication *application = [self.installQueue firstObject];
@@ -167,14 +227,11 @@ static RPVApplicationSigning *sharedInstance;
         [self _resignApplication:application
                       withTeamID:teamID
                         username:username
-                        password:password
-           progressUpdateHandler:progressUpdateHandler
-                    errorHandler:errorHandler
-            andCompletionHandler:completionHandler];
+                        password:password];
     }
 }
 
-- (void)_installIpaAtPath:(NSString*)ipaPath withBundleIdentifier:(NSString*)bundleIdentifier progressUpdateHandler:(void (^)(NSString*, int))progressUpdateHandler errorHandler:(void (^)(NSError*, NSString*))errorHandler {
+- (void)_installIpaAtPath:(NSString*)ipaPath withBundleIdentifier:(NSString*)bundleIdentifier {
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSError *error;
@@ -182,32 +239,79 @@ static RPVApplicationSigning *sharedInstance;
         
         NSURL *ipaURL = [NSURL fileURLWithPath:ipaPath];
         
+        // Make a cached version of the .ipa for if we need to handle another go-around.
+        [[NSFileManager defaultManager] copyItemAtPath:ipaPath toPath:[ipaPath stringByReplacingOccurrencesOfString:@".ipa" withString:@"2.ipa"] error:nil];
+        
+        NSLog(@"Does ipaPath exist? %d", [[NSFileManager defaultManager] fileExistsAtPath:ipaPath]);
+        
         BOOL result = [[LSApplicationWorkspace defaultWorkspace] installApplication:ipaURL
                                                                         withOptions:options
                                                                               error:&error];
-        // Update progress to 90% for this application.
-        progressUpdateHandler(bundleIdentifier, 90);
         
         if (!result) {
+            // Check if this is the case where it's an app from another Team ID.
+            if (error.code == 64) {
+                // Delete the original app, and try again.
+                if ([[LSApplicationWorkspace defaultWorkspace] uninstallApplication:bundleIdentifier withOptions:nil]) {
+                    // Try again!
+                    
+                    // Update progress to 70% for this application.
+                    for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                        [observer applicationSigningUpdateProgress:75 forBundleIdentifier:bundleIdentifier];
+                    }
+                    
+                    NSLog(@"*** Uninstalled application, trying again.");
+                    [self _installIpaAtPath:[ipaPath stringByReplacingOccurrencesOfString:@".ipa" withString:@"2.ipa"] withBundleIdentifier:bundleIdentifier];
+                    
+                    return;
+                }
+            }
+            
             // Give an error!
             NSError *err = [self _errorFromString:error.localizedDescription errorCode:RPVErrorFailedToInstallSignedIPA];
-            errorHandler(err, bundleIdentifier);
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningDidEncounterError:err forBundleIdentifier:bundleIdentifier];
+            }
+        }
+        
+        if (result) {
+            // Update progress to 90% for this application.
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningUpdateProgress:90 forBundleIdentifier:bundleIdentifier];
+            }
         }
         
         // Clean up.
         [[NSFileManager defaultManager] removeItemAtPath:ipaPath error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[ipaPath stringByReplacingOccurrencesOfString:@".ipa" withString:@"2.ipa"] error:nil];
         
-        // Update progress to 100% for this application.
-        progressUpdateHandler(bundleIdentifier, 100);
+        if (result) {
+            // Update progress to 100% for this application.
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningUpdateProgress:100 forBundleIdentifier:bundleIdentifier];
+            }
+        }
         
-        // TODO: if this was the last application, notify the completionHandler of success
+        // If this was the last application, notify the completionHandler of success
+        if (!self.undertakingResignPipeline) {
+            // End the background task!
+            [[UIApplication sharedApplication] endBackgroundTask:self.currentBackgroundTaskIdentifier];
+            self.currentBackgroundTaskIdentifier = UIBackgroundTaskInvalid;
+            
+            // Notify of success!
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningCompleteWithError:nil];
+            }
+        }
     });
 }
 
-- (void)_resignApplication:(RPVApplication*)application withTeamID:(NSString*)teamID username:(NSString*)username password:(NSString*)password progressUpdateHandler:(void (^)(NSString*, int))progressUpdateHandler errorHandler:(void (^)(NSError*, NSString*))errorHandler andCompletionHandler:(void (^)(NSError*))completionHandler {
+- (void)_resignApplication:(RPVApplication*)application withTeamID:(NSString*)teamID username:(NSString*)username password:(NSString*)password{
     
     // Update progress to 10% for this application.
-    progressUpdateHandler([application bundleIdentifier], 10);
+    for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+        [observer applicationSigningUpdateProgress:10 forBundleIdentifier:[application bundleIdentifier]];
+    }
     
     //////////////////////////////////////////////////////////////////////////////////////
     // 1. Make a copy of this application's .app into a directory structure of an IPA.
@@ -220,26 +324,36 @@ static RPVApplicationSigning *sharedInstance;
     if (![self _copyApplicationBundleForApplication:application extractedArchiveURL:&extractedArchiveURL applicationBundleURL:&applicationBundleURL error:&error]) {
         
         // Callback to say we done "goofed".
-        errorHandler(error, [application bundleIdentifier]);
+        for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+            [observer applicationSigningDidEncounterError:error forBundleIdentifier:[application bundleIdentifier]];
+        }
         
         // Start the next application off.
-        if (self.installQueue.count > 0) {
+        if (self.installQueue.count > 1) {
             [self.installQueue removeObjectAtIndex:0];
             [self _initiateNextInstallFromQueueWithTeamID:teamID
                                                  username:username
-                                                 password:password
-                                    progressUpdateHandler:progressUpdateHandler
-                                             errorHandler:errorHandler
-                                     andCompletionHandler:completionHandler];
+                                                 password:password];
         } else {
-            completionHandler(error);
+            // End the background task!
+            [[UIApplication sharedApplication] endBackgroundTask:self.currentBackgroundTaskIdentifier];
+            self.currentBackgroundTaskIdentifier = UIBackgroundTaskInvalid;
+            
+            self.undertakingResignPipeline = NO;
+            
+            // Notify of failure
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningCompleteWithError:error];
+            }
         }
         
         return;
     }
     
     // Update progress to 30% for this application.
-    progressUpdateHandler([application bundleIdentifier], 30);
+    for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+        [observer applicationSigningUpdateProgress:30 forBundleIdentifier:[application bundleIdentifier]];
+    }
     
     //////////////////////////////////////////////////////////////////////////////////////
     // 2. Use libProvision to sign the .app
@@ -248,28 +362,38 @@ static RPVApplicationSigning *sharedInstance;
     [EEBackend signBundleAtPath:[applicationBundleURL path] username:username password:password priorChosenTeamID:teamID withCompletionHandler:^(NSError *error) {
         if (error) {
             // Callback to say we done "goofed".
-            errorHandler(error, [application bundleIdentifier]);
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningDidEncounterError:error forBundleIdentifier:[application bundleIdentifier]];
+            }
             
             // TODO: Cleanup the filesystem?
             
             // Start the next application off.
-            if (self.installQueue.count > 0) {
+            if (self.installQueue.count > 1) {
                 [self.installQueue removeObjectAtIndex:0];
                 [self _initiateNextInstallFromQueueWithTeamID:teamID
                                                      username:username
-                                                     password:password
-                                        progressUpdateHandler:progressUpdateHandler
-                                                 errorHandler:errorHandler
-                                         andCompletionHandler:completionHandler];
+                                                     password:password];
             } else {
-                completionHandler(error);
+                // End the background task!
+                [[UIApplication sharedApplication] endBackgroundTask:self.currentBackgroundTaskIdentifier];
+                self.currentBackgroundTaskIdentifier = UIBackgroundTaskInvalid;
+                
+                self.undertakingResignPipeline = NO;
+                
+                // Notify of failure
+                for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                    [observer applicationSigningCompleteWithError:error];
+                }
             }
             
             return;
         }
         
         // Update progress to 50% for this application.
-        progressUpdateHandler([application bundleIdentifier], 50);
+        for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+            [observer applicationSigningUpdateProgress:50 forBundleIdentifier:[application bundleIdentifier]];
+        }
         
         //////////////////////////////////////////////////////////////////////////////////////
         // 3. Build IPA
@@ -281,28 +405,38 @@ static RPVApplicationSigning *sharedInstance;
         if (![EEBackend repackIpaAtPath:[extractedArchiveURL path] toPath:outputIpaPath error:&err]) {
             
             // Callback to say we done "goofed".
-            errorHandler(err, [application bundleIdentifier]);
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningDidEncounterError:error forBundleIdentifier:[application bundleIdentifier]];
+            }
             
             // TODO: Cleanup the filesystem?
             
             // Start the next application off.
-            if (self.installQueue.count > 0) {
+            if (self.installQueue.count > 1) {
                 [self.installQueue removeObjectAtIndex:0];
                 [self _initiateNextInstallFromQueueWithTeamID:teamID
                                                  username:username
-                                                 password:password
-                                    progressUpdateHandler:progressUpdateHandler
-                                             errorHandler:errorHandler
-                                     andCompletionHandler:completionHandler];
+                                                 password:password];
             } else {
-                completionHandler(err);
+                // End the background task!
+                [[UIApplication sharedApplication] endBackgroundTask:self.currentBackgroundTaskIdentifier];
+                self.currentBackgroundTaskIdentifier = UIBackgroundTaskInvalid;
+                
+                self.undertakingResignPipeline = NO;
+                
+                // Notify of failure
+                for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                    [observer applicationSigningCompleteWithError:error];
+                }
             }
             
             return;
         }
         
         // Update progress to 60% for this application.
-        progressUpdateHandler([application bundleIdentifier], 60);
+        for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+            [observer applicationSigningUpdateProgress:60 forBundleIdentifier:[application bundleIdentifier]];
+        }
         
         //////////////////////////////////////////////////////////////////////////////////////
         // 4. Install IPA
@@ -311,18 +445,18 @@ static RPVApplicationSigning *sharedInstance;
         NSString *bundleIdentifier = [application bundleIdentifier];
         
         // Start the next application off at this point for some parallelism!
-        if (self.installQueue.count > 0) {
+        if (self.installQueue.count > 1) {
             [self.installQueue removeObjectAtIndex:0];
             [self _initiateNextInstallFromQueueWithTeamID:teamID
                                              username:username
-                                             password:password
-                                progressUpdateHandler:progressUpdateHandler
-                                         errorHandler:errorHandler
-                                 andCompletionHandler:completionHandler];
+                                             password:password];
+        } else {
+            // Flag that we're done!
+            self.undertakingResignPipeline = NO;
         }
         
         // And now we install!
-        [self _installIpaAtPath:outputIpaPath withBundleIdentifier:bundleIdentifier progressUpdateHandler:progressUpdateHandler errorHandler:errorHandler];
+        [self _installIpaAtPath:outputIpaPath withBundleIdentifier:bundleIdentifier];
     }];
 }
 

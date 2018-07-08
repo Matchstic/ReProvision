@@ -22,6 +22,8 @@
 +(instancetype)currentHost;
 -(NSString*)localizedName;
 @end
+
+#import <UIKit/UIKit.h> // For device name
 #endif
 
 @implementation EEProvisioning
@@ -416,8 +418,14 @@
 }
 
 - (NSString*)_nameForCurrentMachine {
-    // This might throw compiler warnings on iOS
-    return [NSString stringWithFormat:@"EE- %@", [[NSHost currentHost] localizedName]];
+    // Need to change how we get the device name for iOS-based devices.
+#if TARGET_OS_SIMULATOR
+    return @"Simulator";
+#elif TARGET_OS_IPHONE
+    return [NSString stringWithFormat:@"%@", [[UIDevice currentDevice] name]];
+#else
+    return [NSString stringWithFormat:@"%@", [[NSHost currentHost] localizedName]];
+#endif
 }
 
 - (NSString*)_identifierForCurrentMachine {
@@ -445,6 +453,9 @@
     }
     
     NSLog(@"Generated a codesigning request, submitting...");
+    
+    // Going to add a prefix to the machine name.
+    machineName = [NSString stringWithFormat:@"RPV- %@", machineName];
     
     // Now that we have a CSR and private key, we can submit the CSR to Apple.
     [EEAppleServices submitCodeSigningRequestForTeamID:teamid machineName:machineName machineID:machineId codeSigningRequest:codeSigningRequest withCompletionHandler:^(NSError *error, NSDictionary *plist) {

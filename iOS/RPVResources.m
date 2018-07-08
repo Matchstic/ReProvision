@@ -8,6 +8,10 @@
 #import "RPVResources.h"
 #import "SAMKeychain.h"
 
+#import <UIKit/UIKit.h>
+
+#include <notify.h>
+
 #define SERVICENAME @"com.matchstic.ReProvision"
 
 @implementation RPVResources
@@ -52,12 +56,29 @@
     return value ? [value boolValue] : NO;
 }
 
++ (NSTimeInterval)heartbeatTimerInterval {
+    id value = [[NSUserDefaults standardUserDefaults] objectForKey:@"heartbeatTimerInterval"];
+    int time = value ? [value intValue] : 2;
+    
+    NSTimeInterval interval = 3600;
+    interval *= time;
+    
+    return interval;
+}
+
 + (id)preferenceValueForKey:(NSString*)key {
     return [[NSUserDefaults standardUserDefaults] objectForKey:key];
 }
 
 + (void)setPreferenceValue:(id)value forKey:(NSString*)key withNotification:(NSString*)notification {
     [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
+    
+    // Write to CFPreferences
+    CFPreferencesSetValue ((__bridge CFStringRef)key, (__bridge CFPropertyListRef)value, CFSTR("com.matchstic.reprovision.ios"), kCFPreferencesCurrentUser, kCFPreferencesCurrentHost);
+    CFPreferencesAppSynchronize(CFSTR("com.matchstic.reprovision.ios"));
+    
+    // Notify daemon of new preferences.
+    notify_post("com.matchstic.reprovision.ios/updatePreferences");
     
     // Broadcast notification as Darwin
     [self _broadcastNotification:notification withUserInfo:nil];
@@ -104,6 +125,52 @@
     [SAMKeychain deletePasswordForService:SERVICENAME account:username];
     
     [self _broadcastNotification:@"RPVDisplayAccountSignInController" withUserInfo:nil];
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// Helper methods.
+//////////////////////////////////////////////////////////////////////////////////
+
++ (NSString*)getFormattedTimeRemainingForExpirationDate:(NSDate*)expirationDate {
+    NSDate *now = [NSDate date];
+    
+    NSTimeInterval distanceBetweenDates = [expirationDate timeIntervalSinceDate:now];
+    double secondsInAnHour = 3600;
+    NSInteger hoursBetweenDates = distanceBetweenDates / secondsInAnHour;
+    
+    int days = (int)floor((CGFloat)hoursBetweenDates / 24.0);
+    int minutes = distanceBetweenDates / 60;
+    
+    if (days > 0) {
+        // round up days to make more sense to the user
+        return [NSString stringWithFormat:@"%d day%@, %d hour%@", days, days == 1 ? @"" : @"s", (int)hoursBetweenDates - (days * 24), hoursBetweenDates == 1 ? @"" : @"s"];
+    } else if (hoursBetweenDates > 0) {
+        // less than 24 hours, warning time.
+        return [NSString stringWithFormat:@"%d hour%@", (int)hoursBetweenDates, hoursBetweenDates == 1 ? @"" : @"s"];
+    } else if (minutes > 0){
+        // less than 1 hour, warning time. (!!)
+        return [NSString stringWithFormat:@"%d minute%@", minutes, minutes == 1 ? @"" : @"s"];
+    } else {
+        return @"Expired";
+    }
+}
+
++ (CGRect)boundedRectForFont:(UIFont*)font andText:(NSString*)text width:(CGFloat)width {
+    if (!text || !font) {
+        return CGRectZero;
+    }
+    
+    if (![text isKindOfClass:[NSAttributedString class]]) {
+        NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName:font}];
+        CGRect rect = [attributedText boundingRectWithSize:(CGSize){width, CGFLOAT_MAX}
+                                                   options:NSStringDrawingUsesLineFragmentOrigin
+                                                   context:nil];
+        return rect;
+    } else {
+        return [(NSAttributedString*)text boundingRectWithSize:(CGSize){width, CGFLOAT_MAX}
+                                                       options:NSStringDrawingUsesLineFragmentOrigin
+                                                       context:nil];
+    }
 }
 
 @end

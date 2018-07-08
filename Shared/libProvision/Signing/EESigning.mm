@@ -123,6 +123,7 @@
     X509 *cert = PEM_read_bio_X509(bio, NULL, NULL, NULL);
     if (!cert) {
         NSLog(@"Failed to load CA chain.");
+        @throw [NSException exceptionWithName:@"libProvisionSigningException" reason:@"Could not load CA chain from disk!" userInfo:nil];
     }
     
     return cert;

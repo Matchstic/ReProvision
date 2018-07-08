@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Reload application cache
+echo "Reloading application cache"
+uicache
+
+# Handle the daemon
+echo "(Re)-loading daemon..."
+chown root /Library/LaunchDaemons/com.matchstic.reprovisiond.plist
+
+# Unload for an upgrade. - Might spew an error, so hide that.
+/bin/launchctl unload /Library/LaunchDaemons/com.matchstic.reprovisiond.plist 2>/dev/null
+/bin/launchctl load /Library/LaunchDaemons/com.matchstic.reprovisiond.plist
+
+# Classic easter egg
+echo "Do, or do not. There is no try."

@@ -23,6 +23,7 @@
         self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
     }
     
+    self.view.tintColor = [UIApplication sharedApplication].delegate.window.tintColor;
     [[self navigationItem] setTitle:@"Settings"];
 }
 
@@ -103,7 +104,8 @@
     threshold.titleDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"1 Day Left", @"2 Days Left", @"3 Days Left", @"4 Days Left", @"5 Days Left", @"6 Days Left", nil] forKeys:threshold.values];
     threshold.shortTitleDictionary = threshold.titleDictionary;
     [threshold setProperty:@"thresholdForResigning" forKey:@"key"];
-    [threshold setProperty:@"For example, setting \"2 Days Left\" will cause an application to get re-signed when it is 2 days away from expiring." forKey:@"staticTextMessage"];
+    [threshold setProperty:@"For example, setting \"2 Days Left\" will cause an application to be re-signed when it is 2 days away from expiring." forKey:@"staticTextMessage"];
+    [threshold setProperty:@"com.matchstic.reprovision.ios/resigningThresholdDidChange" forKey:@"PostNotification"];
     
     [array addObject:threshold];
     
@@ -135,7 +137,99 @@
     
     [array addObject:troubleshoot];
     
+    // Credits
+    PSSpecifier *group4 = [PSSpecifier groupSpecifierWithName:@"Credits"];
+    [array addObject:group4];
+    
+    PSSpecifier* author = [PSSpecifier preferenceSpecifierNamed:@"author"
+                                                               target:self
+                                                                  set:nil
+                                                                  get:nil
+                                                               detail:nil
+                                                                 cell:PSLinkCell
+                                                                 edit:nil];
+    
+    [array addObject:author];
+    
+    PSSpecifier* designer = [PSSpecifier preferenceSpecifierNamed:@"designer"
+                                                         target:self
+                                                            set:nil
+                                                            get:nil
+                                                         detail:nil
+                                                           cell:PSLinkCell
+                                                           edit:nil];
+    
+    [array addObject:designer];
+    
     return array;
+}
+
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 4) {
+        static NSString *cellIdentifier = @"credits.cell";
+        
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+        }
+        
+        cell.textLabel.text = indexPath.row == 0 ? @"Matchstic" : @"Aesign";
+        cell.detailTextLabel.text = indexPath.row == 0 ? @"Developer" : @"Designer";
+        cell.imageView.image = [UIImage imageNamed:indexPath.row == 0 ? @"author" : @"designer"];
+        
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
+        return cell;
+    } else {
+        UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
+        
+        // Find the type of cell this is.
+        int section = (int)indexPath.section;
+        int row = (int)indexPath.row;
+        
+        PSSpecifier *represented;
+        NSArray *specifiers = [self specifiers];
+        int currentSection = -1;
+        int currentRow = 0;
+        for (int i = 0; i < specifiers.count; i++) {
+            PSSpecifier *spec = [specifiers objectAtIndex:i];
+            
+            // Update current sections
+            if (spec.cellType == PSGroupCell) {
+                currentSection++;
+                currentRow = 0;
+                continue;
+            }
+            
+            // Check if this is the right specifier.
+            if (currentRow == row && currentSection == section) {
+                represented = spec;
+                break;
+            } else {
+                currentRow++;
+            }
+        }
+        
+        // Tint the cell if needed!
+        if (represented.cellType == PSButtonCell)
+            cell.textLabel.textColor = [UIApplication sharedApplication].delegate.window.tintColor;
+        
+        return cell;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return indexPath.section == 4 ? 60.0 : UITableViewAutomaticDimension;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 4) {
+        // handle credits tap.
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        [self _openTwitterForUser:indexPath.row == 0 ? @"_Matchstic" : @"aesign_"];
+    } else {
+        [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+    }
 }
 
 - (void)updateSpecifiersForAppleID:(NSString*)username {
@@ -170,6 +264,22 @@
 
 - (void)didClickSignIn:(id)sender {
     [RPVResources userDidRequestAccountSignIn];
+}
+
+- (void)_openTwitterForUser:(NSString*)username {
+    UIApplication *app = [UIApplication sharedApplication];
+    
+    NSURL *twitterapp = [NSURL URLWithString:[NSString stringWithFormat:@"twitter:///user?screen_name=%@", username]];
+    NSURL *tweetbot = [NSURL URLWithString:[NSString stringWithFormat:@"tweetbot:///user_profile/%@", username]];
+    NSURL *twitterweb = [NSURL URLWithString:[NSString stringWithFormat:@"http://twitter.com/%@", username]];
+    
+    
+    if ([app canOpenURL:twitterapp])
+        [app openURL:twitterapp];
+    else if ([app canOpenURL:tweetbot])
+        [app openURL:tweetbot];
+    else
+        [app openURL:twitterweb];
 }
 
 - (id)readPreferenceValue:(PSSpecifier*)value {

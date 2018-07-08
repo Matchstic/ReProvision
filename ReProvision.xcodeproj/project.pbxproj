@@ -7,11 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0BA671B5481B8584C4CBDEAD /* libPods-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6128985EC92357E21F928222 /* libPods-macOS.a */; };
-		8F6C6C6A581562A14415C53B /* libPods-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 752E9A9CE1D776522A582DBF /* libPods-iOS.a */; };
-		C92D37382050025C00F9F152 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = C92D37342050025C00F9F152 /* LICENSE */; };
-		C92D37392050025C00F9F152 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = C92D37362050025C00F9F152 /* README.md */; };
-		C92D373A2050025C00F9F152 /* CKBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = C92D37372050025C00F9F152 /* CKBlurView.m */; };
+		A26601C23E41FF5D32A6DF6C /* libPods-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0BF9DAD92CB745EF24C11FC /* libPods-iOS.a */; };
+		C90AD51E20697F23008B2F2B /* RPVNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C90AD51D20697F23008B2F2B /* RPVNotificationManager.m */; };
+		C90AD5212069968E008B2F2B /* RPVBackgroundSigningManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C90AD5202069968E008B2F2B /* RPVBackgroundSigningManager.m */; };
 		C92D374120502B3900F9F152 /* RPVAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C92D374020502B3900F9F152 /* RPVAccountViewController.m */; };
 		C92D374520502B5600F9F152 /* RPVAccount2FAViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C92D374420502B5600F9F152 /* RPVAccount2FAViewController.m */; };
 		C92D374820502B6300F9F152 /* RPVAccountPrivacyPolicyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C92D374720502B6300F9F152 /* RPVAccountPrivacyPolicyViewController.m */; };
@@ -24,18 +22,23 @@
 		C9313C1C2005292F000AD4C3 /* RPVAdvancedController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C192005292F000AD4C3 /* RPVAdvancedController.m */; };
 		C9313C1F20052B13000AD4C3 /* RPVResources.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C1E20052B13000AD4C3 /* RPVResources.m */; };
 		C938D396200842F7003802FF /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C938D395200842F7003802FF /* MobileCoreServices.framework */; };
-		C96B0CC02005354C00F713AF /* RPVInstalledCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CBF2005354C00F713AF /* RPVInstalledCollectionViewCell.m */; };
-		C96B0CC320053FD300F713AF /* RPVInstalledCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CC220053FD300F713AF /* RPVInstalledCollectionViewLayout.m */; };
-		C96B0CC6200545D100F713AF /* RPVInstalledCollectionMainHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CC5200545D100F713AF /* RPVInstalledCollectionMainHeaderView.m */; };
-		C96B0CC9200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CC7200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.m */; };
+		C93F3B6C20F21C9000B573E6 /* HookUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = C93F3B6920F21C9000B573E6 /* HookUtil.c */; };
 		C96B0CD52005704F00F713AF /* RPVApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD42005704F00F713AF /* RPVApplication.m */; };
 		C96B0CD8200570DA00F713AF /* RPVApplicationDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD7200570DA00F713AF /* RPVApplicationDatabase.m */; };
 		C96B0CDB2005782A00F713AF /* RPVApplicationSigning.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CDA2005782A00F713AF /* RPVApplicationSigning.m */; };
+		C96FBFE220EB9DF0007E2EC3 /* RPVInstalledViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */; };
+		C96FBFE820EB9F0F007E2EC3 /* RPVInstalledMainHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE420EB9F0F007E2EC3 /* RPVInstalledMainHeaderView.m */; };
+		C96FBFE920EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE620EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m */; };
+		C96FBFEE20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFEC20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m */; };
+		C96FBFF120EBD287007E2EC3 /* RPVInstalledTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */; };
+		C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */ = {isa = PBXBuildFile; fileRef = C996746520EE314B00EEFBD2 /* PackageVersion.plist */; };
+		C9AB43BF20F012E00016F78F /* SpringBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C9AB43C020F012E00016F78F /* BackBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43BE20F012E00016F78F /* BackBoardServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C9AB43C220F016CC0016F78F /* AssertionServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43C120F016CC0016F78F /* AssertionServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C9C6EA6C2004261300211FDD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA602004261300211FDD /* AppDelegate.m */; };
 		C9C6EA6D2004261300211FDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA612004261300211FDD /* Assets.xcassets */; };
 		C9C6EA6E2004261300211FDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA622004261300211FDD /* LaunchScreen.storyboard */; };
 		C9C6EA6F2004261300211FDD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA642004261300211FDD /* Main.storyboard */; };
-		C9C6EA702004261300211FDD /* RPVInstalledCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA672004261300211FDD /* RPVInstalledCollectionViewController.m */; };
 		C9C6EA722004261300211FDD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA692004261300211FDD /* main.m */; };
 		C9C6EA732004261300211FDD /* RPVSettingsNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA6B2004261300211FDD /* RPVSettingsNavigationViewController.m */; };
 		C9C6EAF62004280A00211FDD /* EEAppleServices.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA782004280A00211FDD /* EEAppleServices.m */; };
@@ -149,24 +152,43 @@
 		C9C6EB76200428C200211FDD /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAEE2004280A00211FDD /* unzip.c */; };
 		C9C6EB77200428C200211FDD /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAF02004280A00211FDD /* zip.c */; };
 		C9C6EB78200428C200211FDD /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAF32004280A00211FDD /* SSZipArchive.m */; };
-		C9E9F4FB204F2EC500EDE8CD /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E9F4F8204F2EC500EDE8CD /* UIImage+Scale.m */; };
-		C9E9F4FC204F2EC500EDE8CD /* UIImage+ColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E9F4F9204F2EC500EDE8CD /* UIImage+ColorArt.m */; };
-		C9E9F4FD204F2EC500EDE8CD /* SLColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E9F4FA204F2EC500EDE8CD /* SLColorArt.m */; };
+		C9D5BACE20EE3D54000D5970 /* RPVDaemonListener.h in Headers */ = {isa = PBXBuildFile; fileRef = C9D5BACC20EE3D54000D5970 /* RPVDaemonListener.h */; };
+		C9D5BACF20EE3D54000D5970 /* RPVDaemonListener.m in Sources */ = {isa = PBXBuildFile; fileRef = C9D5BACD20EE3D54000D5970 /* RPVDaemonListener.m */; };
+		C9E7C2AC20ECFC1A00FDF3B0 /* RPVTroubleshootingNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E7C2AB20ECFC1A00FDF3B0 /* RPVTroubleshootingNavigationViewController.m */; };
+		C9E7C2AF20ECFC3C00FDF3B0 /* RPVTroubleshootingController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E7C2AE20ECFC3C00FDF3B0 /* RPVTroubleshootingController.m */; };
+		C9E7C2B220ED016000FDF3B0 /* RPVTroubleshootingCertificatesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E7C2B120ED016000FDF3B0 /* RPVTroubleshootingCertificatesViewController.m */; };
+		C9E7C2BD20EE296500FDF3B0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9E7C2BC20EE296500FDF3B0 /* Foundation.framework */; };
+		C9E7C2C720EE296500FDF3B0 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9E7C2C620EE296500FDF3B0 /* main.mm */; };
+		C9E9BB7720C5D12500EE27D9 /* RPVSplitViewDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BB7620C5D12500EE27D9 /* RPVSplitViewDetailViewController.m */; };
+		C9E9BB7A20C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BB7920C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.m */; };
+		C9E9BB7D20C5D38D00EE27D9 /* RPVRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BB7C20C5D38D00EE27D9 /* RPVRootViewController.m */; };
+		C9F3FA6920EE6A48002AD7B9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9F3FA6820EE6A48002AD7B9 /* CoreFoundation.framework */; };
 		C9FDB29B20518712005934CD /* RPVAccountFinalController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9FDB29A20518712005934CD /* RPVAccountFinalController.m */; };
 		C9FDB2A2205195E8005934CD /* libMobileGestalt.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FDB2A1205195E8005934CD /* libMobileGestalt.tbd */; };
+		FDC46406FBD5ED313E3C450E /* libPods-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 56C208AF9B386EA848EA9D18 /* libPods-macOS.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C996746720EE32BE00EEFBD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9C6EA3A2004257E00211FDD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C9E7C2BB20EE296400FDF3B0;
+			remoteInfo = "iOS Daemon";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		1BED720855DAA03FC578B695 /* Pods-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iOS/Pods-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		1C46832E058CCB73D45E85EB /* Pods-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-iOS/Pods-iOS.release.xcconfig"; sourceTree = "<group>"; };
-		6128985EC92357E21F928222 /* libPods-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		752E9A9CE1D776522A582DBF /* libPods-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		56C208AF9B386EA848EA9D18 /* libPods-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0BF9DAD92CB745EF24C11FC /* libPods-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B809A0BC7D3B055DCE0E28C4 /* Pods-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-macOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-macOS/Pods-macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		BA8B6832F905206352FC8D1C /* Pods-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-macOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-macOS/Pods-macOS.release.xcconfig"; sourceTree = "<group>"; };
-		C92D37342050025C00F9F152 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		C92D37352050025C00F9F152 /* CKBlurView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKBlurView.h; sourceTree = "<group>"; };
-		C92D37362050025C00F9F152 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		C92D37372050025C00F9F152 /* CKBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKBlurView.m; sourceTree = "<group>"; };
+		C90AD51C20697F23008B2F2B /* RPVNotificationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVNotificationManager.h; sourceTree = "<group>"; };
+		C90AD51D20697F23008B2F2B /* RPVNotificationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVNotificationManager.m; sourceTree = "<group>"; };
+		C90AD51F2069968E008B2F2B /* RPVBackgroundSigningManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVBackgroundSigningManager.h; path = "Shared/Application Database/RPVBackgroundSigningManager.h"; sourceTree = "<group>"; };
+		C90AD5202069968E008B2F2B /* RPVBackgroundSigningManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RPVBackgroundSigningManager.m; path = "Shared/Application Database/RPVBackgroundSigningManager.m"; sourceTree = "<group>"; };
 		C92D373F20502B3900F9F152 /* RPVAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVAccountViewController.h; sourceTree = "<group>"; };
 		C92D374020502B3900F9F152 /* RPVAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVAccountViewController.m; sourceTree = "<group>"; };
 		C92D374320502B5600F9F152 /* RPVAccount2FAViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVAccount2FAViewController.h; sourceTree = "<group>"; };
@@ -204,28 +226,34 @@
 		C9313C3120052C29000AD4C3 /* PSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSViewController.h; sourceTree = "<group>"; };
 		C938D394200824F8003802FF /* RPVErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVErrors.h; path = "Shared/Application Database/RPVErrors.h"; sourceTree = "<group>"; };
 		C938D395200842F7003802FF /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		C96B0CBE2005354C00F713AF /* RPVInstalledCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionViewCell.h; sourceTree = "<group>"; };
-		C96B0CBF2005354C00F713AF /* RPVInstalledCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionViewCell.m; sourceTree = "<group>"; };
-		C96B0CC120053FD300F713AF /* RPVInstalledCollectionViewLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionViewLayout.h; sourceTree = "<group>"; };
-		C96B0CC220053FD300F713AF /* RPVInstalledCollectionViewLayout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionViewLayout.m; sourceTree = "<group>"; };
-		C96B0CC4200545D100F713AF /* RPVInstalledCollectionMainHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionMainHeaderView.h; sourceTree = "<group>"; };
-		C96B0CC5200545D100F713AF /* RPVInstalledCollectionMainHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionMainHeaderView.m; sourceTree = "<group>"; };
-		C96B0CC7200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RPVInstalledCollectionSectionHeaderView.m; path = "/Users/matt/iOS/Projects/Extender-Installer/iOS/Installed Panes/RPVInstalledCollectionSectionHeaderView.m"; sourceTree = "<absolute>"; };
-		C96B0CC8200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVInstalledCollectionSectionHeaderView.h; path = "/Users/matt/iOS/Projects/Extender-Installer/iOS/Installed Panes/RPVInstalledCollectionSectionHeaderView.h"; sourceTree = "<absolute>"; };
+		C93F3B6620F21C9000B573E6 /* HookUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HookUtil.h; sourceTree = "<group>"; };
+		C93F3B6920F21C9000B573E6 /* HookUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HookUtil.c; sourceTree = "<group>"; };
 		C96B0CD32005704E00F713AF /* RPVApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RPVApplication.h; path = "Shared/Application Database/RPVApplication.h"; sourceTree = "<group>"; };
 		C96B0CD42005704F00F713AF /* RPVApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RPVApplication.m; path = "Shared/Application Database/RPVApplication.m"; sourceTree = "<group>"; };
 		C96B0CD6200570DA00F713AF /* RPVApplicationDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVApplicationDatabase.h; path = "Shared/Application Database/RPVApplicationDatabase.h"; sourceTree = "<group>"; };
 		C96B0CD7200570DA00F713AF /* RPVApplicationDatabase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RPVApplicationDatabase.m; path = "Shared/Application Database/RPVApplicationDatabase.m"; sourceTree = "<group>"; };
 		C96B0CD92005782A00F713AF /* RPVApplicationSigning.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVApplicationSigning.h; path = "Shared/Application Database/RPVApplicationSigning.h"; sourceTree = "<group>"; };
 		C96B0CDA2005782A00F713AF /* RPVApplicationSigning.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RPVApplicationSigning.m; path = "Shared/Application Database/RPVApplicationSigning.m"; sourceTree = "<group>"; };
+		C96FBFE020EB9DF0007E2EC3 /* RPVInstalledViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledViewController.h; sourceTree = "<group>"; };
+		C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledViewController.m; sourceTree = "<group>"; };
+		C96FBFE420EB9F0F007E2EC3 /* RPVInstalledMainHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledMainHeaderView.m; sourceTree = "<group>"; };
+		C96FBFE520EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledSectionHeaderView.h; sourceTree = "<group>"; };
+		C96FBFE620EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledSectionHeaderView.m; sourceTree = "<group>"; };
+		C96FBFE720EB9F0F007E2EC3 /* RPVInstalledMainHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledMainHeaderView.h; sourceTree = "<group>"; };
+		C96FBFEC20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionViewCell.m; sourceTree = "<group>"; };
+		C96FBFED20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionViewCell.h; sourceTree = "<group>"; };
+		C96FBFEF20EBD287007E2EC3 /* RPVInstalledTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledTableViewCell.h; sourceTree = "<group>"; };
+		C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledTableViewCell.m; sourceTree = "<group>"; };
+		C996746520EE314B00EEFBD2 /* PackageVersion.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
+		C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = SpringBoardServices.tbd; path = Shared/iosdaemon/lib/SpringBoardServices.tbd; sourceTree = "<group>"; };
+		C9AB43BE20F012E00016F78F /* BackBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = BackBoardServices.tbd; path = Shared/iosdaemon/lib/BackBoardServices.tbd; sourceTree = "<group>"; };
+		C9AB43C120F016CC0016F78F /* AssertionServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = AssertionServices.tbd; path = Shared/iosdaemon/lib/AssertionServices.tbd; sourceTree = "<group>"; };
 		C9C6EA422004257E00211FDD /* ReProvision.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReProvision.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9C6EA5F2004261300211FDD /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		C9C6EA602004261300211FDD /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		C9C6EA612004261300211FDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C9C6EA632004261300211FDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C9C6EA652004261300211FDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		C9C6EA662004261300211FDD /* RPVInstalledCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionViewController.h; sourceTree = "<group>"; };
-		C9C6EA672004261300211FDD /* RPVInstalledCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionViewController.m; sourceTree = "<group>"; };
 		C9C6EA682004261300211FDD /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9C6EA692004261300211FDD /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C9C6EA6A2004261300211FDD /* RPVSettingsNavigationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVSettingsNavigationViewController.h; sourceTree = "<group>"; };
@@ -352,12 +380,25 @@
 		C9C6EB3E2004282A00211FDD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C9C6EB3F2004282A00211FDD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C9C6EB412004282A00211FDD /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
-		C9E9F4F5204F2EC500EDE8CD /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Scale.h"; sourceTree = "<group>"; };
-		C9E9F4F6204F2EC500EDE8CD /* UIImage+ColorArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ColorArt.h"; sourceTree = "<group>"; };
-		C9E9F4F7204F2EC500EDE8CD /* SLColorArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SLColorArt.h; sourceTree = "<group>"; };
-		C9E9F4F8204F2EC500EDE8CD /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Scale.m"; sourceTree = "<group>"; };
-		C9E9F4F9204F2EC500EDE8CD /* UIImage+ColorArt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ColorArt.m"; sourceTree = "<group>"; };
-		C9E9F4FA204F2EC500EDE8CD /* SLColorArt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SLColorArt.m; sourceTree = "<group>"; };
+		C9D5BACC20EE3D54000D5970 /* RPVDaemonListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVDaemonListener.h; sourceTree = "<group>"; };
+		C9D5BACD20EE3D54000D5970 /* RPVDaemonListener.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVDaemonListener.m; sourceTree = "<group>"; };
+		C9E7C2AA20ECFC1A00FDF3B0 /* RPVTroubleshootingNavigationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVTroubleshootingNavigationViewController.h; sourceTree = "<group>"; };
+		C9E7C2AB20ECFC1A00FDF3B0 /* RPVTroubleshootingNavigationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVTroubleshootingNavigationViewController.m; sourceTree = "<group>"; };
+		C9E7C2AD20ECFC3C00FDF3B0 /* RPVTroubleshootingController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVTroubleshootingController.h; sourceTree = "<group>"; };
+		C9E7C2AE20ECFC3C00FDF3B0 /* RPVTroubleshootingController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVTroubleshootingController.m; sourceTree = "<group>"; };
+		C9E7C2B020ED016000FDF3B0 /* RPVTroubleshootingCertificatesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVTroubleshootingCertificatesViewController.h; sourceTree = "<group>"; };
+		C9E7C2B120ED016000FDF3B0 /* RPVTroubleshootingCertificatesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVTroubleshootingCertificatesViewController.m; sourceTree = "<group>"; };
+		C9E7C2BC20EE296500FDF3B0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C9E7C2C520EE296500FDF3B0 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		C9E7C2C620EE296500FDF3B0 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		C9E9BB7520C5D12500EE27D9 /* RPVSplitViewDetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVSplitViewDetailViewController.h; sourceTree = "<group>"; };
+		C9E9BB7620C5D12500EE27D9 /* RPVSplitViewDetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVSplitViewDetailViewController.m; sourceTree = "<group>"; };
+		C9E9BB7820C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVSplitViewMasterTableViewController.h; sourceTree = "<group>"; };
+		C9E9BB7920C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVSplitViewMasterTableViewController.m; sourceTree = "<group>"; };
+		C9E9BB7B20C5D38D00EE27D9 /* RPVRootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVRootViewController.h; sourceTree = "<group>"; };
+		C9E9BB7C20C5D38D00EE27D9 /* RPVRootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVRootViewController.m; sourceTree = "<group>"; };
+		C9F3FA6620EE6A42002AD7B9 /* SpringBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = SpringBoardServices.tbd; path = Shared/iosdaemon/SpringBoardServices.tbd; sourceTree = "<group>"; };
+		C9F3FA6820EE6A48002AD7B9 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		C9FDB29920518712005934CD /* RPVAccountFinalController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVAccountFinalController.h; sourceTree = "<group>"; };
 		C9FDB29A20518712005934CD /* RPVAccountFinalController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVAccountFinalController.m; sourceTree = "<group>"; };
 		C9FDB29C2051941D005934CD /* libMobileGestalt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libMobileGestalt.h; sourceTree = "<group>"; };
@@ -373,7 +414,7 @@
 				C92D374A20502D7300F9F152 /* WebKit.framework in Frameworks */,
 				C938D396200842F7003802FF /* MobileCoreServices.framework in Frameworks */,
 				C9313C052005277E000AD4C3 /* Preferences.tbd in Frameworks */,
-				8F6C6C6A581562A14415C53B /* libPods-iOS.a in Frameworks */,
+				A26601C23E41FF5D32A6DF6C /* libPods-iOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,7 +422,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0BA671B5481B8584C4CBDEAD /* libPods-macOS.a in Frameworks */,
+				FDC46406FBD5ED313E3C450E /* libPods-macOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9E7C2B820EE296400FDF3B0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9AB43C220F016CC0016F78F /* AssertionServices.tbd in Frameworks */,
+				C9AB43BF20F012E00016F78F /* SpringBoardServices.tbd in Frameworks */,
+				C9AB43C020F012E00016F78F /* BackBoardServices.tbd in Frameworks */,
+				C9F3FA6920EE6A48002AD7B9 /* CoreFoundation.framework in Frameworks */,
+				C9E7C2BD20EE296500FDF3B0 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,12 +444,18 @@
 		25B27802FF2D573B29DEC669 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C9AB43C120F016CC0016F78F /* AssertionServices.tbd */,
+				C9AB43BE20F012E00016F78F /* BackBoardServices.tbd */,
+				C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */,
+				C9F3FA6820EE6A48002AD7B9 /* CoreFoundation.framework */,
+				C9F3FA6620EE6A42002AD7B9 /* SpringBoardServices.tbd */,
 				C9FDB2A1205195E8005934CD /* libMobileGestalt.tbd */,
 				C92D374920502D7300F9F152 /* WebKit.framework */,
 				C938D395200842F7003802FF /* MobileCoreServices.framework */,
 				C9313C042005277E000AD4C3 /* Preferences.tbd */,
-				752E9A9CE1D776522A582DBF /* libPods-iOS.a */,
-				6128985EC92357E21F928222 /* libPods-macOS.a */,
+				B0BF9DAD92CB745EF24C11FC /* libPods-iOS.a */,
+				56C208AF9B386EA848EA9D18 /* libPods-macOS.a */,
+				C9E7C2BC20EE296500FDF3B0 /* Foundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -404,22 +463,13 @@
 		C90C2218200533B300255B08 /* Installed Panes */ = {
 			isa = PBXGroup;
 			children = (
-				C9C6EA662004261300211FDD /* RPVInstalledCollectionViewController.h */,
-				C9C6EA672004261300211FDD /* RPVInstalledCollectionViewController.m */,
-				C96B0CCE20056FB800F713AF /* Collection View misc. */,
+				C96FBFE020EB9DF0007E2EC3 /* RPVInstalledViewController.h */,
+				C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */,
+				C96FBFEB20EBA52A007E2EC3 /* Table View */,
+				C96FBFEA20EBA51E007E2EC3 /* Collection View */,
+				C96FBFE320EB9EED007E2EC3 /* Section Headers */,
 			);
 			path = "Installed Panes";
-			sourceTree = "<group>";
-		};
-		C92D37332050025C00F9F152 /* CKBlurView */ = {
-			isa = PBXGroup;
-			children = (
-				C92D37342050025C00F9F152 /* LICENSE */,
-				C92D37352050025C00F9F152 /* CKBlurView.h */,
-				C92D37362050025C00F9F152 /* README.md */,
-				C92D37372050025C00F9F152 /* CKBlurView.m */,
-			);
-			path = CKBlurView;
 			sourceTree = "<group>";
 		};
 		C92D374220502B4200F9F152 /* Account */ = {
@@ -457,11 +507,13 @@
 		C9313C2020052B1D000AD4C3 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				C92D37332050025C00F9F152 /* CKBlurView */,
-				C9E9F4F4204F2EC500EDE8CD /* ColorArt */,
+				C93F3B6520F21C9000B573E6 /* HookUtil */,
 				C9313C2120052C29000AD4C3 /* Headers */,
 				C9313C1D20052B13000AD4C3 /* RPVResources.h */,
 				C9313C1E20052B13000AD4C3 /* RPVResources.m */,
+				C9C6EA692004261300211FDD /* main.m */,
+				C9C6EA682004261300211FDD /* Info.plist */,
+				C996746520EE314B00EEFBD2 /* PackageVersion.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -469,6 +521,7 @@
 		C9313C2120052C29000AD4C3 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				C9FDB29C2051941D005934CD /* libMobileGestalt.h */,
 				C9313C2220052C29000AD4C3 /* Preferences */,
 			);
 			path = Headers;
@@ -496,34 +549,59 @@
 			path = Preferences;
 			sourceTree = "<group>";
 		};
-		C96B0CCE20056FB800F713AF /* Collection View misc. */ = {
+		C93F3B6520F21C9000B573E6 /* HookUtil */ = {
 			isa = PBXGroup;
 			children = (
-				C96B0CBE2005354C00F713AF /* RPVInstalledCollectionViewCell.h */,
-				C96B0CBF2005354C00F713AF /* RPVInstalledCollectionViewCell.m */,
-				C96B0CC120053FD300F713AF /* RPVInstalledCollectionViewLayout.h */,
-				C96B0CC220053FD300F713AF /* RPVInstalledCollectionViewLayout.m */,
-				C96B0CC4200545D100F713AF /* RPVInstalledCollectionMainHeaderView.h */,
-				C96B0CC5200545D100F713AF /* RPVInstalledCollectionMainHeaderView.m */,
-				C96B0CC8200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.h */,
-				C96B0CC7200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.m */,
+				C93F3B6620F21C9000B573E6 /* HookUtil.h */,
+				C93F3B6920F21C9000B573E6 /* HookUtil.c */,
 			);
-			name = "Collection View misc.";
+			path = HookUtil;
 			sourceTree = "<group>";
 		};
 		C96B0CD22005702900F713AF /* Application Database */ = {
 			isa = PBXGroup;
 			children = (
+				C96B0CD92005782A00F713AF /* RPVApplicationSigning.h */,
+				C96B0CDA2005782A00F713AF /* RPVApplicationSigning.m */,
+				C90AD51F2069968E008B2F2B /* RPVBackgroundSigningManager.h */,
+				C90AD5202069968E008B2F2B /* RPVBackgroundSigningManager.m */,
 				C96B0CD32005704E00F713AF /* RPVApplication.h */,
 				C96B0CD42005704F00F713AF /* RPVApplication.m */,
 				C96B0CD6200570DA00F713AF /* RPVApplicationDatabase.h */,
 				C96B0CD7200570DA00F713AF /* RPVApplicationDatabase.m */,
 				C938D394200824F8003802FF /* RPVErrors.h */,
-				C96B0CD92005782A00F713AF /* RPVApplicationSigning.h */,
-				C96B0CDA2005782A00F713AF /* RPVApplicationSigning.m */,
 			);
 			name = "Application Database";
 			path = ..;
+			sourceTree = "<group>";
+		};
+		C96FBFE320EB9EED007E2EC3 /* Section Headers */ = {
+			isa = PBXGroup;
+			children = (
+				C96FBFE520EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.h */,
+				C96FBFE620EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m */,
+				C96FBFE720EB9F0F007E2EC3 /* RPVInstalledMainHeaderView.h */,
+				C96FBFE420EB9F0F007E2EC3 /* RPVInstalledMainHeaderView.m */,
+			);
+			path = "Section Headers";
+			sourceTree = "<group>";
+		};
+		C96FBFEA20EBA51E007E2EC3 /* Collection View */ = {
+			isa = PBXGroup;
+			children = (
+				C96FBFED20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.h */,
+				C96FBFEC20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m */,
+			);
+			path = "Collection View";
+			sourceTree = "<group>";
+		};
+		C96FBFEB20EBA52A007E2EC3 /* Table View */ = {
+			isa = PBXGroup;
+			children = (
+				C96FBFEF20EBD287007E2EC3 /* RPVInstalledTableViewCell.h */,
+				C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */,
+			);
+			path = "Table View";
 			sourceTree = "<group>";
 		};
 		C9C6EA392004257E00211FDD = {
@@ -555,15 +633,14 @@
 				C9C6EA612004261300211FDD /* Assets.xcassets */,
 				C9C6EA622004261300211FDD /* LaunchScreen.storyboard */,
 				C9C6EA642004261300211FDD /* Main.storyboard */,
-				C92D374B20502E3900F9F152 /* RPVTabBarController.h */,
-				C92D374C20502E3900F9F152 /* RPVTabBarController.m */,
+				C90AD51C20697F23008B2F2B /* RPVNotificationManager.h */,
+				C90AD51D20697F23008B2F2B /* RPVNotificationManager.m */,
+				C9E9BB7220C5D07A00EE27D9 /* Root Controllers */,
 				C92D374220502B4200F9F152 /* Account */,
 				C90C2218200533B300255B08 /* Installed Panes */,
-				C9C6EA682004261300211FDD /* Info.plist */,
-				C9FDB29C2051941D005934CD /* libMobileGestalt.h */,
-				C9C6EA692004261300211FDD /* main.m */,
-				C9313C2020052B1D000AD4C3 /* Supporting Files */,
+				C9E7C2A920ECFBF100FDF3B0 /* Troubleshooting Pane */,
 				C9313C1320052912000AD4C3 /* Settings Panes */,
+				C9313C2020052B1D000AD4C3 /* Supporting Files */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -572,6 +649,7 @@
 			isa = PBXGroup;
 			children = (
 				C96B0CD22005702900F713AF /* Application Database */,
+				C9E7C2BE20EE296500FDF3B0 /* iosdaemon */,
 				C9C6EA752004280A00211FDD /* libProvision */,
 			);
 			path = Shared;
@@ -808,17 +886,67 @@
 			path = macOS;
 			sourceTree = "<group>";
 		};
-		C9E9F4F4204F2EC500EDE8CD /* ColorArt */ = {
+		C9E7C2A920ECFBF100FDF3B0 /* Troubleshooting Pane */ = {
 			isa = PBXGroup;
 			children = (
-				C9E9F4F5204F2EC500EDE8CD /* UIImage+Scale.h */,
-				C9E9F4F6204F2EC500EDE8CD /* UIImage+ColorArt.h */,
-				C9E9F4F7204F2EC500EDE8CD /* SLColorArt.h */,
-				C9E9F4F8204F2EC500EDE8CD /* UIImage+Scale.m */,
-				C9E9F4F9204F2EC500EDE8CD /* UIImage+ColorArt.m */,
-				C9E9F4FA204F2EC500EDE8CD /* SLColorArt.m */,
+				C9E7C2AA20ECFC1A00FDF3B0 /* RPVTroubleshootingNavigationViewController.h */,
+				C9E7C2AB20ECFC1A00FDF3B0 /* RPVTroubleshootingNavigationViewController.m */,
+				C9E7C2AD20ECFC3C00FDF3B0 /* RPVTroubleshootingController.h */,
+				C9E7C2AE20ECFC3C00FDF3B0 /* RPVTroubleshootingController.m */,
+				C9E7C2B020ED016000FDF3B0 /* RPVTroubleshootingCertificatesViewController.h */,
+				C9E7C2B120ED016000FDF3B0 /* RPVTroubleshootingCertificatesViewController.m */,
 			);
-			path = ColorArt;
+			path = "Troubleshooting Pane";
+			sourceTree = "<group>";
+		};
+		C9E7C2BE20EE296500FDF3B0 /* iosdaemon */ = {
+			isa = PBXGroup;
+			children = (
+				C9D5BACC20EE3D54000D5970 /* RPVDaemonListener.h */,
+				C9D5BACD20EE3D54000D5970 /* RPVDaemonListener.m */,
+				C9E7C2C620EE296500FDF3B0 /* main.mm */,
+				C9E7C2C320EE296500FDF3B0 /* Supporting Files */,
+			);
+			path = iosdaemon;
+			sourceTree = "<group>";
+		};
+		C9E7C2C320EE296500FDF3B0 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C9E7C2C520EE296500FDF3B0 /* Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		C9E9BB7220C5D07A00EE27D9 /* Root Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				C9E9BB7B20C5D38D00EE27D9 /* RPVRootViewController.h */,
+				C9E9BB7C20C5D38D00EE27D9 /* RPVRootViewController.m */,
+				C9E9BB7420C5D09300EE27D9 /* iPad */,
+				C9E9BB7320C5D08700EE27D9 /* iPhone */,
+			);
+			path = "Root Controllers";
+			sourceTree = "<group>";
+		};
+		C9E9BB7320C5D08700EE27D9 /* iPhone */ = {
+			isa = PBXGroup;
+			children = (
+				C92D374B20502E3900F9F152 /* RPVTabBarController.h */,
+				C92D374C20502E3900F9F152 /* RPVTabBarController.m */,
+			);
+			path = iPhone;
+			sourceTree = "<group>";
+		};
+		C9E9BB7420C5D09300EE27D9 /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+				C9E9BB7520C5D12500EE27D9 /* RPVSplitViewDetailViewController.h */,
+				C9E9BB7620C5D12500EE27D9 /* RPVSplitViewDetailViewController.m */,
+				C9E9BB7820C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.h */,
+				C9E9BB7920C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.m */,
+			);
+			path = iPad;
 			sourceTree = "<group>";
 		};
 		DCE41DBEB53648B12AD3BE45 /* Pods */ = {
@@ -834,21 +962,35 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		C9E7C2B920EE296400FDF3B0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9D5BACE20EE3D54000D5970 /* RPVDaemonListener.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		C9C6EA412004257E00211FDD /* iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9C6EA5B2004257E00211FDD /* Build configuration list for PBXNativeTarget "iOS" */;
 			buildPhases = (
+				C996746A20EE32D500EEFBD2 /* Move daemon binary into Package */,
 				E7B8235B02A4CDD86F4E0C07 /* [CP] Check Pods Manifest.lock */,
 				C9C6EA3E2004257E00211FDD /* Sources */,
 				C9C6EA3F2004257E00211FDD /* Frameworks */,
 				C9C6EA402004257E00211FDD /* Resources */,
 				8ABCE96F0C79D1EA9DC757CE /* [CP] Embed Pods Frameworks */,
 				38659AA49377400431BBBE6E /* [CP] Copy Pods Resources */,
+				C996746420EE30EB00EEFBD2 /* Sign application and create .deb */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C996746820EE32BE00EEFBD2 /* PBXTargetDependency */,
 			);
 			name = iOS;
 			productName = ReProvision;
@@ -875,6 +1017,22 @@
 			productReference = C9C6EB342004282900211FDD /* ReProvision.app */;
 			productType = "com.apple.product-type.application";
 		};
+		C9E7C2BB20EE296400FDF3B0 /* iOS Daemon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C9E7C2CF20EE296500FDF3B0 /* Build configuration list for PBXNativeTarget "iOS Daemon" */;
+			buildPhases = (
+				C9E7C2B720EE296400FDF3B0 /* Sources */,
+				C9E7C2B820EE296400FDF3B0 /* Frameworks */,
+				C9E7C2B920EE296400FDF3B0 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "iOS Daemon";
+			productName = iosdaemon;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -886,7 +1044,7 @@
 				TargetAttributes = {
 					C9C6EA412004257E00211FDD = {
 						CreatedOnToolsVersion = 9.1;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -901,6 +1059,10 @@
 								enabled = 0;
 							};
 						};
+					};
+					C9E7C2BB20EE296400FDF3B0 = {
+						CreatedOnToolsVersion = 9.1;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -918,6 +1080,7 @@
 			projectRoot = "";
 			targets = (
 				C9C6EA412004257E00211FDD /* iOS */,
+				C9E7C2BB20EE296400FDF3B0 /* iOS Daemon */,
 				C9C6EB332004282900211FDD /* macOS */,
 			);
 		};
@@ -930,12 +1093,11 @@
 			files = (
 				C9C6EA6D2004261300211FDD /* Assets.xcassets in Resources */,
 				C9C6EA6F2004261300211FDD /* Main.storyboard in Resources */,
-				C92D37392050025C00F9F152 /* README.md in Resources */,
 				C9C6EA6E2004261300211FDD /* LaunchScreen.storyboard in Resources */,
 				C9C6EAF92004280A00211FDD /* apple-ios.pem in Resources */,
 				C9C6EAF82004280A00211FDD /* apple-dev.pem in Resources */,
 				C9C6EAFC2004280A00211FDD /* verisign-2048-256.pem in Resources */,
-				C92D37382050025C00F9F152 /* LICENSE in Resources */,
+				C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */,
 				C9C6EAFA2004280A00211FDD /* verisign-1024-128.pem in Resources */,
 				C9C6EAFB2004280A00211FDD /* verisign-2048-128.pem in Resources */,
 			);
@@ -959,9 +1121,12 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-iOS/Pods-iOS-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MBCircularProgressBar/MBCircularProgressBar.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MBCircularProgressBar.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1004,14 +1169,45 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-iOS/Pods-iOS-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/UIImageColors/UIImageColors.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UIImageColors.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-iOS/Pods-iOS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		C996746420EE30EB00EEFBD2 /* Sign application and create .deb */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Sign application and create .deb";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"Copying application into Package\"\n\n# Clean out existing .app\nrm -rf \"${PROJECT_DIR}/iOS/Package/Applications/${CONTENTS_FOLDER_PATH}\"\n\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/${CONTENTS_FOLDER_PATH}\"\ncp -R $builtpath \"${PROJECT_DIR}/iOS/Package/Applications/\"\n\n# Sign with entitlements\necho \"Signing with entitlements.xml...\"\nif type \"${iOSOpenDevPath}/bin/ldid2\" > /dev/null;\nthen\n${iOSOpenDevPath}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/iOS/Package/Applications/${EXECUTABLE_PATH}\"\nelif type \"/usr/bin/ldid2\" > /dev/null;\nthen\n/usr/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/iOS/Package/Applications/${EXECUTABLE_PATH}\"\nelif type \"/usr/local/bin/ldid2\" > /dev/null;\nthen\n/usr/local/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/iOS/Package/Applications/${EXECUTABLE_PATH}\"\nelif type \"ldid2\" > /dev/null;\nthen\nldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/iOS/Package/Applications/${EXECUTABLE_PATH}\"\nelse\necho \"Could not find ldid2 on your system (searched /usr/bin, /usr/local/bin, ${iOSOpenDevPath}/bin/)\"\nexit 1\nfi\n\n# Build package!\n${iOSOpenDevPath}/bin/iosod build -p \"${PROJECT_DIR}/iOS/PackageVersion.plist\" \"${PROJECT_DIR}/iOS/Package\" \"${PROJECT_DIR}/iOS/CydiaPackages\"";
+		};
+		C996746A20EE32D500EEFBD2 /* Move daemon binary into Package */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Move daemon binary into Package";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"Copying daemon into Package\"\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/reprovisiond\"\n\ncp -R $builtpath \"${PROJECT_DIR}/iOS/Package/usr/bin\"\n\n# We now need to sign the daemon with appropriate entitlements via ldid2\necho \"Signing with entitlements.plist...\"\nif type \"${iOSOpenDevPath}/bin/ldid2\" > /dev/null;\nthen\n${iOSOpenDevPath}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/iosdaemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelif type \"/usr/bin/ldid2\" > /dev/null;\nthen\n/usr/bin/ldid2 -S\"${PROJECT_DIR}/Shared/iosdaemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelif type \"/usr/local/bin/ldid2\" > /dev/null;\nthen\n/usr/local/bin/ldid2 -S\"${PROJECT_DIR}/Shared/iosdaemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelif type \"ldid2\" > /dev/null;\nthen\nldid2 -S\"${PROJECT_DIR}/Shared/iosdaemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelse\necho \"Could not find ldid2 on your system (searched /usr/bin, /usr/local/bin, ${iOSOpenDevPath}/bin/)\"\nexit 1\nfi";
 		};
 		E7B8235B02A4CDD86F4E0C07 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1060,29 +1256,32 @@
 				C9C6EB1F2004280A00211FDD /* aes_ni.c in Sources */,
 				C9C6EB112004280A00211FDD /* Node.cpp in Sources */,
 				C9C6EB072004280A00211FDD /* Dictionary.cpp in Sources */,
+				C9E9BB7720C5D12500EE27D9 /* RPVSplitViewDetailViewController.m in Sources */,
 				C9C6EB0F2004280A00211FDD /* node_iterator.c in Sources */,
 				C9C6EB1C2004280A00211FDD /* SAMKeychain.m in Sources */,
-				C9C6EA702004261300211FDD /* RPVInstalledCollectionViewController.m in Sources */,
 				C9C6EB172004280A00211FDD /* time64.c in Sources */,
 				C9C6EB0D2004280A00211FDD /* list.c in Sources */,
+				C96FBFEE20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m in Sources */,
 				C9C6EB012004280A00211FDD /* base64.c in Sources */,
 				C9C6EB2A2004280A00211FDD /* ioapi_buf.c in Sources */,
-				C96B0CC320053FD300F713AF /* RPVInstalledCollectionViewLayout.m in Sources */,
-				C96B0CC02005354C00F713AF /* RPVInstalledCollectionViewCell.m in Sources */,
-				C9E9F4FD204F2EC500EDE8CD /* SLColorArt.m in Sources */,
 				C9C6EAF62004280A00211FDD /* EEAppleServices.m in Sources */,
+				C9E9BB7D20C5D38D00EE27D9 /* RPVRootViewController.m in Sources */,
 				C9C6EB0E2004280A00211FDD /* node.c in Sources */,
 				C9C6EB2F2004280A00211FDD /* SSZipArchive.m in Sources */,
 				C9C6EB092004280A00211FDD /* Integer.cpp in Sources */,
 				C9C6EB142004280A00211FDD /* Real.cpp in Sources */,
+				C9E9BB7A20C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.m in Sources */,
 				C9C6EB1B2004280A00211FDD /* SAMKeychainQuery.m in Sources */,
 				C9C6EB152004280A00211FDD /* String.cpp in Sources */,
 				C9C6EB2B2004280A00211FDD /* ioapi_mem.c in Sources */,
+				C93F3B6C20F21C9000B573E6 /* HookUtil.c in Sources */,
 				C9C6EB242004280A00211FDD /* hmac.c in Sources */,
-				C96B0CC9200545E300F713AF /* RPVInstalledCollectionSectionHeaderView.m in Sources */,
 				C9C6EB2D2004280A00211FDD /* unzip.c in Sources */,
+				C9E7C2AC20ECFC1A00FDF3B0 /* RPVTroubleshootingNavigationViewController.m in Sources */,
 				C96B0CD52005704F00F713AF /* RPVApplication.m in Sources */,
+				C90AD51E20697F23008B2F2B /* RPVNotificationManager.m in Sources */,
 				C9C6EA732004261300211FDD /* RPVSettingsNavigationViewController.m in Sources */,
+				C96FBFE920EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m in Sources */,
 				C9C6EB022004280A00211FDD /* Boolean.cpp in Sources */,
 				C9C6EB1D2004280A00211FDD /* EESigning.mm in Sources */,
 				C9C6EB182004280A00211FDD /* Uid.cpp in Sources */,
@@ -1093,11 +1292,14 @@
 				C92D3753205096DB00F9F152 /* RPVAccountTeamIDViewController.m in Sources */,
 				C9C6EB292004280A00211FDD /* ioapi.c in Sources */,
 				C9C6EB162004280A00211FDD /* Structure.cpp in Sources */,
-				C9E9F4FB204F2EC500EDE8CD /* UIImage+Scale.m in Sources */,
 				C9C6EB202004280A00211FDD /* aescrypt.c in Sources */,
+				C96FBFF120EBD287007E2EC3 /* RPVInstalledTableViewCell.m in Sources */,
+				C9E7C2B220ED016000FDF3B0 /* RPVTroubleshootingCertificatesViewController.m in Sources */,
 				C9C6EB192004280A00211FDD /* xplist.c in Sources */,
 				C9C6EB2C2004280A00211FDD /* minishared.c in Sources */,
 				C9313C1C2005292F000AD4C3 /* RPVAdvancedController.m in Sources */,
+				C96FBFE220EB9DF0007E2EC3 /* RPVInstalledViewController.m in Sources */,
+				C9E7C2AF20ECFC3C00FDF3B0 /* RPVTroubleshootingController.m in Sources */,
 				C9313C1F20052B13000AD4C3 /* RPVResources.m in Sources */,
 				C9C6EB062004280A00211FDD /* Date.cpp in Sources */,
 				C92D374120502B3900F9F152 /* RPVAccountViewController.m in Sources */,
@@ -1105,9 +1307,9 @@
 				C9C6EAFF2004280A00211FDD /* lookup2.c in Sources */,
 				C9C6EB0C2004280A00211FDD /* iterator.c in Sources */,
 				C9C6EAF72004280A00211FDD /* NSData+GZIP.m in Sources */,
+				C90AD5212069968E008B2F2B /* RPVBackgroundSigningManager.m in Sources */,
 				C92D374D20502E3900F9F152 /* RPVTabBarController.m in Sources */,
 				C9C6EB052004280A00211FDD /* Data.cpp in Sources */,
-				C96B0CC6200545D100F713AF /* RPVInstalledCollectionMainHeaderView.m in Sources */,
 				C9C6EB132004280A00211FDD /* ptrarray.c in Sources */,
 				C9C6EB222004280A00211FDD /* aestab.c in Sources */,
 				C9C6EB232004280A00211FDD /* fileenc.c in Sources */,
@@ -1118,9 +1320,8 @@
 				C92D374520502B5600F9F152 /* RPVAccount2FAViewController.m in Sources */,
 				C96B0CD8200570DA00F713AF /* RPVApplicationDatabase.m in Sources */,
 				C9C6EA6C2004261300211FDD /* AppDelegate.m in Sources */,
-				C92D373A2050025C00F9F152 /* CKBlurView.m in Sources */,
 				C9C6EB102004280A00211FDD /* node_list.c in Sources */,
-				C9E9F4FC204F2EC500EDE8CD /* UIImage+ColorArt.m in Sources */,
+				C96FBFE820EB9F0F007E2EC3 /* RPVInstalledMainHeaderView.m in Sources */,
 				C9C6EB282004280A00211FDD /* crypt.c in Sources */,
 				C9C6EB082004280A00211FDD /* hashtable.c in Sources */,
 				C9C6EAFE2004280A00211FDD /* ldid.cpp in Sources */,
@@ -1195,7 +1396,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C9E7C2B720EE296400FDF3B0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9D5BACF20EE3D54000D5970 /* RPVDaemonListener.m in Sources */,
+				C9E7C2C720EE296500FDF3B0 /* main.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C996746820EE32BE00EEFBD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C9E7C2BB20EE296400FDF3B0 /* iOS Daemon */;
+			targetProxy = C996746720EE32BE00EEFBD2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		C9C6EA622004261300211FDD /* LaunchScreen.storyboard */ = {
@@ -1334,8 +1552,9 @@
 			baseConfigurationReference = 1BED720855DAA03FC578B695 /* Pods-iOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = MWMJ98X6F2;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
 					"${PROJECT_DIR}/iOS/Headers/**",
 					"$(inherited)",
@@ -1343,7 +1562,7 @@
 					"\"${PODS_ROOT}/Headers/Public/OpenSSL-Universal\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1354,6 +1573,7 @@
 				SDKROOT = iphoneos;
 				SYSTEM_HEADER_SEARCH_PATHS = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				iOSOpenDevPath = /opt/iOSOpenDev;
 			};
 			name = Debug;
 		};
@@ -1362,8 +1582,9 @@
 			baseConfigurationReference = 1C46832E058CCB73D45E85EB /* Pods-iOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = MWMJ98X6F2;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
 					"${PROJECT_DIR}/iOS/Headers/**",
 					"$(inherited)",
@@ -1371,7 +1592,7 @@
 					"\"${PODS_ROOT}/Headers/Public/OpenSSL-Universal\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1382,6 +1603,7 @@
 				SDKROOT = iphoneos;
 				SYSTEM_HEADER_SEARCH_PATHS = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				iOSOpenDevPath = /opt/iOSOpenDev;
 			};
 			name = Release;
 		};
@@ -1423,6 +1645,85 @@
 			};
 			name = Release;
 		};
+		C9E7C2CD20EE296500FDF3B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				ENABLE_BITCODE = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				EXECUTABLE_EXTENSION = "";
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = "$(iOSOpenDevPath)/frameworks/**";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Shared/iosdaemon/Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/include",
+					"$(iOSOpenDevPath)/include/**",
+				);
+				INSTALL_PATH = /usr/bin;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/reprovisiond";
+				LIBRARY_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/lib/**",
+					"$(PROJECT_DIR)/Shared/iosdaemon",
+					"$(PROJECT_DIR)/Shared/iosdaemon/lib",
+				);
+				MACH_O_TYPE = mh_execute;
+				PRODUCT_NAME = reprovisiond;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = NO;
+				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Debug;
+		};
+		C9E7C2CE20EE296500FDF3B0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = YES;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				ENABLE_BITCODE = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				EXECUTABLE_EXTENSION = "";
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = "$(iOSOpenDevPath)/frameworks/**";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Shared/iosdaemon/Prefix.pch;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/include",
+					"$(iOSOpenDevPath)/include/**",
+				);
+				INSTALL_PATH = /usr/bin;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/reprovisiond";
+				LIBRARY_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/lib/**",
+					"$(PROJECT_DIR)/Shared/iosdaemon",
+					"$(PROJECT_DIR)/Shared/iosdaemon/lib",
+				);
+				MACH_O_TYPE = mh_execute;
+				PRODUCT_NAME = reprovisiond;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1449,6 +1750,15 @@
 			buildConfigurations = (
 				C9C6EB432004282A00211FDD /* Debug */,
 				C9C6EB442004282A00211FDD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C9E7C2CF20EE296500FDF3B0 /* Build configuration list for PBXNativeTarget "iOS Daemon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C9E7C2CD20EE296500FDF3B0 /* Debug */,
+				C9E7C2CE20EE296500FDF3B0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

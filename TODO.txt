@@ -1,0 +1,10 @@
+- Add checks for network connectivity
+- Write privacy policy
+- Add action to tapping an application
+- Provide localisation support
+- Fix UI issues
+	* The tableview equivalents of "no applications..." go funny when changing
+	* what constitutes as expiring soon.
+	* Slight sizing issue for Troubleshooting icon on iPad
+- Add licensing notices as a tab in Credits under "Third-Party Licenses"
+- Add in-app notifications for iOS 9 users

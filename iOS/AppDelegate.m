@@ -9,52 +9,245 @@
 #import "AppDelegate.h"
 #import "RPVResources.h"
 
+#import "RPVNotificationManager.h"
+#import "RPVBackgroundSigningManager.h"
+#import "RPVResources.h"
+#import "SAMKeychain.h"
+
+#include <notify.h>
+
 @interface AppDelegate ()
+
+@property (nonatomic, readwrite) int daemonNotificationToken;
 
 @end
 
 @implementation AppDelegate
 
+- (BOOL)application:(UIApplication *)arg1 willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+     NSLog(@"*** [ReProvision] :: applicationWillFinishLaunching, options: %@", launchOptions);
+    
+    return YES;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    [[RPVApplicationSigning sharedInstance] addSigningUpdatesObserver:self];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidChangeBackgroundAppRefreshTime:) name:@"RPVReloadBackgroundAppRefreshTime" object:nil];
+    // Register for background signing notifications.
+    [self _registerForDaemonNotifications];
     
-    // Manually update Background App Refresh time
-    [self userDidChangeBackgroundAppRefreshTime:nil];
+    // Register to send notifications
+    [[RPVNotificationManager sharedInstance] registerToSendNotifications];
+    
+    // Setup Keychain accessibility for when locked.
+    // (prevents not being able to correctly read the passcode when the device is locked)
+    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlock];
+    
+    // Tint colour
+    [self.window setTintColor:[UIColor colorWithRed:147.0/255.0 green:99.0/255.0 blue:207.0/255.0 alpha:1.0]];
+    
+    NSLog(@"*** [ReProvision] :: applicationDidFinishLaunching, options: %@", launchOptions);
     
     return YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+    // nop
 }
-
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    // Launched in background by daemon, or when exiting the application.
+    NSLog(@"*** [ReProvision] :: Launched in background");
+    
+   // [self _checkForDaemonNotification];
 }
 
-
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    // nop
+    NSLog(@"*** [ReProvision] :: applicationWillEnterForeground");
 }
 
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    // nop
+    NSLog(@"*** [ReProvision] :: applicationDidBecomeActive");
 }
-
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)userDidChangeBackgroundAppRefreshTime:(id)sender {
-    // TODO: Setup Background App Refresh
+//////////////////////////////////////////////////////////////////////////////////
+// Application Signing delegate methods.
+//////////////////////////////////////////////////////////////////////////////////
+
+- (void)applicationSigningDidStart {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"com.matchstic.reprovision/signingInProgress" object:nil];
+    NSLog(@"Started signing...");
+}
+
+- (void)applicationSigningUpdateProgress:(int)percent forBundleIdentifier:(NSString *)bundleIdentifier {
+    NSLog(@"'%@' at %d%%", bundleIdentifier, percent);
+    
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    [userInfo setObject:bundleIdentifier forKey:@"bundleIdentifier"];
+    [userInfo setObject:[NSNumber numberWithInt:percent] forKey:@"percent"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"com.matchstic.reprovision/signingUpdate" object:nil userInfo:userInfo];
+    
+    switch (percent) {
+        case 100:
+            [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Success" body:[NSString stringWithFormat:@"Signed '%@'", bundleIdentifier] isDebugMessage:NO andNotificationID:nil];
+            break;
+        case 10:
+            [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"DEBUG" body:[NSString stringWithFormat:@"Started signing routine for '%@'", bundleIdentifier] isDebugMessage:YES andNotificationID:nil];
+            break;
+        case 50:
+            [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"DEBUG" body:[NSString stringWithFormat:@"Wrote signatures for bundle '%@'", bundleIdentifier] isDebugMessage:YES andNotificationID:nil];
+            break;
+        case 60:
+            [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"DEBUG" body:[NSString stringWithFormat:@"Rebuilt IPA for bundle '%@'", bundleIdentifier] isDebugMessage:YES andNotificationID:nil];
+            break;
+        case 90:
+            [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"DEBUG" body:[NSString stringWithFormat:@"Installing IPA for bundle '%@'", bundleIdentifier] isDebugMessage:YES andNotificationID:nil];
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (void)applicationSigningDidEncounterError:(NSError *)error forBundleIdentifier:(NSString *)bundleIdentifier {
+    NSLog(@"'%@' had error: %@", bundleIdentifier, error);
+    [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Error" body:[NSString stringWithFormat:@"For '%@'\n%@", bundleIdentifier, error.localizedDescription] isDebugMessage:NO isUrgentMessage:YES andNotificationID:nil];
+    
+    // Ensure the UI goes back to when signing was not occuring
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    [userInfo setObject:bundleIdentifier forKey:@"bundleIdentifier"];
+    [userInfo setObject:[NSNumber numberWithInt:100] forKey:@"percent"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"com.matchstic.reprovision/signingUpdate" object:nil userInfo:userInfo];
+}
+
+- (void)applicationSigningCompleteWithError:(NSError *)error {
+    NSLog(@"Completed signing, with error: %@", error);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"com.matchstic.reprovision/signingComplete" object:nil];
+    
+    // Display any errors if needed.
+    if (error) {
+        switch (error.code) {
+            case RPVErrorNoSigningRequired:
+                [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Success" body:@"No applications require signing at this time" isDebugMessage:NO isUrgentMessage:YES andNotificationID:nil];
+                break;
+            default:
+                [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Error" body:error.localizedDescription isDebugMessage:NO isUrgentMessage:YES andNotificationID:nil];
+                break;
+        }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Automatic application signing
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)_registerForDaemonNotifications {
+    int status;
+    static char first = 0;
+    
+    if (!first) {
+        status = notify_register_check("com.matchstic.reprovision.ios/applicationNotification", &_daemonNotificationToken);
+        if (status != NOTIFY_STATUS_OK) {
+            fprintf(stderr, "registration failed (%u)\n", status);
+            return;
+        }
+        
+        first = 1;
+    }
+    
+    // Handle when we're open and get a background request come through.
+    status = notify_register_dispatch("com.matchstic.reprovision.ios/applicationNotification", &_daemonNotificationToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0l), ^(int info) {
+        
+        NSLog(@"*** [ReProvision] :: Got a background signing request when open.");
+        
+        [self _didRecieveDaemonNotification];
+    });
+    
+    // And do a check now for if we need to sign.
+    [self _checkForDaemonNotification];
+}
+
+- (void)_checkForDaemonNotification {
+    // Check the daemon's notification state.
+    
+    int status, check;
+    status = notify_check(_daemonNotificationToken, &check);
+    if (status == NOTIFY_STATUS_OK && check != 0) {
+        [self _didRecieveDaemonNotification];
+    }
+}
+
+- (void)_didRecieveDaemonNotification {
+    uint64_t incoming = 0;
+    notify_get_state(_daemonNotificationToken, &incoming);
+    
+    NSLog(@"*** [ReProvision] :: daemon notification received. State: %d", (int)incoming);
+    
+    if (incoming == 1) {
+        // Start a background sign
+        UIApplication *application = [UIApplication sharedApplication];
+        UIBackgroundTaskIdentifier __block bgTask = [application beginBackgroundTaskWithName:@"ReProvision Background Signing" expirationHandler:^{
+            // We should never be called due to using the unboundedTaskCompletion background mode.
+            // Putting code here for completeness.
+            [application endBackgroundTask:bgTask];
+            bgTask = UIBackgroundTaskInvalid;
+            
+            [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
+        }];
+        
+        [[RPVBackgroundSigningManager sharedInstance] attemptBackgroundSigningIfNecessary:^{
+            // Done, so stop this background task.
+            [application endBackgroundTask:bgTask];
+            bgTask = UIBackgroundTaskInvalid;
+            
+            // Ask to remove our process assertion 5 seconds later, so that we can assume any notifications
+            // have been scheduled.
+            [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
+        }];
+        
+    } else if (incoming == 2) {
+        // Check that user credentials exist, notify if not
+        if (![RPVResources getUsername] || [[RPVResources getUsername] isEqualToString:@""] || ![RPVResources getPassword] || [[RPVResources getPassword] isEqualToString:@""]) {
+            
+            [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Login Required" body:@"Tap to login to ReProvision. This is needed to re-sign applications." isDebugMessage:NO isUrgentMessage:YES andNotificationID:@"login"];
+        }
+        
+        // Ask to remove our process assertion 5 seconds later, so that we can assume any notifications
+        // have been scheduled.
+        [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
+        
+    } else if (incoming == 3) {
+        // Check if any applications need resigning. If they do, show notifications as appropriate.
+    
+        if ([[RPVBackgroundSigningManager sharedInstance] anyApplicationsNeedingResigning]) {
+            [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Re-signing Queued" body:@"Unlock your device to resign applications." isDebugMessage:NO isUrgentMessage:YES andNotificationID:/*@"resignQueued"*/nil];
+        } else {
+            [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"" body:@"No applications need re-signing at this time." isDebugMessage:NO isUrgentMessage:NO andNotificationID:/*@"resignQueued"*/nil];
+        }
+        
+        // Ask to remove our process assertion 5 seconds later, so that we can assume any notifications
+        // have been scheduled.
+        [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
+    }
+    
+    // Reset the state so we don't redo anything when exiting the application.
+    notify_set_state(_daemonNotificationToken, 0);
+}
+
+- (void)_notifyDaemonOfMessageHandled {
+    // Let the daemon know to release the background assertion.
+    notify_post("com.matchstic.reprovision.ios/didFinishBackgroundTask");
 }
 
 @end
