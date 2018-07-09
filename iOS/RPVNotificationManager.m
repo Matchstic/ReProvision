@@ -14,6 +14,8 @@
 #import "RPVResources.h"
 #import "HookUtil.h"
 
+#import <RMessage.h>
+
 // Fix for crashing when using stashing.
 HOOK_MESSAGE(id, UNUserNotificationCenter, initWithBundleIdentifier, NSString *bundleID) {
     id result;
@@ -39,6 +41,9 @@ HOOK_MESSAGE(id, UNUserNotificationCenter, initWithBundleIdentifier, NSString *b
     
     dispatch_once(&onceToken, ^{
         sharedInstance = [[RPVNotificationManager alloc] init];
+        
+        // Setup iOS 9 stylings
+        [RMessage addDesignsFromFileWithName:@"RMessageDesign" inBundle:[NSBundle mainBundle]];
     });
     return sharedInstance;
 }
@@ -50,7 +55,6 @@ HOOK_MESSAGE(id, UNUserNotificationCenter, initWithBundleIdentifier, NSString *b
 - (void)registerToSendNotifications {
     
     if (@available(iOS 10.0, *)) {
-        NSLog(@"***** Requesting auth");
         // For responding to notifications.
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         center.delegate = self;
@@ -108,6 +112,21 @@ HOOK_MESSAGE(id, UNUserNotificationCenter, initWithBundleIdentifier, NSString *b
     notification.soundName = nil;
     
     [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    
+    // Send one in-app also.
+    // Cancel any existing notification.
+    [RMessage dismissActiveNotification];
+    [RMessage showNotificationWithTitle:title
+                               subtitle:body
+                              iconImage:[UIImage imageNamed:@"notifIcon"]
+                                   type:RMessageTypeNormal
+                         customTypeName:@"ios9"
+                               duration:3.0
+                               callback:nil
+                            buttonTitle:nil
+                         buttonCallback:nil
+                             atPosition:RMessagePositionTop
+                   canBeDismissedByUser:YES];
 }
 
 - (void)_newSendNotificationWithTitle:(NSString*)title body:(NSString*)body andNotificationID:(NSString*)identifier {
