@@ -69,6 +69,7 @@
     threshold.shortTitleDictionary = threshold.titleDictionary;
     [threshold setProperty:@"heartbeatTimerInterval" forKey:@"key"];
     [threshold setProperty:@"A longer time between checks uses less battery, but has more risk that applications won't be re-signed before a reboot." forKey:@"staticTextMessage"];
+    [threshold setProperty:@"com.matchstic.reprovision.ios/heartbeatIntervalDidChange" forKey:@"PostNotification"];
     
     [array addObject:threshold];
     
@@ -174,8 +175,7 @@
 /////////////////////////////////////////////////////////////////////////////////////
 
 - (void)startBackgroundSign:(id)sender {
-    notify_set_state(self.daemonNotificationToken, 1);
-    notify_post("com.matchstic.reprovision.ios/debugStartBackgroundSign");
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"com.matchstic.reprovision.ios/debugStartBackgroundSign" object:nil];
 }
 
 @end

@@ -52,7 +52,8 @@ static RPVApplicationDatabase *sharedDatabase;
     NSMutableArray *applications = [NSMutableArray array];
     
     for (LSApplicationProxy *proxy in [[LSApplicationWorkspace defaultWorkspace] allApplications]) {
-        if ([[proxy teamID] isEqualToString:teamID]) {
+        if ([[proxy teamID] isEqualToString:teamID] &&
+            ![[proxy applicationIdentifier] isEqualToString:[[NSBundle mainBundle] bundleIdentifier]]) {
             RPVApplication *application = [[RPVApplication alloc] initWithApplicationProxy:proxy];
             
             [applications addObject:application];

@@ -3,6 +3,7 @@ platform :ios, '9.0'
 pod 'OpenSSL-Universal'
 pod "MBCircularProgressBar"
 pod 'MarqueeLabel'
+pod "RMessage"
 pod 'TORoundedTableView'
 end
 
