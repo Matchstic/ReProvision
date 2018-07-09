@@ -21,6 +21,8 @@
 // Fake data source stuff...
 #define USE_FAKE_DATA 0
 
+#define TABLE_VIEWS_INSET 20
+
 @interface LSApplicationProxy : NSObject
 @property (nonatomic, readonly) NSString *applicationIdentifier;
 + (instancetype)applicationProxyForIdentifier:(NSString*)arg1;
@@ -211,8 +213,8 @@
     
     // Table View's frame height is: insetTop + (n*itemheight) + insetBottom
     CGFloat height = [self tableView:self.recentTableView numberOfRowsInSection:0] * [self _tableViewCellHeight];
-    self.recentTableView.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, height);
-    self.recentTableView.contentSize = CGSizeMake(self.view.bounds.size.width, height);
+    self.recentTableView.frame = CGRectMake(TABLE_VIEWS_INSET, yOffset, self.view.bounds.size.width - (TABLE_VIEWS_INSET*2), height);
+    self.recentTableView.contentSize = CGSizeMake(self.view.bounds.size.width - (TABLE_VIEWS_INSET*2), height);
     
     yOffset += height + 15;
     
@@ -223,8 +225,8 @@
     
     // Table View's frame height is: insetTop + (n*itemheight) + insetBottom
     CGFloat otherAppsHeight = [self tableView:self.otherApplicationsTableView numberOfRowsInSection:0] * [self _tableViewCellHeight];
-    self.otherApplicationsTableView.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, otherAppsHeight);
-    self.otherApplicationsTableView.contentSize = CGSizeMake(self.view.bounds.size.width, otherAppsHeight);
+    self.otherApplicationsTableView.frame = CGRectMake(TABLE_VIEWS_INSET, yOffset, self.view.bounds.size.width - (TABLE_VIEWS_INSET*2), otherAppsHeight);
+    self.otherApplicationsTableView.contentSize = CGSizeMake(self.view.bounds.size.width - (TABLE_VIEWS_INSET*2), otherAppsHeight);
     
     yOffset += otherAppsHeight + 15;
     
@@ -286,12 +288,9 @@
     } else {
         [self _debugCreateFakeDataSources];
         
-        // Reload the collection view and table view.
+        // Reload the collection view and table views.
         [self.expiringCollectionView reloadData];
         [self.recentTableView reloadData];
-        
-        // Also grab any other sideloaded applications
-        self.otherApplicationsDataSource = [[[RPVApplicationDatabase sharedInstance] getAllSideloadedApplicationsNotMatchingTeamID:[RPVResources getTeamID]] mutableCopy];
         [self.otherApplicationsTableView reloadData];
     }
     
@@ -305,13 +304,15 @@
 - (void)_debugCreateFakeDataSources {
     self.expiringSoonDataSource = [NSMutableArray array];
     self.recentlySignedDataSource = [NSMutableArray array];
+    self.otherApplicationsDataSource = [NSMutableArray array];
     
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 2; i++) {
         LSApplicationProxy *proxy = [LSApplicationProxy applicationProxyForIdentifier:@"com.matchstic.reprovision.ios"];
         RPVApplication *application = [[RPVApplication alloc] initWithApplicationProxy:proxy];
         
         [self.recentlySignedDataSource addObject:application];
         [self.expiringSoonDataSource addObject:application];
+        [self.otherApplicationsDataSource addObject:application];
     }
 }
 
@@ -539,6 +540,8 @@
             if (self.otherApplicationsDataSource.count == 0) {
                 // Reload the table to show the "no apps" label
                 [self.otherApplicationsTableView reloadData];
+                // Stop editing too.
+                [self.otherApplicationsTableView setEditing:NO];
             } else {
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
                 

@@ -89,26 +89,28 @@ static CGFloat inset = 20;
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    self.contentView.frame = CGRectMake(inset, inset/3.0, self.frame.size.width - (inset*2.0), self.frame.size.height - inset/1.5);
+    self.contentView.frame = CGRectMake(0, inset/3.0, self.frame.size.width, self.frame.size.height - inset/1.5);
     
     if (!self.noApplicationsInThisSection) {
         CGFloat xInset = 10;
         CGFloat yInset = 10;
         
-        self.icon.frame = CGRectMake(xInset, yInset, (self.contentView.frame.size.height - yInset*2), (self.contentView.frame.size.height - yInset*2));
+        CGFloat editingInset = self.isEditing ? 32.0 : 0.0;
+        
+        self.icon.frame = CGRectMake(xInset + editingInset, yInset, (self.contentView.frame.size.height - yInset*2), (self.contentView.frame.size.height - yInset*2));
         
         CGFloat displayNameHeight = IS_IPAD ? 27 : 18;
-        self.displayNameLabel.frame = CGRectMake(xInset + self.icon.frame.size.width + xInset*1.25, (self.contentView.frame.size.height/2) - displayNameHeight + 2, self.contentView.frame.size.width - (xInset + self.icon.frame.size.width + xInset*2), displayNameHeight);
+        self.displayNameLabel.frame = CGRectMake(editingInset + xInset + self.icon.frame.size.width + xInset*1.25, (self.contentView.frame.size.height/2) - displayNameHeight + 2, self.contentView.frame.size.width - (xInset + self.icon.frame.size.width + 25) - editingInset, displayNameHeight);
         
         CGFloat bundleIdentifierHeight = IS_IPAD ? 22.5 : 15;
         CGRect timeRemainingRect = [RPVResources boundedRectForFont:self.timeRemainingLabel.font andText:self.timeRemainingLabel.text width:self.contentView.frame.size.width - (self.bundleIdentifierLabel.frame.origin.x + self.bundleIdentifierLabel.frame.size.width + 20)];
         
         self.timeRemainingLabel.frame = CGRectMake(self.contentView.frame.size.width - 25 - timeRemainingRect.size.width, (self.contentView.frame.size.height/2) + 3, timeRemainingRect.size.width + 10, bundleIdentifierHeight);
         
-        self.bundleIdentifierLabel.frame = CGRectMake(xInset + self.icon.frame.size.width + xInset*1.25, (self.contentView.frame.size.height/2) + 3, self.contentView.frame.size.width - (xInset + self.icon.frame.size.width + xInset*1.25 + 10 + self.timeRemainingLabel.frame.size.width), bundleIdentifierHeight);
+        self.bundleIdentifierLabel.frame = CGRectMake(self.displayNameLabel.frame.origin.x, (self.contentView.frame.size.height/2) + 4, self.contentView.frame.size.width - (xInset + self.icon.frame.size.width + xInset*1.25 + 10 + self.timeRemainingLabel.frame.size.width + editingInset), bundleIdentifierHeight);
         
         self.progressBar.frame = CGRectMake(self.bundleIdentifierLabel.frame.origin.x, self.bundleIdentifierLabel.frame.origin.y, bundleIdentifierHeight, bundleIdentifierHeight);
-        self.percentCompleteLabel.frame = CGRectMake(self.bundleIdentifierLabel.frame.origin.x + bundleIdentifierHeight + 7, self.bundleIdentifierLabel.frame.origin.y, self.contentView.frame.size.width - self.bundleIdentifierLabel.frame.origin.x - xInset*2.0 - bundleIdentifierHeight - 7, bundleIdentifierHeight);
+        self.percentCompleteLabel.frame = CGRectMake(self.bundleIdentifierLabel.frame.origin.x + bundleIdentifierHeight + 7, self.bundleIdentifierLabel.frame.origin.y, self.bundleIdentifierLabel.frame.size.width - bundleIdentifierHeight - 7, bundleIdentifierHeight);
     } else {
         self.displayNameLabel.frame = self.contentView.bounds;
     }
