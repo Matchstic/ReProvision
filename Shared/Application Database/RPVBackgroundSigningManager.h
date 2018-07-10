@@ -12,12 +12,11 @@
 @interface RPVBackgroundSigningManager : NSObject <RPVApplicationSigningProtocol>
 
 + (instancetype)sharedInstance;
+- (void)attemptBackgroundSigningIfNecessary:(void (^)(void))completionHandler;
 
 /**
  Checks if any applications need re-signing for the saved threshold.
  */
 - (BOOL)anyApplicationsNeedingResigning;
-
-- (void)startBackgroundMonitoringIfNecessary;
 
 @end

@@ -94,7 +94,6 @@
     PSSpecifier *resign = [PSSpecifier preferenceSpecifierNamed:@"Automatically Re-sign" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
     [resign setProperty:@"resign" forKey:@"key"];
     [resign setProperty:@1 forKey:@"default"];
-    [resign setProperty:@"com.matchstic.reprovision.ios/automaticResignDidChange" forKey:@"PostNotification"];
     
     [array addObject:resign];
     

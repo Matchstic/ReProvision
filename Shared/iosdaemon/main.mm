@@ -17,7 +17,7 @@ int main(int argc, const char *argv[])
     
     // start a timer so that the process does not exit.
     NSTimer *timer = [[NSTimer alloc] initWithFireDate:[NSDate date]
-                                              interval:5 // Slight delay for battery life improvements
+                                              interval:1 // Slight delay for battery life improvements
                                                 target:listener
                                               selector:@selector(timerFireMethod:)
                                               userInfo:nil

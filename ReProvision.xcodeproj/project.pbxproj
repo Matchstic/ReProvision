@@ -23,9 +23,6 @@
 		C9313C1F20052B13000AD4C3 /* RPVResources.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C1E20052B13000AD4C3 /* RPVResources.m */; };
 		C938D396200842F7003802FF /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C938D395200842F7003802FF /* MobileCoreServices.framework */; };
 		C93F3B6C20F21C9000B573E6 /* HookUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = C93F3B6920F21C9000B573E6 /* HookUtil.c */; };
-		C93F3B6E20F226A800B573E6 /* RMessageDesign.json in Resources */ = {isa = PBXBuildFile; fileRef = C93F3B6D20F226A800B573E6 /* RMessageDesign.json */; };
-		C95886B920F3818C002941F0 /* AssertionServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C95886B720F3818C002941F0 /* AssertionServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
-		C95886BA20F3818C002941F0 /* BackBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C95886B820F3818C002941F0 /* BackBoardServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C96B0CD52005704F00F713AF /* RPVApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD42005704F00F713AF /* RPVApplication.m */; };
 		C96B0CD8200570DA00F713AF /* RPVApplicationDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD7200570DA00F713AF /* RPVApplicationDatabase.m */; };
 		C96B0CDB2005782A00F713AF /* RPVApplicationSigning.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CDA2005782A00F713AF /* RPVApplicationSigning.m */; };
@@ -34,7 +31,10 @@
 		C96FBFE920EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE620EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m */; };
 		C96FBFEE20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFEC20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m */; };
 		C96FBFF120EBD287007E2EC3 /* RPVInstalledTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */; };
+		C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */ = {isa = PBXBuildFile; fileRef = C996746520EE314B00EEFBD2 /* PackageVersion.plist */; };
 		C9AB43BF20F012E00016F78F /* SpringBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C9AB43C020F012E00016F78F /* BackBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43BE20F012E00016F78F /* BackBoardServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C9AB43C220F016CC0016F78F /* AssertionServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43C120F016CC0016F78F /* AssertionServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C9C6EA6C2004261300211FDD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA602004261300211FDD /* AppDelegate.m */; };
 		C9C6EA6D2004261300211FDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA612004261300211FDD /* Assets.xcassets */; };
 		C9C6EA6E2004261300211FDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA622004261300211FDD /* LaunchScreen.storyboard */; };
@@ -228,9 +228,6 @@
 		C938D395200842F7003802FF /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		C93F3B6620F21C9000B573E6 /* HookUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HookUtil.h; sourceTree = "<group>"; };
 		C93F3B6920F21C9000B573E6 /* HookUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HookUtil.c; sourceTree = "<group>"; };
-		C93F3B6D20F226A800B573E6 /* RMessageDesign.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = RMessageDesign.json; sourceTree = "<group>"; };
-		C95886B720F3818C002941F0 /* AssertionServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = AssertionServices.tbd; path = lib/AssertionServices.tbd; sourceTree = "<group>"; };
-		C95886B820F3818C002941F0 /* BackBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = BackBoardServices.tbd; path = lib/BackBoardServices.tbd; sourceTree = "<group>"; };
 		C96B0CD32005704E00F713AF /* RPVApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RPVApplication.h; path = "Shared/Application Database/RPVApplication.h"; sourceTree = "<group>"; };
 		C96B0CD42005704F00F713AF /* RPVApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RPVApplication.m; path = "Shared/Application Database/RPVApplication.m"; sourceTree = "<group>"; };
 		C96B0CD6200570DA00F713AF /* RPVApplicationDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVApplicationDatabase.h; path = "Shared/Application Database/RPVApplicationDatabase.h"; sourceTree = "<group>"; };
@@ -413,8 +410,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C95886B920F3818C002941F0 /* AssertionServices.tbd in Frameworks */,
-				C95886BA20F3818C002941F0 /* BackBoardServices.tbd in Frameworks */,
 				C9FDB2A2205195E8005934CD /* libMobileGestalt.tbd in Frameworks */,
 				C92D374A20502D7300F9F152 /* WebKit.framework in Frameworks */,
 				C938D396200842F7003802FF /* MobileCoreServices.framework in Frameworks */,
@@ -435,7 +430,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9AB43C220F016CC0016F78F /* AssertionServices.tbd in Frameworks */,
 				C9AB43BF20F012E00016F78F /* SpringBoardServices.tbd in Frameworks */,
+				C9AB43C020F012E00016F78F /* BackBoardServices.tbd in Frameworks */,
 				C9F3FA6920EE6A48002AD7B9 /* CoreFoundation.framework in Frameworks */,
 				C9E7C2BD20EE296500FDF3B0 /* Foundation.framework in Frameworks */,
 			);
@@ -449,8 +446,6 @@
 			children = (
 				C9AB43C120F016CC0016F78F /* AssertionServices.tbd */,
 				C9AB43BE20F012E00016F78F /* BackBoardServices.tbd */,
-				C95886B720F3818C002941F0 /* AssertionServices.tbd */,
-				C95886B820F3818C002941F0 /* BackBoardServices.tbd */,
 				C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */,
 				C9F3FA6820EE6A48002AD7B9 /* CoreFoundation.framework */,
 				C9F3FA6620EE6A42002AD7B9 /* SpringBoardServices.tbd */,
@@ -519,7 +514,6 @@
 				C9C6EA692004261300211FDD /* main.m */,
 				C9C6EA682004261300211FDD /* Info.plist */,
 				C996746520EE314B00EEFBD2 /* PackageVersion.plist */,
-				C93F3B6D20F226A800B573E6 /* RMessageDesign.json */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -984,8 +978,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9C6EA5B2004257E00211FDD /* Build configuration list for PBXNativeTarget "iOS" */;
 			buildPhases = (
-				E7B8235B02A4CDD86F4E0C07 /* [CP] Check Pods Manifest.lock */,
 				C996746A20EE32D500EEFBD2 /* Move daemon binary into Package */,
+				E7B8235B02A4CDD86F4E0C07 /* [CP] Check Pods Manifest.lock */,
 				C9C6EA3E2004257E00211FDD /* Sources */,
 				C9C6EA3F2004257E00211FDD /* Frameworks */,
 				C9C6EA402004257E00211FDD /* Resources */,
@@ -1103,7 +1097,7 @@
 				C9C6EAF92004280A00211FDD /* apple-ios.pem in Resources */,
 				C9C6EAF82004280A00211FDD /* apple-dev.pem in Resources */,
 				C9C6EAFC2004280A00211FDD /* verisign-2048-256.pem in Resources */,
-				C93F3B6E20F226A800B573E6 /* RMessageDesign.json in Resources */,
+				C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */,
 				C9C6EAFA2004280A00211FDD /* verisign-1024-128.pem in Resources */,
 				C9C6EAFB2004280A00211FDD /* verisign-2048-128.pem in Resources */,
 			);
@@ -1129,30 +1123,10 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-iOS/Pods-iOS-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/MBCircularProgressBar/MBCircularProgressBar.bundle",
-				"${PODS_ROOT}/RMessage/RMessage/Resources/RMessageView.xib",
-				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundErrorIcon.png",
-				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundErrorIcon@2x.png",
-				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundSuccessIcon.png",
-				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundSuccessIcon@2x.png",
-				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundWarningIcon.png",
-				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundWarningIcon@2x.png",
-				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationButtonBackground.png",
-				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationButtonBackground@2x.png",
-				"${PODS_ROOT}/RMessage/RMessage/Assets/RMessageDefaultDesign.json",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MBCircularProgressBar.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RMessageView.nib",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundErrorIcon.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundErrorIcon@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundSuccessIcon.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundSuccessIcon@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundWarningIcon.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundWarningIcon@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationButtonBackground.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationButtonBackground@2x.png",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RMessageDefaultDesign.json",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1581,7 +1555,6 @@
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"${PROJECT_DIR}/iOS/Headers/**",
 					"$(inherited)",
@@ -1594,7 +1567,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/iOS",
-					"$(PROJECT_DIR)/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.matchstic.reprovision.ios;
 				PRODUCT_NAME = ReProvision;
@@ -1613,7 +1585,6 @@
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"${PROJECT_DIR}/iOS/Headers/**",
 					"$(inherited)",
@@ -1626,7 +1597,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/iOS",
-					"$(PROJECT_DIR)/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.matchstic.reprovision.ios;
 				PRODUCT_NAME = ReProvision;
