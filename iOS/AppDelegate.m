@@ -38,14 +38,8 @@
     // Register to send notifications
     [[RPVNotificationManager sharedInstance] registerToSendNotifications];
     
-    // Start background signing if needed.
-    [[RPVBackgroundSigningManager sharedInstance] startBackgroundMonitoringIfNecessary];
-    
-    // Check the user has valid credentials.
-    if (![RPVResources getUsername] || [[RPVResources getUsername] isEqualToString:@""] || ![RPVResources getPassword] || [[RPVResources getPassword] isEqualToString:@""]) {
-        
-        [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Login Required" body:@"Tap to login to ReProvision. This is needed to re-sign applications." isDebugMessage:NO isUrgentMessage:YES andNotificationID:@"login"];
-    }
+    // Register for background signing notifications.
+    [self _registerForDaemonNotifications];
     
     // Setup Keychain accessibility for when locked.
     // (prevents not being able to correctly read the passcode when the device is locked)
@@ -69,9 +63,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Launched in background by daemon, or when exiting the application.
-    NSLog(@"*** [ReProvision] :: Launched in background");
-    
-   // [self _checkForDaemonNotification];
+    NSLog(@"*** [ReProvision] :: applicationDidEnterBackground");
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -159,5 +151,125 @@
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Automatic application signing
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)_registerForDaemonNotifications {
+    int status;
+    static char first = 0;
+    
+    if (!first) {
+        status = notify_register_check("com.matchstic.reprovision.ios/applicationNotification", &_daemonNotificationToken);
+        if (status != NOTIFY_STATUS_OK) {
+            fprintf(stderr, "registration failed (%u)\n", status);
+            return;
+        }
+        
+        first = 1;
+    }
+    
+    // Handle when we're open and get a background request come through.
+    status = notify_register_dispatch("com.matchstic.reprovision.ios/applicationNotification", &_daemonNotificationToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0l), ^(int info) {
+        
+        NSLog(@"*** [ReProvision] :: Got a background signing request when open.");
+        
+        [self _didRecieveDaemonNotification];
+    });
+    
+    // And do a check now for if we need to sign.
+    [self _checkForDaemonNotification];
+}
+
+- (void)_checkForDaemonNotification {
+    // Check the daemon's notification state.
+    
+    int status, check;
+    status = notify_check(_daemonNotificationToken, &check);
+    if (status == NOTIFY_STATUS_OK && check != 0) {
+        [self _didRecieveDaemonNotification];
+    }
+}
+
+- (void)_didRecieveDaemonNotification {
+    uint64_t incoming = 0;
+    notify_get_state(_daemonNotificationToken, &incoming);
+    
+    NSLog(@"*** [ReProvision] :: daemon notification received. State: %d", (int)incoming);
+    
+    switch (incoming) {
+        case 1:
+            [self daemonDidRequestNewBackgroundSigning];
+            break;
+            
+        case 2:
+            [self daemonDidRequestCredentialsCheck];
+            break;
+            
+        case 3:
+            [self daemonDidRequestQueuedNotification];
+            break;
+            
+        default:
+            break;
+    }
+    
+    // Reset the state so we don't redo anything when exiting the application.
+    notify_set_state(_daemonNotificationToken, 0);
+}
+
+- (void)_notifyDaemonOfMessageHandled {
+    // Let the daemon know to release the background assertion.
+    notify_post("com.matchstic.reprovision.ios/didFinishBackgroundTask");
+}
+
+- (void)daemonDidRequestNewBackgroundSigning {
+    // Start a background sign
+    UIApplication *application = [UIApplication sharedApplication];
+    UIBackgroundTaskIdentifier __block bgTask = [application beginBackgroundTaskWithName:@"ReProvision Background Signing" expirationHandler:^{
+        // We should never be called due to using the unboundedTaskCompletion background mode.
+        // Putting code here for completeness.
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+        
+        [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
+    }];
+    
+    [[RPVBackgroundSigningManager sharedInstance] attemptBackgroundSigningIfNecessary:^{
+        // Done, so stop this background task.
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+        
+        // Ask to remove our process assertion 5 seconds later, so that we can assume any notifications
+        // have been scheduled.
+        [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
+    }];
+}
+
+- (void)daemonDidRequestCredentialsCheck {
+    // Check that user credentials exist, notify if not
+    if (![RPVResources getUsername] || [[RPVResources getUsername] isEqualToString:@""] || ![RPVResources getPassword] || [[RPVResources getPassword] isEqualToString:@""]) {
+        
+        [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Login Required" body:@"Tap to login to ReProvision. This is needed to re-sign applications." isDebugMessage:NO isUrgentMessage:YES andNotificationID:@"login"];
+    }
+    
+    // Ask to remove our process assertion 5 seconds later, so that we can assume any notifications
+    // have been scheduled.
+    [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
+}
+
+- (void)daemonDidRequestQueuedNotification {
+    // Check if any applications need resigning. If they do, show notifications as appropriate.
+    
+    if ([[RPVBackgroundSigningManager sharedInstance] anyApplicationsNeedingResigning]) {
+        [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Re-signing Queued" body:@"Unlock your device to resign applications." isDebugMessage:NO isUrgentMessage:YES andNotificationID:/*@"resignQueued"*/nil];
+    } else {
+        [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"" body:@"No applications need re-signing at this time." isDebugMessage:NO isUrgentMessage:NO andNotificationID:/*@"resignQueued"*/nil];
+    }
+    
+    // Ask to remove our process assertion 5 seconds later, so that we can assume any notifications
+    // have been scheduled.
+    [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
+}
 
 @end

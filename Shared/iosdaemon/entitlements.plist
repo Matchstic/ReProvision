@@ -22,5 +22,7 @@
 	</array>
 	<key>com.apple.backboardd.launchapplications</key>
 	<true/>
+	<key>com.apple.multitasking.unlimitedassertions</key>
+	<true/>
 </dict>
 </plist>

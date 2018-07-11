@@ -50,6 +50,9 @@ extern "C" {
 }
 #endif
 
+extern NSString* BKSActivateForEventOptionTypeBackgroundContentFetching;
+extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
+
 @interface BKSProcessAssertion : NSObject
 - (id)initWithPID:(pid_t)arg1 flags:(unsigned int)arg2 reason:(BKSProcessAssertionReason)arg3 name:(NSString*)arg4 withHandler:(void (^)(BOOL success))arg5;
 - (void)invalidate;
@@ -70,6 +73,7 @@ extern "C" {
     
 @property (nonatomic, strong) NSDictionary *settings;
 @property (nonatomic, strong) NSTimer *signingTimer;
+@property (nonatomic, strong) NSTimer *assertionFallbackTimer;
 @property (nonatomic, readwrite) BOOL updateQueuedForUnlock;
 @property (nonatomic, readwrite) BOOL uiLockState;
 
@@ -191,38 +195,78 @@ extern "C" {
 #if TARGET_OS_SIMULATOR
     return 0;
 #else
-    int result = SBSLaunchApplicationWithIdentifierAndLaunchOptions(CFSTR(APPLICATION_IDENTIFIER), nil, 1);
+    
+    pid_t servicePid = 0;
+    SBSProcessIDForDisplayIdentifier(CFSTR(APPLICATION_IDENTIFIER), &servicePid);
+    
+    // If running, do assertion now.
+    if (servicePid != 0) {
+        [self _aquireApplicationBackgroundAssertion];
+    }
+    
+    NSMutableDictionary *launchOptions = [@{} mutableCopy];
+    NSDictionary *eventOptions = @{ BKSActivateForEventOptionTypeBackgroundContentFetching : @""};
+    
+    [launchOptions setObject:eventOptions forKey:BKSOpenApplicationOptionKeyActivateForEvent];
+    
+    int result = SBSLaunchApplicationWithIdentifierAndLaunchOptions(CFSTR(APPLICATION_IDENTIFIER), (__bridge CFDictionaryRef)(launchOptions), 1);
     
     NSLog(@"*** [reprovisiond] :: Launched application with result: %d", result);
-    if (result == 0) {
-        // Aquire assertion for exiting background.
-        pid_t servicePid;
-        SBSProcessIDForDisplayIdentifier(CFSTR(APPLICATION_IDENTIFIER), &servicePid);
-        
-        if (servicePid != 0) {
-            NSLog(@"*** [reprovisiond] :: Aquiring background assertion");
-            self.applicationBackgroundAssertion = [[BKSProcessAssertion alloc] initWithPID:servicePid flags:(BKSProcessAssertionFlagPreventSuspend | BKSProcessAssertionFlagAllowIdleSleep) reason:BKSProcessAssertionReasonFinishTask name:@APPLICATION_IDENTIFIER withHandler:^(BOOL success) {
-                 if (success) {
-                     // Need to do anything here?
-                     NSLog(@"*** [reprovisiond] :: Did aquire background assertion");
-                 } else {
-                     NSLog(@"*** [reprovisiond] :: Failed to aquire background assertion");
-                 }
-            }];
-        } else {
-            // No PID!
-            NSLog(@"*** [reprovisiond] :: Could not find application's PID, might be first launch.");
-        }
+    if (result == 0 && servicePid == 0) {
+        // Aquire assertion now that we're launched.
+        [self _aquireApplicationBackgroundAssertion];
     }
     
     return result;
 #endif
 }
 
+- (void)_aquireApplicationBackgroundAssertion {
+#if TARGET_OS_SIMULATOR
+    return;
+#else
+    pid_t servicePid;
+    SBSProcessIDForDisplayIdentifier(CFSTR(APPLICATION_IDENTIFIER), &servicePid);
+    
+    if (servicePid != 0) {
+        NSLog(@"*** [reprovisiond] :: Aquiring background assertion");
+        self.applicationBackgroundAssertion = [[BKSProcessAssertion alloc] initWithPID:servicePid flags:(BKSProcessAssertionFlagPreventSuspend | BKSProcessAssertionFlagAllowIdleSleep) reason:BKSProcessAssertionReasonExternalAccessory name:@APPLICATION_IDENTIFIER withHandler:^(BOOL success) {
+            if (success) {
+                // Need to do anything here?
+                NSLog(@"*** [reprovisiond] :: Did aquire background assertion");
+                
+                // Start the fallback timer for removing the assertion.
+                self.assertionFallbackTimer = [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(_assertionFallbackDidFire:) userInfo:nil repeats:NO];
+            } else {
+                NSLog(@"*** [reprovisiond] :: Failed to aquire background assertion");
+            }
+        }];
+    } else {
+        // No PID!
+        NSLog(@"*** [reprovisiond] :: Could not find application's PID, might be first launch.");
+    }
+#endif
+}
+
+- (void)_assertionFallbackDidFire:(id)sender {
+    NSLog(@"*** [reprovisiond] :: Background assertion fallback did fire.");
+    [self _releaseApplicationBackgroundAssertion];
+}
+
 - (void)_releaseApplicationBackgroundAssertion {
+#if TARGET_OS_SIMULATOR
+    return;
+#else
     NSLog(@"*** [reprovisiond] :: Releasing background assertion");
+    
+    if (self.assertionFallbackTimer) {
+        [self.assertionFallbackTimer invalidate];
+        self.assertionFallbackTimer = nil;
+    }
+    
     [self.applicationBackgroundAssertion invalidate];
     self.applicationBackgroundAssertion = nil;
+#endif
 }
 
 - (void)sb_didFinishLaunchingNotification {
@@ -299,7 +343,7 @@ extern "C" {
         });
         
         // Application did finish task.
-        status = notify_register_dispatch("com.matchstic.reprovision.ios/didFinishBackgroundTask", &_applicationDidFinishTaskToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0l), ^(int token) {
+        status = notify_register_dispatch("com.matchstic.reprovision.ios/didFinishBackgroundTask", &_applicationDidFinishTaskToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0l), ^(int token) {
             
             // No state associated with this message.
             [weakSelf _releaseApplicationBackgroundAssertion];

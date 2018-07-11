@@ -244,9 +244,15 @@ static RPVApplicationSigning *sharedInstance;
         
         NSLog(@"Does ipaPath exist? %d", [[NSFileManager defaultManager] fileExistsAtPath:ipaPath]);
         
-        BOOL result = [[LSApplicationWorkspace defaultWorkspace] installApplication:ipaURL
-                                                                        withOptions:options
-                                                                              error:&error];
+        BOOL result = NO;
+        @try {
+            result = [[LSApplicationWorkspace defaultWorkspace] installApplication:ipaURL
+                                                                       withOptions:options
+                                                                             error:&error];
+        } @catch (NSException *e) {
+            error = [self _errorFromString:e.description errorCode:RPVErrorFailedToInstallSignedIPA];
+            result = NO;
+        }
         
         if (!result) {
             // Check if this is the case where it's an app from another Team ID.
