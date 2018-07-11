@@ -7,6 +7,6 @@
         "backgroundColor": "#000000",
         "blurBackground": 1,
         "disableSpringAnimationPadding": 0,
-        "opacity": 0.95
+        "opacity": 1.0
     }
 }

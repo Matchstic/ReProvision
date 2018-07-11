@@ -31,6 +31,7 @@
 		C96FBFE920EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE620EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m */; };
 		C96FBFEE20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFEC20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m */; };
 		C96FBFF120EBD287007E2EC3 /* RPVInstalledTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */; };
+		C97EF5BA20F6AA3B005CB1DB /* RMessageDesign.json in Resources */ = {isa = PBXBuildFile; fileRef = C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */; };
 		C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */ = {isa = PBXBuildFile; fileRef = C996746520EE314B00EEFBD2 /* PackageVersion.plist */; };
 		C9AB43BF20F012E00016F78F /* SpringBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C9AB43C020F012E00016F78F /* BackBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43BE20F012E00016F78F /* BackBoardServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -244,6 +245,7 @@
 		C96FBFED20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionViewCell.h; sourceTree = "<group>"; };
 		C96FBFEF20EBD287007E2EC3 /* RPVInstalledTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledTableViewCell.h; sourceTree = "<group>"; };
 		C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledTableViewCell.m; sourceTree = "<group>"; };
+		C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = RMessageDesign.json; sourceTree = "<group>"; };
 		C996746520EE314B00EEFBD2 /* PackageVersion.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
 		C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = SpringBoardServices.tbd; path = Shared/iosdaemon/lib/SpringBoardServices.tbd; sourceTree = "<group>"; };
 		C9AB43BE20F012E00016F78F /* BackBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = BackBoardServices.tbd; path = Shared/iosdaemon/lib/BackBoardServices.tbd; sourceTree = "<group>"; };
@@ -604,6 +606,16 @@
 			path = "Table View";
 			sourceTree = "<group>";
 		};
+		C97EF5BB20F6AA41005CB1DB /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				C90AD51C20697F23008B2F2B /* RPVNotificationManager.h */,
+				C90AD51D20697F23008B2F2B /* RPVNotificationManager.m */,
+				C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
 		C9C6EA392004257E00211FDD = {
 			isa = PBXGroup;
 			children = (
@@ -633,8 +645,7 @@
 				C9C6EA612004261300211FDD /* Assets.xcassets */,
 				C9C6EA622004261300211FDD /* LaunchScreen.storyboard */,
 				C9C6EA642004261300211FDD /* Main.storyboard */,
-				C90AD51C20697F23008B2F2B /* RPVNotificationManager.h */,
-				C90AD51D20697F23008B2F2B /* RPVNotificationManager.m */,
+				C97EF5BB20F6AA41005CB1DB /* Notifications */,
 				C9E9BB7220C5D07A00EE27D9 /* Root Controllers */,
 				C92D374220502B4200F9F152 /* Account */,
 				C90C2218200533B300255B08 /* Installed Panes */,
@@ -1097,6 +1108,7 @@
 				C9C6EAF92004280A00211FDD /* apple-ios.pem in Resources */,
 				C9C6EAF82004280A00211FDD /* apple-dev.pem in Resources */,
 				C9C6EAFC2004280A00211FDD /* verisign-2048-256.pem in Resources */,
+				C97EF5BA20F6AA3B005CB1DB /* RMessageDesign.json in Resources */,
 				C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */,
 				C9C6EAFA2004280A00211FDD /* verisign-1024-128.pem in Resources */,
 				C9C6EAFB2004280A00211FDD /* verisign-2048-128.pem in Resources */,

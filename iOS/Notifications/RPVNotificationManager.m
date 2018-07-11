@@ -17,7 +17,9 @@
 #import <RMessage.h>
 
 // Fix for crashing when using stashing.
-HOOK_MESSAGE(id, UNUserNotificationCenter, initWithBundleIdentifier, NSString *bundleID) {
+HOOK_MESSAGE(id, UNUserNotificationCenter, initWithBundleIdentifier_, NSString *bundleID) {
+    NSLog(@"*** [ReProvision] :: Hooked -[UNUserNotificationCenter initWithBundleIdentifier:]");
+    
     id result;
     
     if (!bundleID) {
@@ -25,9 +27,9 @@ HOOK_MESSAGE(id, UNUserNotificationCenter, initWithBundleIdentifier, NSString *b
     }
     
     @try {
-        result = _UNUserNotificationCenter_initWithBundleIdentifier(self, sel, bundleID);
+        result = _UNUserNotificationCenter_initWithBundleIdentifier_(self, sel, bundleID);
     } @catch (NSException *e) {
-        result = _UNUserNotificationCenter_initWithBundleIdentifier(self, sel, [[NSBundle mainBundle] bundleIdentifier]);
+        result = _UNUserNotificationCenter_initWithBundleIdentifier_(self, sel, [[NSBundle mainBundle] bundleIdentifier]);
     }
     
     return result;
@@ -118,7 +120,7 @@ HOOK_MESSAGE(id, UNUserNotificationCenter, initWithBundleIdentifier, NSString *b
     [RMessage dismissActiveNotification];
     [RMessage showNotificationWithTitle:title
                                subtitle:body
-                              iconImage:[UIImage imageNamed:@"notifIcon"]
+                              iconImage:nil
                                    type:RMessageTypeNormal
                          customTypeName:@"ios9"
                                duration:3.0
