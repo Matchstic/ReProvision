@@ -18,6 +18,8 @@
 #import "RPVInstalledCollectionViewCell.h"
 #import "RPVInstalledTableViewCell.h"
 
+#import "RPVApplicationDetailController.h"
+
 // Fake data source stuff...
 #define USE_FAKE_DATA 0
 
@@ -47,6 +49,8 @@
 @property (nonatomic, strong) NSMutableArray *expiringSoonDataSource;
 @property (nonatomic, strong) NSMutableArray *recentlySignedDataSource;
 @property (nonatomic, strong) NSMutableArray *otherApplicationsDataSource;
+
+@property (nonatomic, strong) NSMutableDictionary *currentSigningProgress;
 @end
 
 @implementation RPVInstalledViewController
@@ -57,6 +61,8 @@
     
     [self.expiringCollectionView registerClass:[RPVInstalledCollectionViewCell class] forCellWithReuseIdentifier:@"installed.cell"];
     [self.recentTableView registerClass:[RPVInstalledTableViewCell class] forCellReuseIdentifier:@"installed.cell"];
+    
+    self.currentSigningProgress = [NSMutableDictionary dictionary];
     
     [[RPVApplicationSigning sharedInstance] addSigningUpdatesObserver:self];
     
@@ -99,6 +105,7 @@
     self.rootScrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
     self.rootScrollView.delegate = self;
     self.rootScrollView.backgroundColor = [UIColor colorWithWhite:0.96 alpha:1.0];
+    self.rootScrollView.alwaysBounceVertical = YES;
     if (@available(iOS 11.0, *)) {
         self.rootScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
@@ -380,6 +387,18 @@
     return 1;
 }
 
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    [collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    
+    // Show detail view
+    if (self.expiringSoonDataSource.count > 0) {
+        RPVApplication *application = [self.expiringSoonDataSource objectAtIndex:indexPath.row];
+        NSString *buttonTitle = @"SIGN";
+        
+        [self _showApplicationDetailController:application withButtonTitle:buttonTitle];
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 // Table View delegate methods.
 //////////////////////////////////////////////////////////////////////////////////
@@ -427,6 +446,43 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    RPVApplication *application;
+    NSString *buttonTitle = @"";
+    if ([tableView isEqual:self.otherApplicationsTableView] && self.otherApplicationsDataSource.count > 0) {
+        buttonTitle = @"ADD";
+        application = [self.otherApplicationsDataSource objectAtIndex:indexPath.row];
+    } else if ([tableView isEqual:self.recentTableView] && self.recentlySignedDataSource.count > 0) {
+        buttonTitle = @"SIGN";
+        application = [self.recentlySignedDataSource objectAtIndex:indexPath.row];
+    } else {
+        return;
+    }
+    
+    [self _showApplicationDetailController:application withButtonTitle:buttonTitle];
+}
+
+- (void)_showApplicationDetailController:(RPVApplication*)application withButtonTitle:(NSString*)buttonTitle {
+    RPVApplicationDetailController *detailController = [[RPVApplicationDetailController alloc] initWithApplication:application];
+    
+    // Update with current states.
+    [detailController setButtonTitle:buttonTitle];
+    if ([[self.currentSigningProgress allKeys] containsObject:[application bundleIdentifier]]) {
+        int currentPercent = [[self.currentSigningProgress objectForKey:[application bundleIdentifier]] intValue];
+        [detailController setCurrentSigningPercent:currentPercent];
+    }
+    
+    // Add to the rootViewController of the application, as an effective overlay.
+    detailController.view.alpha = 0.0;
+    
+    UIViewController *rootController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    [rootController addChildViewController:detailController];
+    [rootController.view addSubview:detailController.view];
+    
+    detailController.view.frame = rootController.view.bounds;
+    
+    // Animate in!
+    [detailController animateForPresentation];
 }
 
 // We provide editing only for the other applications table.
@@ -436,10 +492,10 @@
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [tableView isEqual:self.otherApplicationsTableView] ? UITableViewCellEditingStyleInsert : UITableViewCellEditingStyleNone;
+    return UITableViewCellEditingStyleNone;
 }
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+/*- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Can only be from the other table view.
         NSString *bundleIdentifier = [self.otherApplicationsDataSource objectAtIndex:indexPath.row];
@@ -450,7 +506,7 @@
                                                                   username:[RPVResources getUsername]
                                                                   password:[RPVResources getPassword]];
     }
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////////
 // Application Signing delegate methods.
@@ -459,6 +515,8 @@
 - (void)applicationSigningDidStart {}
 
 - (void)applicationSigningUpdateProgress:(int)progress forBundleIdentifier:(NSString *)bundleIdentifier {
+    [self.currentSigningProgress setObject:[NSNumber numberWithInt:progress] forKey:bundleIdentifier];
+    
     if (progress == 100) {
         // Great success! Now we can move items around!
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -580,7 +638,9 @@
     }
 }
 
-- (void)applicationSigningDidEncounterError:(NSError *)error forBundleIdentifier:(NSString *)bundleIdentifier {}
+- (void)applicationSigningDidEncounterError:(NSError *)error forBundleIdentifier:(NSString *)bundleIdentifier {
+    [self.currentSigningProgress setObject:@100 forKey:bundleIdentifier];
+}
 
 - (void)applicationSigningCompleteWithError:(NSError *)error {}
 

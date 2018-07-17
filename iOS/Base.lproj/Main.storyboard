@@ -620,11 +620,11 @@
         <image name="installedActive" width="26" height="26"/>
         <image name="settings" width="26" height="26"/>
         <image name="settingsActive" width="26" height="26"/>
-        <image name="troubleshooting" width="32" height="26"/>
-        <image name="troubleshootingActive" width="32" height="26"/>
+        <image name="troubleshooting" width="32" height="32"/>
+        <image name="troubleshootingActive" width="32" height="32"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="heH-fA-v2l"/>
+        <segue reference="wOt-Kt-FeS"/>
         <segue reference="yQw-Ft-jD9"/>
         <segue reference="wDq-bR-Jyb"/>
         <segue reference="kw9-cF-VrK"/>

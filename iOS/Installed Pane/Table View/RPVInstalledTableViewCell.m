@@ -80,16 +80,12 @@ static CGFloat inset = 20;
     self.timeRemainingLabel.text = [RPVResources getFormattedTimeRemainingForExpirationDate:self.expiryDate];
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-}
-
 - (void)layoutSubviews {
     [super layoutSubviews];
     
     self.contentView.frame = CGRectMake(0, inset/3.0, self.frame.size.width, self.frame.size.height - inset/1.5);
+    self.selectedBackgroundView.frame = self.contentView.frame;
+    self.selectedBackgroundView.layer.cornerRadius = 12.5;
     
     if (!self.noApplicationsInThisSection) {
         CGFloat xInset = 10;
@@ -123,6 +119,11 @@ static CGFloat inset = 20;
     
     if (!self.expiryUpdateTimer) {
         self.expiryUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(onExpiryUpdateTimerFired:) userInfo:nil repeats:YES];
+    }
+    
+    if (!self.selectedBackgroundView) {
+        self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+        self.selectedBackgroundView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.2];
     }
     
     if (!self.icon) {
@@ -224,6 +225,8 @@ static CGFloat inset = 20;
     
     self.contentView.clipsToBounds = YES;
     self.contentView.layer.cornerRadius = 12.5;
+    self.selectedBackgroundView.layer.cornerRadius = 12.5;
+    self.selectedBackgroundView.clipsToBounds = YES;
     
     self.backgroundColor = [UIColor clearColor];
     self.contentView.backgroundColor = [UIColor whiteColor];
