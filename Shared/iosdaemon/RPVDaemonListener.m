@@ -68,16 +68,20 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 @property (nonatomic, readwrite) int debugBackgroundSign;
 @property (nonatomic, readwrite) int lockstateToken;
 @property (nonatomic, readwrite) int springboardBootToken;
+@property (nonatomic, readwrite) int backboardBacklightChangedToken;
 @property (nonatomic, readwrite) int applicationNotificationToken;
 @property (nonatomic, readwrite) int applicationDidFinishTaskToken;
     
 @property (nonatomic, strong) NSDictionary *settings;
-@property (nonatomic, strong) NSTimer *signingTimer;
 @property (nonatomic, strong) NSTimer *assertionFallbackTimer;
 @property (nonatomic, readwrite) BOOL updateQueuedForUnlock;
 @property (nonatomic, readwrite) BOOL uiLockState;
 
 @property (nonatomic, readwrite) BOOL springboardDidLaunchSeen;
+
+@property (nonatomic, strong) NSTimer *signingTimer;
+@property (nonatomic, readwrite) time_t lastLockedTime;
+@property (nonatomic, readwrite) NSTimeInterval lastLockedTimeDelta;
 
 @property (nonatomic, strong) BKSProcessAssertion *applicationBackgroundAssertion;
 
@@ -96,6 +100,10 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 - (void)initialiseListener {
     // Start timer for signing, and setup notifications on SB events.
     [self reloadSettings];
+    
+    // Setup last locked times a
+    self.lastLockedTime = time(NULL);
+    self.lastLockedTimeDelta = [self heartbeatTimerInterval];
 
     [self _restartSigningTimer];
 }
@@ -106,7 +114,7 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     if (self.signingTimer)
         [self.signingTimer invalidate];
     
-    self.signingTimer = [NSTimer timerWithTimeInterval:[self heartbeatTimerInterval] target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:YES];
+    self.signingTimer = [NSTimer timerWithTimeInterval:[self heartbeatTimerInterval] target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:NO];
     [[NSRunLoop currentRunLoop] addTimer:self.signingTimer forMode:NSDefaultRunLoopMode];
 }
     
@@ -116,6 +124,9 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     
     NSTimeInterval interval = 3600;
     interval *= time;
+    
+    // DEBUG ONLY!
+    return 12 * 60;
     
     return interval;
 }
@@ -152,6 +163,9 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
         NSLog(@"*** [reprovisiond] :: Signing timer fired: update now");
         [self _initiateNewSigningRoutine];
     }
+    
+    // Restart the timer with the full duration.
+    [self _restartSigningTimer];
 }
     
 - (void)_initiateNewSigningRoutine {
@@ -281,11 +295,17 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     NSLog(@"*** [reprovisiond] :: Device was locked.");
     self.uiLockState = YES;
     
-    if (self.springboardDidLaunchSeen) {
-        self.springboardDidLaunchSeen = NO;
+    // If the unlocked timer is running, then we need to stop it.
+    // BUT! We need to know how long was left on it to correctly set our timeDelta
+    self.lastLockedTime = time(NULL);
+    
+    if (self.signingTimer != nil) {
+        self.lastLockedTimeDelta = fabs([[NSDate date] timeIntervalSinceDate:self.signingTimer.fireDate]);
+        [self.signingTimer invalidate];
         
-        NSLog(@"*** [reprovisiond] :: Checking credentials after reaching a sane point since SpringBoard launched.");
-        [self _initiateApplicationCheckForCredentials];
+        NSLog(@"*** [reprovisiond] :: Time delta from timer: %f", self.lastLockedTimeDelta);
+    } else {
+        self.lastLockedTimeDelta = [self heartbeatTimerInterval];
     }
 }
 
@@ -297,7 +317,52 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
         [self _initiateNewSigningRoutine];
     }
     
+    // Restart the signing timer with the remaining interval from being locked.
+    NSTimeInterval remainingInterval = 0;
+    
+    // Already fired and waiting for unlock, next one is the full time interval
+    if (self.updateQueuedForUnlock)
+        remainingInterval = [self heartbeatTimerInterval];
+    else
+        remainingInterval = fabs(difftime(self.lastLockedTime + self.lastLockedTimeDelta, time(NULL)));
+    
+    NSLog(@"*** [reprovisiond] :: Restarting timer with interval: %f seconds", remainingInterval);
+        
+    self.signingTimer = [NSTimer timerWithTimeInterval:remainingInterval target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:NO];
+    [[NSRunLoop currentRunLoop] addTimer:self.signingTimer forMode:NSDefaultRunLoopMode];
+    
     self.uiLockState = NO;
+}
+
+- (void)bb_backlightChanged:(int)state {
+    if (state > 0) {
+        NSLog(@"*** [reprovisiond] :: Display turned on");
+        
+        if (self.uiLockState == YES) {
+            // Handle launching the app for credentials checks after SpringBoard launches
+            if (self.springboardDidLaunchSeen) {
+                self.springboardDidLaunchSeen = NO;
+                
+                NSLog(@"*** [reprovisiond] :: Checking credentials after reaching a sane point since SpringBoard launched.");
+                [self _initiateApplicationCheckForCredentials];
+            }
+            
+            // We're locked, and the display turned on. Check to see if our current time exceeds the stored time + delta.
+            if (self.lastLockedTime + self.lastLockedTimeDelta < time(NULL)) {
+                [self signingTimerDidFire:nil];
+            } else {
+                NSTimeInterval timeRemaining = self.lastLockedTime + self.lastLockedTimeDelta - time(NULL);
+                
+                int hoursRemaining = timeRemaining / 60 / 60;
+                int minutesRemaining = (timeRemaining - (hoursRemaining*60*60)) / 60;
+                int secondsRemaining = timeRemaining - (hoursRemaining*60*60) - (minutesRemaining*60);
+                
+                NSLog(@"*** [reprovisiond] :: Timer not 'triggered', remaining: %dh %dm %ds", hoursRemaining, minutesRemaining, secondsRemaining);
+            }
+        }
+    } else {
+        NSLog(@"*** [reprovisiond] :: Display turned off");
+    }
 }
     
 //////////////////////////////////////////////////////////////////////////
@@ -340,6 +405,15 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
             
             // No state associated with this message.
             [weakSelf sb_didFinishLaunchingNotification];
+        });
+        
+        // backboardd backlight changes
+        status = notify_register_dispatch("com.apple.backboardd.backlight.changed", &_backboardBacklightChangedToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0l), ^(int token) {
+            
+            uint64_t state = UINT64_MAX;
+            notify_get_state(_backboardBacklightChangedToken, &state);
+            
+            [weakSelf bb_backlightChanged:(int)state];
         });
         
         // Application did finish task.

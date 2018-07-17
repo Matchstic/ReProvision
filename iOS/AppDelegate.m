@@ -227,8 +227,6 @@
     // Start a background sign
     UIApplication *application = [UIApplication sharedApplication];
     UIBackgroundTaskIdentifier __block bgTask = [application beginBackgroundTaskWithName:@"ReProvision Background Signing" expirationHandler:^{
-        // We should never be called due to using the unboundedTaskCompletion background mode.
-        // Putting code here for completeness.
         [application endBackgroundTask:bgTask];
         bgTask = UIBackgroundTaskInvalid;
         
@@ -251,21 +249,39 @@
     if (![RPVResources getUsername] || [[RPVResources getUsername] isEqualToString:@""] || ![RPVResources getPassword] || [[RPVResources getPassword] isEqualToString:@""]) {
         
         [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Login Required" body:@"Tap to login to ReProvision. This is needed to re-sign applications." isDebugMessage:NO isUrgentMessage:YES andNotificationID:@"login"];
+    } else {
+        // Nothing to do, just notify that we're done.
+        [self _notifyDaemonOfMessageHandled];
     }
-    
-    // Ask to remove our process assertion 5 seconds later, so that we can assume any notifications
-    // have been scheduled.
-    [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
 }
 
 - (void)daemonDidRequestQueuedNotification {
     // Check if any applications need resigning. If they do, show notifications as appropriate.
     
     if ([[RPVBackgroundSigningManager sharedInstance] anyApplicationsNeedingResigning]) {
-        [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Re-signing Queued" body:@"Unlock your device to resign applications." isDebugMessage:NO isUrgentMessage:YES andNotificationID:/*@"resignQueued"*/nil];
+        [self _sendBackgroundedNotificationWithTitle:@"Re-signing Queued" body:@"Unlock your device to resign applications." isDebug:NO isUrgent:YES withNotificationID:@"resignQueued"];
     } else {
-        [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"" body:@"No applications need re-signing at this time." isDebugMessage:NO isUrgentMessage:NO andNotificationID:/*@"resignQueued"*/nil];
+        [self _sendBackgroundedNotificationWithTitle:@"DEBUG" body:@"Background check has been queued for next unlock." isDebug:YES isUrgent:NO withNotificationID:nil];
     }
+}
+
+- (void)_sendBackgroundedNotificationWithTitle:(NSString*)title body:(NSString*)body isDebug:(BOOL)isDebug isUrgent:(BOOL)isUrgent withNotificationID:(NSString*)notifID {
+    
+    // We start a background task to ensure the notification is posted when expected.
+    UIApplication *application = [UIApplication sharedApplication];
+    UIBackgroundTaskIdentifier __block bgTask = [application beginBackgroundTaskWithName:@"ReProvision Background Notification" expirationHandler:^{
+        [application endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+        
+        [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
+    }];
+    
+    // Post the notification.
+    [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:title body:body isDebugMessage:isDebug isUrgentMessage:isUrgent andNotificationID:notifID];
+    
+    // Done, so stop this background task.
+    [application endBackgroundTask:bgTask];
+    bgTask = UIBackgroundTaskInvalid;
     
     // Ask to remove our process assertion 5 seconds later, so that we can assume any notifications
     // have been scheduled.
