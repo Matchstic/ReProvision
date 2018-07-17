@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
-@interface RPVAccountPrivacyPolicyViewController : UIViewController
+@interface RPVAccountPrivacyPolicyViewController : UIViewController <WKNavigationDelegate>
 
 @property (strong, nonatomic) WKWebView *webView;
 
