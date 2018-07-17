@@ -161,11 +161,23 @@
     
     [array addObject:designer];
     
+    PSSpecifier *openSourceLicenses = [PSSpecifier preferenceSpecifierNamed:@"Third-party Licenses"
+                                                                     target:self
+                                                                        set:nil
+                                                                        get:nil
+                                                                     detail:NSClassFromString(@"RPVWebViewController")
+                                                                       cell:PSLinkCell
+                                                                       edit:nil];
+    
+    [openSourceLicenses setProperty:@"openSourceLicenses" forKey:@"key"];
+    
+    [array addObject:openSourceLicenses];
+    
     return array;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 4) {
+    if (indexPath.section == 4 && indexPath.row < 2) {
         static NSString *cellIdentifier = @"credits.cell";
         
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
@@ -219,11 +231,11 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return indexPath.section == 4 ? 60.0 : UITableViewAutomaticDimension;
+    return indexPath.section == 4 && indexPath.row < 2 ? 60.0 : UITableViewAutomaticDimension;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 4) {
+    if (indexPath.section == 4 && indexPath.row < 2) {
         // handle credits tap.
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
         [self _openTwitterForUser:indexPath.row == 0 ? @"_Matchstic" : @"aesign_"];
