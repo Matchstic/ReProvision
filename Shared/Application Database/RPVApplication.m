@@ -8,10 +8,19 @@
 
 #import "RPVApplication.h"
 
+@interface _LSDiskUsage : NSObject
+@property (nonatomic, readonly) NSNumber *dynamicUsage;
+@property (nonatomic, readonly) NSNumber *onDemandResourcesUsage;
+@property (nonatomic, readonly) NSNumber *sharedUsage;
+@property (nonatomic, readonly) NSNumber *staticUsage;
+@end
+
 @interface LSApplicationProxy : NSObject
 
 @property (nonatomic, readonly) NSString *applicationIdentifier;
 @property (nonatomic, readonly) NSURL *bundleURL;
+@property (nonatomic, readonly) _LSDiskUsage *diskUsage;
+@property (nonatomic, readonly) NSString *shortVersionString;
 
 + (instancetype)applicationProxyForIdentifier:(NSString*)arg1;
 
@@ -45,6 +54,14 @@
 
 - (NSString*)applicationName {
     return self.proxy != nil ? [self.proxy localizedName] : @"Example";
+}
+
+- (NSString*)applicationVersion {
+    return self.proxy != nil ? [self.proxy shortVersionString] : @"1.0";
+}
+
+- (NSNumber*)applicationInstalledSize {
+    return self.proxy != nil ? [self.proxy.diskUsage staticUsage] : @0;
 }
 
 - (UIImage*)applicationIcon {

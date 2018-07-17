@@ -18,6 +18,8 @@
 
 - (NSString*)bundleIdentifier;
 - (NSString*)applicationName;
+- (NSString*)applicationVersion;
+- (NSNumber*)applicationInstalledSize;
 
 // Make sure to call this one asynchronously
 - (UIImage*)applicationIcon;
