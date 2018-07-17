@@ -309,10 +309,6 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 - (void)sb_didUIUnlockNotification {
     // Start a signing routine since we had one trigger whilst locked.
     NSLog(@"*** [reprovisiond] :: Device was unlocked.");
-    if (self.updateQueuedForUnlock) {
-        self.updateQueuedForUnlock = NO;
-        [self _initiateNewSigningRoutine];
-    }
     
     // Restart the signing timer with the remaining interval from being locked.
     NSTimeInterval remainingInterval = 0;
@@ -327,6 +323,12 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
         
     self.signingTimer = [NSTimer timerWithTimeInterval:remainingInterval target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:NO];
     [[NSRunLoop currentRunLoop] addTimer:self.signingTimer forMode:NSDefaultRunLoopMode];
+    
+    // Handle queued signing
+    if (self.updateQueuedForUnlock) {
+        self.updateQueuedForUnlock = NO;
+        [self _initiateNewSigningRoutine];
+    }
     
     self.uiLockState = NO;
 }
@@ -344,17 +346,19 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
                 [self _initiateApplicationCheckForCredentials];
             }
             
-            // We're locked, and the display turned on. Check to see if our current time exceeds the stored time + delta.
-            if (self.lastLockedTime + self.lastLockedTimeDelta < time(NULL)) {
-                [self signingTimerDidFire:nil];
-            } else {
-                NSTimeInterval timeRemaining = self.lastLockedTime + self.lastLockedTimeDelta - time(NULL);
-                
-                int hoursRemaining = timeRemaining / 60 / 60;
-                int minutesRemaining = (timeRemaining - (hoursRemaining*60*60)) / 60;
-                int secondsRemaining = timeRemaining - (hoursRemaining*60*60) - (minutesRemaining*60);
-                
-                NSLog(@"*** [reprovisiond] :: Timer not 'triggered', remaining: %dh %dm %ds", hoursRemaining, minutesRemaining, secondsRemaining);
+            if (!self.updateQueuedForUnlock) {
+                // We're locked, and the display turned on. Check to see if our current time exceeds the stored time + delta.
+                if (self.lastLockedTime + self.lastLockedTimeDelta < time(NULL)) {
+                    [self signingTimerDidFire:nil];
+                } else {
+                    NSTimeInterval timeRemaining = self.lastLockedTime + self.lastLockedTimeDelta - time(NULL);
+                    
+                    int hoursRemaining = timeRemaining / 60 / 60;
+                    int minutesRemaining = (timeRemaining - (hoursRemaining*60*60)) / 60;
+                    int secondsRemaining = timeRemaining - (hoursRemaining*60*60) - (minutesRemaining*60);
+                    
+                    NSLog(@"*** [reprovisiond] :: Timer not 'triggered', remaining: %dh %dm %ds", hoursRemaining, minutesRemaining, secondsRemaining);
+                }
             }
         }
     } else {
