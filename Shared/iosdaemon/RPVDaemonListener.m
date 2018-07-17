@@ -125,9 +125,6 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     NSTimeInterval interval = 3600;
     interval *= time;
     
-    // DEBUG ONLY!
-    return 12 * 60;
-    
     return interval;
 }
 
