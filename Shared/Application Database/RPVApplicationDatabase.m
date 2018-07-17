@@ -52,7 +52,9 @@ static RPVApplicationDatabase *sharedDatabase;
     NSMutableArray *applications = [NSMutableArray array];
     
     for (LSApplicationProxy *proxy in [[LSApplicationWorkspace defaultWorkspace] allApplications]) {
-        if ([[proxy teamID] isEqualToString:teamID]) {
+        // If the teamID doesn't match, ignore.
+        // If the bundleURL is /Application/*, then ignore.
+        if ([[proxy teamID] isEqualToString:teamID] && ![[proxy.bundleURL path] hasPrefix:@"/Application"]) {
             RPVApplication *application = [[RPVApplication alloc] initWithApplicationProxy:proxy];
             
             [applications addObject:application];
