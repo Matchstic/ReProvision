@@ -12,6 +12,8 @@ Provisioning is undertaken via the user's Apple ID credentials, and supports bot
 - Basic settings to configure alerts shown by the automatic re-signing.
 - [TODO] Ability to install any `.ipa` file downloaded through Safari from the device.
 
+Battery optimisations are also in place through the usage of a background daemon to handle automatic signing.
+
 ##### tvOS [TODO]
 
 - Same features as for iOS
