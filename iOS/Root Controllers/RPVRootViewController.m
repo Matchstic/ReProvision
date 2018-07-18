@@ -37,6 +37,9 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self _setupSplitController:(UISplitViewController *)mainViewController];
     }
+    
+    // Update status bar style.
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -58,6 +61,11 @@
     // Present applications controller
     [detailController presentSelectedItem:kItemApplications];
     [masterController.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    // Only ever have one child at any time.
+    return self.childViewControllers.count > 0 ? [[self.childViewControllers objectAtIndex:0] preferredStatusBarStyle] : UIStatusBarStyleDefault;
 }
 
 /*

@@ -82,15 +82,14 @@
     [super viewWillAppear:animated];
     
     // Set status bar colour
-    [[UIApplication sharedApplication] setStatusBarStyle:[self preferredStatusBarStyle]];
-    [self setNeedsStatusBarAppearanceUpdate];
+   // [[UIApplication sharedApplication] setStatusBarStyle:[self preferredStatusBarStyle]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
     // Reset status bar colour
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
 - (void)didReceiveMemoryWarning {

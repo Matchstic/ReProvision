@@ -57,6 +57,10 @@
     [self performSegueWithIdentifier:animated ? @"presentAccountControllerAnimated" : @"presentAccountController" sender:nil];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return [self.childViewControllerForStatusBarStyle preferredStatusBarStyle];
+}
+
 /*
 #pragma mark - Navigation
 
