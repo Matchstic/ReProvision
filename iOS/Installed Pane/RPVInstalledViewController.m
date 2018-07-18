@@ -305,7 +305,7 @@
     [self.view setNeedsLayout];
     
     // Set the sideloaded apps table to be editing if necessary.
-    [self.otherApplicationsTableView setEditing:self.otherApplicationsDataSource.count > 0 animated:NO];
+   // [self.otherApplicationsTableView setEditing:self.otherApplicationsDataSource.count > 0 animated:NO];
 }
 
 - (void)_debugCreateFakeDataSources {
@@ -488,7 +488,7 @@
 // We provide editing only for the other applications table.
 
 - (BOOL)tableView:(UITableView*)tableView canEditRowAtIndexPath:(NSIndexPath*)arg2 {
-    return [tableView isEqual:self.otherApplicationsTableView];
+    return NO;
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -599,7 +599,7 @@
                 // Reload the table to show the "no apps" label
                 [self.otherApplicationsTableView reloadData];
                 // Stop editing too.
-                [self.otherApplicationsTableView setEditing:NO];
+                //[self.otherApplicationsTableView setEditing:NO];
             } else {
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
                 
