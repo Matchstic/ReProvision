@@ -12,4 +12,7 @@
 
 - (void)configureWithApplication:(id)application fallbackDisplayName:(NSString*)fallback andExpiryDate:(NSDate*)date;
 
+- (void)flashNotificationSuccess;
+- (void)flashNotificationFailure;
+
 @end

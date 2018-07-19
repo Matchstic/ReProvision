@@ -78,20 +78,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_reloadDataForUserDidSignIn:) name:@"com.matchstic.reprovision.ios/resigningThresholdDidChange" object:nil];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    // Set status bar colour
-   // [[UIApplication sharedApplication] setStatusBarStyle:[self preferredStatusBarStyle]];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    
-    // Reset status bar colour
-    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-}
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -209,7 +195,11 @@
     
     // Top background view.
     self.topBackgroundView.frame = CGRectMake(0, 0, self.view.bounds.size.width, yOffset);
+    // Stop implicit animation.
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
     self.topBackgroundGradientLayer.frame = self.topBackgroundView.bounds;
+    [CATransaction commit];
     
     yOffset += 5;
     
@@ -494,19 +484,6 @@
     return UITableViewCellEditingStyleNone;
 }
 
-/*- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Can only be from the other table view.
-        NSString *bundleIdentifier = [self.otherApplicationsDataSource objectAtIndex:indexPath.row];
-        
-        // Start signing this one app.
-        [[RPVApplicationSigning sharedInstance] resignSpecificApplications:@[bundleIdentifier]
-                                                                withTeamID:[RPVResources getTeamID]
-                                                                  username:[RPVResources getUsername]
-                                                                  password:[RPVResources getPassword]];
-    }
-}*/
-
 //////////////////////////////////////////////////////////////////////////////////
 // Application Signing delegate methods.
 //////////////////////////////////////////////////////////////////////////////////
@@ -517,6 +494,7 @@
     [self.currentSigningProgress setObject:[NSNumber numberWithInt:progress] forKey:bundleIdentifier];
     
     if (progress == 100) {
+        
         // Great success! Now we can move items around!
         dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -549,63 +527,64 @@
         
         // Move from the old data source to number 2.
         if (oldDataSource == 1) {
-            [self.expiringCollectionView performBatchUpdates:^{
-                int index = (int)[self.expiringSoonDataSource indexOfObject:application];
-                
+            // Batch updates, or straight-up reloadData.
+            if (self.expiringSoonDataSource.count - 1 == 0) {
                 // Remove items from data source.
-                [self.expiringSoonDataSource removeObjectAtIndex:index];
+                [self.expiringSoonDataSource removeObject:application];
                 
-                // And from collection view, maybe...
-                if (self.expiringSoonDataSource.count == 0) {
-                    // Reload!
-                    [self.expiringCollectionView reloadData];
-                } else {
+                [self.expiringCollectionView reloadData];
+            } else {
+                [self.expiringCollectionView performBatchUpdates:^{
+                    int index = (int)[self.expiringSoonDataSource indexOfObject:application];
+                    
+                    // Remove items from data source.
+                    [self.expiringSoonDataSource removeObjectAtIndex:index];
+                    
                     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
                     [self.expiringCollectionView deleteItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
-                }
-            } completion:^(BOOL finished) {
-                
-            }];
+                } completion:^(BOOL finished) {
+                    
+                }];
+            }
         } else if (oldDataSource == 2) {
             // Effectively this will be a re-order, but oh well.
             // Newest items go at the bottom.
-            [self.recentTableView beginUpdates];
             
-            int index = (int)[self.recentlySignedDataSource indexOfObject:application];
-            [self.recentlySignedDataSource removeObjectAtIndex:index];
-            
-            // Delete the row from the table, maybe...
-            
-            if (self.recentlySignedDataSource.count == 0) {
-                // Reload the table to show the "no apps" thing
-                
+            // Just reload into no applications.
+            if (self.recentlySignedDataSource.count - 1 == 0) {
+                [self.recentlySignedDataSource removeObject:application];
                 [self.recentTableView reloadData];
             } else {
+                [self.recentTableView beginUpdates];
+                
+                int index = (int)[self.recentlySignedDataSource indexOfObject:application];
+                [self.recentlySignedDataSource removeObjectAtIndex:index];
+                
+                // Delete the row from the table
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
                 
                 [self.recentTableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+                
+                [self.recentTableView endUpdates];
             }
-            
-            [self.recentTableView endUpdates];
         } else if (oldDataSource == 3) {
-            [self.otherApplicationsTableView beginUpdates];
             
-            int index = (int)[self.otherApplicationsDataSource indexOfObject:application];
-            [self.otherApplicationsDataSource removeObjectAtIndex:index];
-            
-            // Delete the row from the table, maybe...
-            if (self.otherApplicationsDataSource.count == 0) {
-                // Reload the table to show the "no apps" label
+            if (self.otherApplicationsDataSource.count - 1 == 0) {
+                [self.otherApplicationsDataSource removeObject:application];
                 [self.otherApplicationsTableView reloadData];
-                // Stop editing too.
-                //[self.otherApplicationsTableView setEditing:NO];
             } else {
+                [self.otherApplicationsTableView beginUpdates];
+                
+                int index = (int)[self.otherApplicationsDataSource indexOfObject:application];
+                [self.otherApplicationsDataSource removeObjectAtIndex:index];
+                
+                // Delete the row from the table
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
                 
                 [self.otherApplicationsTableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+                
+                [self.otherApplicationsTableView endUpdates];
             }
-            
-            [self.otherApplicationsTableView endUpdates];
         }
             
         // Now that we've removed the old application, create a new object for it to handle changes
@@ -633,12 +612,23 @@
         // We now need to relayout everything!
         [self.view setNeedsLayout];
             
+            // Flash notification on this cell.
+            dispatch_async(dispatch_get_main_queue(), ^(){
+                [[self _cellForApplication:application] flashNotificationSuccess];
+            });
+            
         });
     }
 }
 
 - (void)applicationSigningDidEncounterError:(NSError *)error forBundleIdentifier:(NSString *)bundleIdentifier {
     [self.currentSigningProgress setObject:@100 forKey:bundleIdentifier];
+    
+    // Find cell for this identifier.
+    // Flash notification on this cell.
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        [[self _cellForApplication:[self _applicationForBundleIdentifier:bundleIdentifier]] flashNotificationFailure];
+    });
 }
 
 - (void)applicationSigningCompleteWithError:(NSError *)error {}
@@ -675,6 +665,64 @@
                                                           username:[RPVResources getUsername]
                                                           password:[RPVResources getPassword]];
     }
+}
+
+- (RPVApplication*)_applicationForBundleIdentifier:(NSString*)bundleIdentifier {
+    RPVApplication *application;
+    // Check expiring
+    for (RPVApplication *app in self.expiringSoonDataSource) {
+        if ([app.bundleIdentifier isEqualToString:bundleIdentifier]) {
+            application = app;
+            break;
+        }
+    }
+    // Check recents
+    for (RPVApplication *app in self.recentlySignedDataSource) {
+        if ([app.bundleIdentifier isEqualToString:bundleIdentifier]) {
+            application = app;
+            break;
+        }
+    }
+    // Check others
+    for (RPVApplication *app in self.otherApplicationsDataSource) {
+        if ([app.bundleIdentifier isEqualToString:bundleIdentifier]) {
+            application = app;
+            break;
+        }
+    }
+    
+    return application;
+}
+
+- (id)_cellForApplication:(RPVApplication*)application {
+    NSString *bundleIdentifier = [application bundleIdentifier];
+
+    // Check expiring
+    for (RPVApplication *app in self.expiringSoonDataSource) {
+        if ([app.bundleIdentifier isEqualToString:bundleIdentifier]) {
+            int index = (int)[self.expiringSoonDataSource indexOfObject:app];
+            NSIndexPath *path = [NSIndexPath indexPathForRow:index inSection:0];
+            return [self.expiringCollectionView cellForItemAtIndexPath:path];
+        }
+    }
+    // Check recents
+    for (RPVApplication *app in self.recentlySignedDataSource) {
+        if ([app.bundleIdentifier isEqualToString:bundleIdentifier]) {
+            int index = (int)[self.recentlySignedDataSource indexOfObject:app];
+            NSIndexPath *path = [NSIndexPath indexPathForRow:index inSection:0];
+            return [self.recentTableView cellForRowAtIndexPath:path];
+        }
+    }
+    // Check others
+    for (RPVApplication *app in self.otherApplicationsDataSource) {
+        if ([app.bundleIdentifier isEqualToString:bundleIdentifier]) {
+            int index = (int)[self.otherApplicationsDataSource indexOfObject:app];
+            NSIndexPath *path = [NSIndexPath indexPathForRow:index inSection:0];
+            return [self.otherApplicationsTableView cellForRowAtIndexPath:path];
+        }
+    }
+    
+    return nil;
 }
 
 //////////////////////////////////////////////////////////////////////////////////

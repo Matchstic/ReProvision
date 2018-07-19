@@ -160,25 +160,27 @@
 }
 
 - (void)_checkDeviceRegistration {
-    self.titleLabel.text = @"Checking Device Status";
-    self.subtitleLabel.text = @"Verifying...";
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        self.titleLabel.text = @"Checking Device Status";
+        self.subtitleLabel.text = @"Verifying...";
     
-    [[RPVAccountChecker sharedInstance] registerCurrentDeviceForTeamID:self.teamId withUsername:self.username password:self.password andCompletionHandler:^(NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [[RPVAccountChecker sharedInstance] registerCurrentDeviceForTeamID:self.teamId withUsername:self.username password:self.password andCompletionHandler:^(NSError *error) {
             // Error only happens if user already has registered this device!
             [self _storeUserDetails];
-        });
-    }];
+        }];
+    });
 }
 
 - (void)_storeUserDetails {
-    self.titleLabel.text = @"Storing Login Information";
-    self.subtitleLabel.text = @"Working...";
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        self.titleLabel.text = @"Storing Login Information";
+        self.subtitleLabel.text = @"Working...";
     
-    // Store details of the user to RPVResources
-    [RPVResources storeUsername:self.username password:self.password andTeamID:self.teamId];
+        // Store details of the user to RPVResources
+        [RPVResources storeUsername:self.username password:self.password andTeamID:self.teamId];
     
-    [self performSelector:@selector(_done) withObject:nil afterDelay:2.0];
+        [self performSelector:@selector(_done) withObject:nil afterDelay:2.0];
+    });
 }
 
 - (void)_done {

@@ -34,6 +34,8 @@
 @property (nonatomic, strong) MarqueeLabel *percentCompleteLabel;
 @property (nonatomic, strong) MBCircularProgressBarView *progressBar;
 
+@property (nonatomic, strong) UIView *notificationView;
+
 @end
 
 static CGFloat inset = 20;
@@ -99,7 +101,7 @@ static CGFloat inset = 20;
         self.displayNameLabel.frame = CGRectMake(editingInset + xInset + self.icon.frame.size.width + xInset*1.25, (self.contentView.frame.size.height/2) - displayNameHeight + 2, self.contentView.frame.size.width - (xInset + self.icon.frame.size.width + 25) - editingInset, displayNameHeight);
         
         CGFloat bundleIdentifierHeight = IS_IPAD ? 22.5 : 15;
-        CGRect timeRemainingRect = [RPVResources boundedRectForFont:self.timeRemainingLabel.font andText:self.timeRemainingLabel.text width:self.contentView.frame.size.width - (self.bundleIdentifierLabel.frame.origin.x + self.bundleIdentifierLabel.frame.size.width + 20)];
+        CGRect timeRemainingRect = [RPVResources boundedRectForFont:self.timeRemainingLabel.font andText:self.timeRemainingLabel.text width:self.contentView.frame.size.width - (self.displayNameLabel.frame.origin.x + 20)];
         
         self.timeRemainingLabel.frame = CGRectMake(self.contentView.frame.size.width - 25 - timeRemainingRect.size.width, (self.contentView.frame.size.height/2) + 3, timeRemainingRect.size.width + 10, bundleIdentifierHeight);
         
@@ -107,6 +109,8 @@ static CGFloat inset = 20;
         
         self.progressBar.frame = CGRectMake(self.bundleIdentifierLabel.frame.origin.x, self.bundleIdentifierLabel.frame.origin.y, bundleIdentifierHeight, bundleIdentifierHeight);
         self.percentCompleteLabel.frame = CGRectMake(self.bundleIdentifierLabel.frame.origin.x + bundleIdentifierHeight + 7, self.bundleIdentifierLabel.frame.origin.y, self.bundleIdentifierLabel.frame.size.width - bundleIdentifierHeight - 7, bundleIdentifierHeight);
+        
+        self.notificationView.frame = self.contentView.bounds;
     } else {
         self.displayNameLabel.frame = self.contentView.bounds;
     }
@@ -208,10 +212,18 @@ static CGFloat inset = 20;
         [self.contentView addSubview:self.progressBar];
     }
     
+    if (!self.notificationView) {
+        self.notificationView = [[UIView alloc] initWithFrame:CGRectZero];
+        self.notificationView.hidden = YES;
+        
+        [self.contentView insertSubview:self.notificationView atIndex:0];
+    }
+    
     // Reset text colours if needed
     self.displayNameLabel.textColor = [UIColor blackColor];
     self.displayNameLabel.font = [UIFont systemFontOfSize:IS_IPAD ? 20 : 16 weight:UIFontWeightBold];
     self.displayNameLabel.textAlignment = NSTextAlignmentLeft;
+    self.displayNameLabel.labelize = NO;
     
     self.bundleIdentifierLabel.textColor = [UIColor grayColor];
     self.timeRemainingLabel.textColor = [UIColor grayColor];
@@ -227,6 +239,8 @@ static CGFloat inset = 20;
     self.contentView.layer.cornerRadius = 12.5;
     self.selectedBackgroundView.layer.cornerRadius = 12.5;
     self.selectedBackgroundView.clipsToBounds = YES;
+    self.notificationView.layer.cornerRadius = 12.5;
+    self.notificationView.clipsToBounds = YES;
     
     self.backgroundColor = [UIColor clearColor];
     self.contentView.backgroundColor = [UIColor whiteColor];
@@ -242,6 +256,7 @@ static CGFloat inset = 20;
         self.displayNameLabel.textColor = [UIColor darkGrayColor];
         self.displayNameLabel.font = [UIFont systemFontOfSize:IS_IPAD ? 20 : 16 weight:UIFontWeightRegular];
         self.displayNameLabel.textAlignment = NSTextAlignmentCenter;
+        self.displayNameLabel.labelize = YES;
         
         // Set hidden state
         self.icon.hidden = YES;
@@ -282,6 +297,39 @@ static CGFloat inset = 20;
     
     // And relayout if needed.
     [self setNeedsLayout];
+}
+
+- (void)flashNotificationSuccess {
+    UIColor *successColour = [UIColor colorWithRed:119.0/255.0 green:207.0/255.0 blue:99.0/255.0 alpha:0.5];
+    [self _flashNotificationWithColour:successColour];
+}
+
+- (void)flashNotificationFailure {
+    UIColor *colour = [UIColor colorWithRed:207.0/255.0 green:99.0/255.0 blue:99.0/255.0 alpha:0.5];
+    [self _flashNotificationWithColour:colour];
+}
+
+- (void)_flashNotificationWithColour:(UIColor*)colour {
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        self.notificationView.backgroundColor = colour;
+        self.notificationView.alpha = 0.0;
+        self.notificationView.hidden = NO;
+    
+        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            self.notificationView.alpha = 1.0;
+        } completion:^(BOOL finished) {
+            if (finished) {
+                [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+                    self.notificationView.alpha = 0.0;
+                } completion:^(BOOL finished) {
+                    if (finished) {
+                        self.notificationView.hidden = YES;
+                        self.notificationView.backgroundColor = [UIColor clearColor];
+                    }
+                }];
+            }
+        }];
+    });
 }
 
 @end

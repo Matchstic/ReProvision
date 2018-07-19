@@ -35,6 +35,8 @@
 @property (nonatomic, strong) MarqueeLabel *percentCompleteLabel;
 @property (nonatomic, strong) MBCircularProgressBarView *progressBar;
 
+@property (nonatomic, strong) UIView *notificationView;
+
 @end
 
 @implementation RPVInstalledCollectionViewCell
@@ -112,6 +114,8 @@
         // Percent of signing.
         self.progressBar.frame = CGRectMake(xInset, self.contentView.frame.size.height - (IS_IPAD ? 33 : 28), 20, 20);
         self.percentCompleteLabel.frame = CGRectMake(xInset + self.progressBar.frame.size.width + 7, self.contentView.frame.size.height - (IS_IPAD ? 33 : 28), self.contentView.frame.size.width - (xInset*2) - self.progressBar.frame.size.width - 7, 20);
+        
+        self.notificationView.frame = self.contentView.bounds;
     } else {
         self.displayNameLabel.frame = self.contentView.bounds;
     }
@@ -209,10 +213,18 @@
         [self.contentView addSubview:self.progressBar];
     }
     
+    if (!self.notificationView) {
+        self.notificationView = [[UIView alloc] initWithFrame:CGRectZero];
+        self.notificationView.hidden = YES;
+        
+        [self.contentView insertSubview:self.notificationView atIndex:0];
+    }
+    
     // Reset text colours if needed
     self.displayNameLabel.textColor = [UIColor blackColor];
     self.displayNameLabel.font = [UIFont systemFontOfSize:IS_IPAD ? 20 : 16 weight:UIFontWeightBold];
     self.displayNameLabel.textAlignment = NSTextAlignmentLeft;
+    self.displayNameLabel.labelize = NO;
     
     self.bundleIdentifierLabel.textColor = [UIColor darkGrayColor];
     self.timeRemainingLabel.textColor = [UIColor grayColor];
@@ -226,6 +238,8 @@
     
     self.contentView.clipsToBounds = YES;
     self.contentView.layer.cornerRadius = 12.5;
+    self.notificationView.layer.cornerRadius = 12.5;
+    self.notificationView.clipsToBounds = YES;
 }
 
 - (void)configureWithApplication:(RPVApplication*)application fallbackDisplayName:(NSString*)fallback andExpiryDate:(NSDate*)expiryDate {
@@ -238,6 +252,7 @@
         self.displayNameLabel.textColor = [UIColor whiteColor];
         self.displayNameLabel.font = [UIFont systemFontOfSize:IS_IPAD ? 20 : 16 weight:UIFontWeightRegular];
         self.displayNameLabel.textAlignment = NSTextAlignmentCenter;
+        self.displayNameLabel.labelize = YES;
         
         // Set hidden state
         self.smallIcon.hidden = YES;
@@ -279,6 +294,39 @@
     [self.bundleIdentifierLabel restartLabel];
     [self.timeRemainingLabel restartLabel];
     [self.percentCompleteLabel restartLabel];
+}
+
+- (void)flashNotificationSuccess {
+    UIColor *successColour = [UIColor colorWithRed:119.0/255.0 green:207.0/255.0 blue:99.0/255.0 alpha:0.5];
+    [self _flashNotificationWithColour:successColour];
+}
+
+- (void)flashNotificationFailure {
+    UIColor *colour = [UIColor colorWithRed:207.0/255.0 green:99.0/255.0 blue:99.0/255.0 alpha:0.5];
+    [self _flashNotificationWithColour:colour];
+}
+
+- (void)_flashNotificationWithColour:(UIColor*)colour {
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        self.notificationView.backgroundColor = colour;
+        self.notificationView.alpha = 0.0;
+        self.notificationView.hidden = NO;
+        
+        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            self.notificationView.alpha = 1.0;
+        } completion:^(BOOL finished) {
+            if (finished) {
+                [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+                    self.notificationView.alpha = 0.0;
+                } completion:^(BOOL finished) {
+                    if (finished) {
+                        self.notificationView.hidden = YES;
+                        self.notificationView.backgroundColor = [UIColor clearColor];
+                    }
+                }];
+            }
+        }];
+    });
 }
 
 @end
