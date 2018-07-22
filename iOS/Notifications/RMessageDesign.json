@@ -1,0 +1,12 @@
+{
+    "ios9": {
+        "subTitleFontSize": 12,
+        "subTitleTextColor": "#FFFFFF",
+        "titleTextColor": "#FFFFFF",
+        "titleFontSize": 14,
+        "backgroundColor": "#000000",
+        "blurBackground": 1,
+        "disableSpringAnimationPadding": 0,
+        "opacity": 1.0
+    }
+}

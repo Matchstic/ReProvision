@@ -1,0 +1,16 @@
+Package: com.matchstic.reprovision
+Name: ReProvision
+Version: 0.1.5
+Description: Re-sign applications on your device
+Section: System
+Depends: firmware (>= 9.0)
+Priority: optional
+Replaces: com.matchstic.Extender-Installer
+Provides: com.matchstic.Extender-Installer
+Architecture: iphoneos-arm
+Author: Matt Clarke <matt@incendo.ws>
+dev: Matt Clarke <matt@incendo.ws>
+Maintainer: Matt Clarke <matt@incendo.ws>
+Homepage: https://github.com/Matchstic/Extender-Installer
+Depiction: http://incendo.ws/repo/depictions/com.matchstic.extender-installer.html
+Icon: file:///Applications/ReProvision.app/AppIcon60x60@2x.png
