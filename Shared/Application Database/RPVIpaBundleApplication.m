@@ -58,7 +58,10 @@
 }
 
 - (NSDictionary*)_loadInfoPlistFromURL:(NSURL*)url {
-    NSData *data = [self _loadFileWithFormat:@"Payload/*/Info.plist" fromIPA:url];
+    NSData *data = [self _loadFileWithFormat:@"Payload/*/Info.plist" fromIPA:url multipleCandiateChooser:^NSString *(NSArray *candidates) {
+        return [candidates firstObject];
+    }];
+    
     return [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:nil];
 }
 
@@ -87,7 +90,46 @@
         // Now load this from the .ipa file
         NSString *fileFormat = [NSString stringWithFormat:@"Payload/*/%@", iconFileName];
         
-        NSData *data = [self _loadFileWithFormat:fileFormat fromIPA:url];
+        NSData *data = [self _loadFileWithFormat:fileFormat fromIPA:url multipleCandiateChooser:^NSString *(NSArray *candidates) {
+            
+            NSArray *suffixPreferences = @[@"@3x", @"@2x", @""];
+            
+            // Choose which candidate is best for the current device, and fallback as needed.
+            NSString *currentBest = @"";
+            int currentBestRank = 2;
+            
+            BOOL anyHaveIpadSuffix = NO;
+            for (NSString *item in candidates) {
+                if ([item containsString:@"~ipad"]) {
+                    anyHaveIpadSuffix = YES;
+                    break;
+                }
+            }
+            
+            for (NSString *item in candidates) {
+                if (IS_IPAD && anyHaveIpadSuffix && ![item containsString:@"~ipad"])
+                    continue;
+        
+                // Alright, maybe this one.
+                
+                // Base case
+                if ([currentBest isEqualToString:@""]) {
+                    currentBest = item;
+                    currentBestRank = [self _rankItem:item forSuffixes:suffixPreferences];
+                }
+                
+                // Go through the suffix preferences, and rank the currentBest and the new item.
+                int itemRank = [self _rankItem:item forSuffixes:suffixPreferences];
+                
+                if (itemRank < currentBestRank) {
+                    currentBest = item;
+                    currentBestRank = itemRank;
+                }
+            }
+        
+            return currentBest;
+        }];
+        
         if (data)
             return [self _maskApplicationIcon:[UIImage imageWithData:data]];
         else
@@ -95,8 +137,28 @@
     }
 }
 
+- (int)_rankItem:(NSString*)item forSuffixes:(NSArray*)suffixes {
+    int rank = (int)suffixes.count - 1;
+    
+    for (int i = 0; i < suffixes.count; i++) {
+        NSString *suffix = [suffixes objectAtIndex:i];
+        
+        if ([item containsString:suffix]) {
+            rank = i;
+            break;
+        }
+    }
+    
+    return rank;
+}
+
 - (UIImage*)_maskApplicationIcon:(UIImage*)icon {
-    UIImage *maskImage = [[UIImage _applicationIconImageForBundleIdentifier:nil format:2 scale:[UIScreen mainScreen].scale] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage *maskImage;
+    @try {
+       maskImage = [[UIImage _applicationIconImageForBundleIdentifier:@"" format:2 scale:[UIScreen mainScreen].scale] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    } @catch (NSException *e) {
+        // Really?! This is usually caused by AnemoneIcons.dylib
+    }
     
     // See: https://stackoverflow.com/a/8127762
     CGImageRef maskRef = maskImage.CGImage;
@@ -151,7 +213,7 @@
     return [UIImage imageWithCGImage:masked];
 }
 
-- (NSData*)_loadFileWithFormat:(NSString*)fileFormat fromIPA:(NSURL*)url {
+- (NSData*)_loadFileWithFormat:(NSString*)fileFormat fromIPA:(NSURL*)url multipleCandiateChooser:(NSString * (^)(NSArray *candidates))candidateChooser {
     NSString *destinationPath = NSTemporaryDirectory();
     if (!destinationPath)
         destinationPath = @"/tmp";
@@ -190,7 +252,11 @@
         
         NSArray *destinationContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[destinationPath stringByDeletingLastPathComponent] error:nil];
         
-        destinationPath = [NSString stringWithFormat:@"%@/%@", [destinationPath stringByDeletingLastPathComponent], [destinationContents lastObject]];
+        if (destinationContents.count > 1) {
+            destinationPath = [NSString stringWithFormat:@"%@/%@", [destinationPath stringByDeletingLastPathComponent], candidateChooser(destinationContents)];
+        } else {
+            destinationPath = [NSString stringWithFormat:@"%@/%@", [destinationPath stringByDeletingLastPathComponent], [destinationContents lastObject]];
+        }
         
         NSData *data = [NSData dataWithContentsOfFile:destinationPath];
         

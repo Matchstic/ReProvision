@@ -22,7 +22,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchBackground" translatesAutoresizingMaskIntoConstraints="NO" id="G2o-z2-7WM">
-                                <rect key="frame" x="0.0" y="-24" width="375" height="691"/>
+                                <rect key="frame" x="0.0" y="-24" width="375" height="735"/>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchIcon2" translatesAutoresizingMaskIntoConstraints="NO" id="4Dk-6S-1vU">
                                 <rect key="frame" x="120" y="162.5" width="135" height="341"/>
@@ -37,7 +37,7 @@
                             <constraint firstItem="4Dk-6S-1vU" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="Cnj-yo-Vsv"/>
                             <constraint firstItem="G2o-z2-7WM" firstAttribute="top" secondItem="exv-uv-4oI" secondAttribute="bottom" constant="-44" id="DIU-KL-dCI"/>
                             <constraint firstAttribute="trailing" secondItem="G2o-z2-7WM" secondAttribute="trailing" id="e1n-HE-s12"/>
-                            <constraint firstItem="K5c-p2-hhs" firstAttribute="top" secondItem="G2o-z2-7WM" secondAttribute="bottom" id="uXW-2n-g2s"/>
+                            <constraint firstItem="K5c-p2-hhs" firstAttribute="top" secondItem="G2o-z2-7WM" secondAttribute="bottom" constant="-44" id="uXW-2n-g2s"/>
                             <constraint firstItem="4Dk-6S-1vU" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="z15-A4-mDW"/>
                         </constraints>
                     </view>

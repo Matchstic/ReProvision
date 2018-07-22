@@ -524,6 +524,18 @@
                 break;
             }
         }
+            
+            if (!application) {
+                // We've just had this called from installing an IPA.
+                // Reload data, and reload tables etc.
+                
+                [self _reloadDataSources];
+                [self.recentSectionHeaderView requestNewButtonEnabledState];
+                [self.expiringSectionHeaderView requestNewButtonEnabledState];
+                [self.otherApplicationsSectionHeaderView requestNewButtonEnabledState];
+                
+                return;
+            }
         
         // Move from the old data source to number 2.
         if (oldDataSource == 1) {
