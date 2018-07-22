@@ -55,6 +55,8 @@
     
     // Handle with locale specific changes for weekdayStart.
     int selected = (int)[components weekday] - (int)[NSCalendar currentCalendar].firstWeekday;
+    if (selected < 0)
+        selected = 7 - selected;
     
     NSDate *startDate = [self.dateToDisplay dateByAddingTimeInterval:-60 * 60 * 24 * selected];
     
