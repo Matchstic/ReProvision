@@ -4,6 +4,7 @@ pod 'OpenSSL-Universal'
 pod "MBCircularProgressBar"
 pod 'MarqueeLabel'
 pod 'TORoundedTableView'
+pod 'RMessage'
 end
 
 target 'macOS' do
