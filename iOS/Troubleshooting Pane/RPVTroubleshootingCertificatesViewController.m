@@ -181,7 +181,7 @@
             NSString *applicationName = @"Unknown";
             if ([(NSString*)[dictionary objectForKey:@"machineName"] containsString:@"RPV"])
                 applicationName = @"ReProvision";
-            else if ([(NSString*)[dictionary objectForKey:@"machineName"] containsString:@"CY"])
+            else if ([(NSString*)[dictionary objectForKey:@"machineName"] containsString:@"Cydia"])
                 applicationName = @"Cydia Impactor or Extender";
             else
                 applicationName = @"Xcode";
@@ -311,10 +311,13 @@
             if (!error) {
                 // Delete the row from the data source
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.tableView reloadData];
-                    
-                    [self.dataSource removeObjectAtIndex:indexPath.row];
-                    [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    if (self.dataSource.count == 1) {
+                        [self.dataSource removeObjectAtIndex:indexPath.row];
+                        [self.tableView reloadData];
+                    } else {
+                        [self.dataSource removeObjectAtIndex:indexPath.row];
+                        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    }
                     
                     [self.tableView setEditing:self.dataSource.count > 0 animated:NO];
                     
