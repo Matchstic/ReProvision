@@ -169,6 +169,7 @@
 		C9E9BB7720C5D12500EE27D9 /* RPVSplitViewDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BB7620C5D12500EE27D9 /* RPVSplitViewDetailViewController.m */; };
 		C9E9BB7A20C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BB7920C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.m */; };
 		C9E9BB7D20C5D38D00EE27D9 /* RPVRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E9BB7C20C5D38D00EE27D9 /* RPVRootViewController.m */; };
+		C9F3F41E2103B0D500A27256 /* RPVIpaBundleApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = C9F3F41D2103B0D500A27256 /* RPVIpaBundleApplication.m */; };
 		C9F3FA6920EE6A48002AD7B9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9F3FA6820EE6A48002AD7B9 /* CoreFoundation.framework */; };
 		C9FDB29B20518712005934CD /* RPVAccountFinalController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9FDB29A20518712005934CD /* RPVAccountFinalController.m */; };
 		C9FDB2A2205195E8005934CD /* libMobileGestalt.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FDB2A1205195E8005934CD /* libMobileGestalt.tbd */; };
@@ -415,6 +416,8 @@
 		C9E9BB7920C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVSplitViewMasterTableViewController.m; sourceTree = "<group>"; };
 		C9E9BB7B20C5D38D00EE27D9 /* RPVRootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVRootViewController.h; sourceTree = "<group>"; };
 		C9E9BB7C20C5D38D00EE27D9 /* RPVRootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVRootViewController.m; sourceTree = "<group>"; };
+		C9F3F41C2103B0D500A27256 /* RPVIpaBundleApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVIpaBundleApplication.h; path = "Shared/Application Database/RPVIpaBundleApplication.h"; sourceTree = "<group>"; };
+		C9F3F41D2103B0D500A27256 /* RPVIpaBundleApplication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RPVIpaBundleApplication.m; path = "Shared/Application Database/RPVIpaBundleApplication.m"; sourceTree = "<group>"; };
 		C9F3FA6620EE6A42002AD7B9 /* SpringBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = SpringBoardServices.tbd; path = Shared/iosdaemon/SpringBoardServices.tbd; sourceTree = "<group>"; };
 		C9F3FA6820EE6A48002AD7B9 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		C9FDB29920518712005934CD /* RPVAccountFinalController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVAccountFinalController.h; sourceTree = "<group>"; };
@@ -586,6 +589,8 @@
 				C90AD5202069968E008B2F2B /* RPVBackgroundSigningManager.m */,
 				C96B0CD32005704E00F713AF /* RPVApplication.h */,
 				C96B0CD42005704F00F713AF /* RPVApplication.m */,
+				C9F3F41C2103B0D500A27256 /* RPVIpaBundleApplication.h */,
+				C9F3F41D2103B0D500A27256 /* RPVIpaBundleApplication.m */,
 				C96B0CD6200570DA00F713AF /* RPVApplicationDatabase.h */,
 				C96B0CD7200570DA00F713AF /* RPVApplicationDatabase.m */,
 				C938D394200824F8003802FF /* RPVErrors.h */,
@@ -1320,6 +1325,7 @@
 				C96FBFEE20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m in Sources */,
 				C9C6EB012004280A00211FDD /* base64.c in Sources */,
 				C9C6EB2A2004280A00211FDD /* ioapi_buf.c in Sources */,
+				C9F3F41E2103B0D500A27256 /* RPVIpaBundleApplication.m in Sources */,
 				C9C6EAF62004280A00211FDD /* EEAppleServices.m in Sources */,
 				C9E9BB7D20C5D38D00EE27D9 /* RPVRootViewController.m in Sources */,
 				C9C6EB0E2004280A00211FDD /* node.c in Sources */,

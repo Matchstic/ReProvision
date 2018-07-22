@@ -12,6 +12,9 @@
 #import "RPVBackgroundSigningManager.h"
 #import "RPVResources.h"
 
+#import "RPVIpaBundleApplication.h"
+#import "RPVApplicationDetailController.h"
+
 #import <RMessageView.h>
 #import "SAMKeychain.h"
 
@@ -80,6 +83,33 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+-(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    
+    // Incoming URL is a fileURL!
+    
+    // Create an RPVApplication for this incoming .ipa, and display the installation popup.
+    RPVIpaBundleApplication *ipaApplication = [[RPVIpaBundleApplication alloc] initWithIpaURL:url];
+    
+    RPVApplicationDetailController *detailController = [[RPVApplicationDetailController alloc] initWithApplication:ipaApplication];
+    
+    // Update with current states.
+    [detailController setButtonTitle:@"INSTALL"];
+    
+    // Add to the rootViewController of the application, as an effective overlay.
+    detailController.view.alpha = 0.0;
+    
+    UIViewController *rootController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    [rootController addChildViewController:detailController];
+    [rootController.view addSubview:detailController.view];
+    
+    detailController.view.frame = rootController.view.bounds;
+    
+    // Animate in!
+    [detailController animateForPresentation];
+    
+    return YES;
 }
 
 //////////////////////////////////////////////////////////////////////////////////

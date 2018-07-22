@@ -11,6 +11,8 @@
 #import "RPVApplication.h"
 #import "EEBackend.h"
 
+#import "SSZipArchive.h"
+
 /* Private headers */
 @interface LSApplicationWorkspace : NSObject
 +(instancetype)defaultWorkspace;
@@ -171,30 +173,65 @@ static RPVApplicationSigning *sharedInstance;
  @return Success
  */
 - (BOOL)_copyApplicationBundleForApplication:(RPVApplication*)application extractedArchiveURL:(NSURL**)extractedArchiveURL applicationBundleURL:(NSURL**)applicationBundleURL error:(NSError**)error {
+    
     NSString *temporaryDirectory = [EEBackend applicationTemporaryDirectory];
+    NSString *dotAppName = @"";
     
-    NSString *applicationBundleLocation = [application locationOfApplicationOnFilesystem].path;
-    NSString *dotAppName = [applicationBundleLocation lastPathComponent];
-    
-    NSString *toPath = [NSString stringWithFormat:@"%@/%@/Payload/%@", temporaryDirectory, [application bundleIdentifier], dotAppName];
-    
-    // Create the parent path if needed
-    NSString *parentPath = [toPath stringByDeletingLastPathComponent];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:parentPath]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:parentPath withIntermediateDirectories:YES attributes:nil error:nil];
-    // Delete any existing .app if needed too.
-    } else if ([[NSFileManager defaultManager] fileExistsAtPath:toPath]) {
-        [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
-    }
-    
-    NSError *err;
-    if (![[NSFileManager defaultManager] copyItemAtPath:applicationBundleLocation toPath:toPath error:&err]) {
-        if (error) {
-            *error = [self _errorFromString:err.localizedDescription errorCode:RPVErrorFailedToCopyBundle];
+    if ([application.class isEqual:[RPVApplication class]]) {
+        NSString *applicationBundleLocation = [application locationOfApplicationOnFilesystem].path;
+        dotAppName = [applicationBundleLocation lastPathComponent];
+        
+        NSString *toPath = [NSString stringWithFormat:@"%@/%@/Payload/%@", temporaryDirectory, [application bundleIdentifier], dotAppName];
+        
+        // Create the parent path if needed
+        NSString *parentPath = [toPath stringByDeletingLastPathComponent];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:parentPath]) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:parentPath withIntermediateDirectories:YES attributes:nil error:nil];
+            // Delete any existing .app if needed too.
+        } else if ([[NSFileManager defaultManager] fileExistsAtPath:toPath]) {
+            [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
         }
-        return NO;
+        
+        NSError *err;
+        if (![[NSFileManager defaultManager] copyItemAtPath:applicationBundleLocation toPath:toPath error:&err]) {
+            if (error) {
+                *error = [self _errorFromString:err.localizedDescription errorCode:RPVErrorFailedToCopyBundle];
+            }
+            return NO;
+        }
+        
+    } else {
+        // This is an IPA application, therefore -locationOfApplicationOnFilesystem will return the .ipa
+        // file on the filesystem.
+        
+        // We need to extract the IPA to our temporary location, and roll from there.
+        NSString *extractionPath = [NSString stringWithFormat:@"%@/%@", temporaryDirectory, [application bundleIdentifier]];
+        NSError *err;
+        BOOL success = [SSZipArchive unzipFileAtPath:[application locationOfApplicationOnFilesystem].path
+                                       toDestination:extractionPath
+                                           overwrite:YES
+                                            password:nil
+                                               error:&err];
+        
+        if (success) {
+            // Find the .app name
+            
+            NSArray *subdirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[NSString stringWithFormat:@"%@/Payload/", extractionPath] error:nil];
+            
+            for (NSString *dir in subdirs) {
+                if (![dir isEqualToString:@".DS_Store"]) {
+                    dotAppName = dir;
+                    break;
+                }
+            }
+        } else {
+            if (error) {
+                *error = [self _errorFromString:err.localizedDescription errorCode:RPVErrorFailedToCopyBundle];
+            }
+            return NO;
+        }
     }
-    
+        
     *extractedArchiveURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", temporaryDirectory, [application bundleIdentifier]]];
     *applicationBundleURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@/Payload/%@", temporaryDirectory, [application bundleIdentifier], dotAppName]];
     

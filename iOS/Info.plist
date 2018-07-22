@@ -63,5 +63,49 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>iPhone Application</string>
+
+            <key>CFBundleTypeIconFiles</key>
+            <array>
+            </array>
+
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>com.matchstic.reprovision.IPA</string>
+            </array>
+
+            <key>LSHandlerRank</key>
+            <string>Owner</string>
+        </dict>
+    </array>
+	
+    <key>UTExportedTypeDeclarations</key>
+    <array>
+        <dict>
+            <key>UTTypeConformsTo</key>
+            <array>
+                <string>public.data</string>
+            </array>
+
+            <key>UTTypeDescription</key>
+            <string>public.archive</string>
+
+            <key>UTTypeIdentifier</key>
+            <string>com.matchstic.reprovision.IPA</string>
+
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key>
+                <string>ipa</string>
+                <key>public.mime-type</key>
+                <string>application/octet-stream</string>
+            </dict>
+        </dict>
+    </array>
 </dict>
 </plist>

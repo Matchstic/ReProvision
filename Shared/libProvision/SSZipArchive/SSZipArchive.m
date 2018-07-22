@@ -384,6 +384,16 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
                 strPath = [strPath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"];
             }
             
+            // Ask delegate if we want to unzip this filename.
+            if ([delegate respondsToSelector:@selector(zipArchiveShouldUnzipFileWithName:fileInfo:)]) {
+                if (![delegate zipArchiveShouldUnzipFileWithName:strPath fileInfo:fileInfo]) {
+                    // Go to the next file.
+                    unzCloseCurrentFile(zip);
+                    ret = unzGoToNextFile(zip);
+                    continue;
+                }
+            }
+            
             NSString *fullPath = [destination stringByAppendingPathComponent:strPath];
             NSError *err = nil;
             NSDictionary *directoryAttr;

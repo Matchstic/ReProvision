@@ -8,6 +8,7 @@
 
 #import "RPVApplicationDetailController.h"
 #import "RPVApplication.h"
+#import "RPVIpaBundleApplication.h"
 #import "RPVApplicationSigning.h"
 #import "RPVCalendarController.h"
 #import "RPVResources.h"
@@ -143,7 +144,8 @@
     [self _addApplicationInstalledSizeComponent];
     
     // Calendar
-    [self _addCalendarComponent];
+    if ([self.application.class isEqual:[RPVApplication class]])
+        [self _addCalendarComponent];
     
     // Progress bar etc
     [self _addProgressComponents];
@@ -365,12 +367,13 @@
     
     y += 40 + itemInsetY + innerItemInsetY;
     
-    // Calendar.
-    
-    self.calendarTitle.frame = CGRectMake(itemInsetX, y, contentViewWidth - itemInsetX*2, 20);
-    self.calendarController.view.frame = CGRectMake(0, y + 20 + innerItemInsetY, contentViewWidth, [self.calendarController calendarHeight]);
-    
-    y += 20 + [self.calendarController calendarHeight] + itemInsetY + innerItemInsetY;
+    // Calendar, only if not an IPA application
+    if ([self.application.class isEqual:[RPVApplication class]]) {
+        self.calendarTitle.frame = CGRectMake(itemInsetX, y, contentViewWidth - itemInsetX*2, 20);
+        self.calendarController.view.frame = CGRectMake(0, y + 20 + innerItemInsetY, contentViewWidth, [self.calendarController calendarHeight]);
+        
+        y += 20 + [self.calendarController calendarHeight] + itemInsetY + innerItemInsetY;
+    }
 
     self.contentView.frame = CGRectMake(self.view.frame.size.width/2 - contentViewWidth/2, self.view.frame.size.height/2 - y/2, contentViewWidth, y);
     

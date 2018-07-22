@@ -704,11 +704,33 @@ free_all:
         [entitlements setObject:[NSString stringWithFormat:@"%@.%@", [EEAppleServices currentTeamID], identifier] forKey:@"application-identifier"];
         
         // Setup enabledFeatures for this new application.
-        
-        BOOL userHasPaidDevelopmentAccount = NO;
+        // We need to check if the user has a paid account or not.
+        [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
+            if (error) {
+                // TODO: handle!
+                return;
+            }
+            
+            // Check to see if the current Team ID is from a free profile.
+            NSArray *teams = [dictionary objectForKey:@"teams"];
+            
+            BOOL isFreeUser = NO;
+            for (NSDictionary *team in teams) {
+                NSString *teamIdToCheck = [team objectForKey:@"teamId"];
+                
+                if ([teamIdToCheck isEqualToString:[EEAppleServices currentTeamID]]) {
+                    NSArray *currentMemberRoles = [[team objectForKey:@"currentTeamMember"] objectForKey:@"roles"];
+                    
+                    if ([currentMemberRoles containsObject:@"XCODE_FREE_USER"]) {
+                        isFreeUser = YES;
+                        break;
+                    }
+                }
+            }
+            
         
         // For the following three identifiers, the user MUST be using a paid developer account.
-        if (userHasPaidDevelopmentAccount) {
+        if (!isFreeUser) {
             // TODO: Check the state for these in the binary's entitlements.
             [enabledFeatures setObject:@0 forKey:@"gameCenter"];
             [enabledFeatures setObject:@0 forKey:@"inAppPurchase"];
@@ -857,6 +879,7 @@ free_all:
                 }
             }];
         }
+        }];
     }];
 }
 
