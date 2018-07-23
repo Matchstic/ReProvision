@@ -45,6 +45,8 @@
  */
 + (void)updateApplicationIdId:(NSString*)appIdId enabledFeatures:(NSDictionary*)enabledFeatures teamID:(NSString*)teamID entitlements:(NSDictionary*)entitlements withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler;
 
++ (void)deleteApplicationIdId:(NSString*)appIdId teamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler;
+
 /**
  * TODO: Docs!
  */

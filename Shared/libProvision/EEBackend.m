@@ -103,7 +103,6 @@
                 NSLog(@"%@", fileIOError);
             } else {
                 NSLog(@"Failed to write '%@'.", embeddedPath);
-                NSLog(@"Result: %@", embeddedMobileProvision);
             }
             
             return;

@@ -728,157 +728,193 @@ free_all:
                 }
             }
             
+            // We now handle "Capabilities" this incoming app can utilise.
         
-        // For the following three identifiers, the user MUST be using a paid developer account.
-        if (!isFreeUser) {
-            // TODO: Check the state for these in the binary's entitlements.
-            [enabledFeatures setObject:@0 forKey:@"gameCenter"];
-            [enabledFeatures setObject:@0 forKey:@"inAppPurchase"];
-            
-            // NWEXT04537 -> if a networking extension exists, true, else leave out.
-            if ([[entitlements allKeys] containsObject:@"com.apple.developer.networking.networkextension"]) {
-                [enabledFeatures setObject:@1 forKey:@"NWEXT04537"];
+            // For the following features, the user MUST be using a paid developer account.
+            if (!isFreeUser) {
+                
+                // TODO: Add the other entitlements that paid accounts can use.
+                /*
+                 * Apple Pay                                                        -> OM633U5T5G
+                 * Associated Domains                                               -> SKC3T5S89Y
+                 * iCloud                                                           -> iCloud
+                 * In-App Purchase                                                  -> inAppPurchase
+                 * Push Notifications                                               -> push
+                 * Wallet/Passbook                                                  -> pass
+                 */
+                
+                NSDictionary *paidEntitlementsToFeatures = @{
+                                                             @"com.apple.developer.networking.networkextension" : @"NWEXT04537",
+                                                             @"com.apple.developer.networking.multipath" : @"MP49FN762P",
+                                                             @"com.apple.networking.vpn.configuration" : @"V66P55NK2I",
+                                                             @"com.apple.developer.siri" : @"SI015DKUHP"
+                                                             };
+                
+                for (NSString *key in [paidEntitlementsToFeatures allKeys]) {
+                    if ([[entitlements allKeys] containsObject:key]) {
+                        NSString *feature = [paidEntitlementsToFeatures objectForKey:key];
+                        [enabledFeatures setObject:@1 forKey:feature];
+                    }
+                }
             }
             
-            // TODO: Add the other entitlements that paid accounts can use.
-            /*
-             * Apple Pay                                                        -> OM633U5T5G
-             * Associated Domains                                               -> SKC3T5S89Y
-             * iCloud                                                           -> iCloud
-             * In-App Purchase                                                  -> inAppPurchase
-             * Personal VPN                                                     -> V66P55NK2I
-             * Push Notifications                                               -> push
-             * SiriKit                                                          -> SI015DKUHP
-             * Wallet/Passbook                                                  -> pass
-             */
-        } else {
-            // We should strip out entitlements the user should not have.
+            // More service IDs: https://github.com/fastlane/fastlane/blob/master/spaceship/lib/spaceship/portal/app_service.rb
+            
+            NSDictionary *freeAndPaidEntitlementsToFeatures = @{
+                                                         @"inter-app-audio" : @"IAD53UNK2F",
+                                                         @"com.apple.external-accessory.wireless-configuration" : @"WC421J6T7P",
+                                                         @"com.apple.developer.homekit" : @"HK421J6T7P",
+                                                         @"com.apple.developer.healthkit" : @"SI015DKUHP",
+                                                         @"com.apple.developer.default-data-protection" : @"dataProtection"
+                                                         };
+            
+            for (NSString *key in [freeAndPaidEntitlementsToFeatures allKeys]) {
+                if ([[entitlements allKeys] containsObject:key]) {
+                    NSString *feature = [freeAndPaidEntitlementsToFeatures objectForKey:key];
+                    [enabledFeatures setObject:@1 forKey:feature];
+                }
+            }
             
             /*
-             * A free (and paid) development account is allowed the following entitlements:
-             * inter-app-audio                                                  -> IAD53UNK2F
-             * com.apple.external-accessory.wireless-configuration              -> WC421J6T7P
-             * com.apple.developer.homekit                                      -> homeKit
-             * com.apple.developer.healthkit                                    -> HK421J6T7P
-             * com.apple.developer.default-data-protection                      -> dataProtection
-             * com.apple.security.application-groups                            -> APG3427HIY
+             * A free (and paid) development account is also allowed the following entitlements:
+             * com.apple.security.application-groups                            -> (handled later)
              * keychain-access-groups                                           -> (implicit)
              * application-identifier                                           -> (implicit)
              * com.apple.developer.team-identifier                              -> (implicit)
-             * get-task-allow
+             * get-task-allow                                                   -> (to be removed later)
              */
             
-            NSArray *freeCertificateAllowableEntitlements = [NSArray arrayWithObjects:@"application-identifier", @"com.apple.developer.team-identifier", @"keychain-access-groups", @"com.apple.security.application-groups", @"com.apple.developer.default-data-protection", @"com.apple.developer.healthkit", @"com.apple.developer.homekit", @"com.apple.external-accessory.wireless-configuration", @"inter-app-audio", @"get-task-allow", nil];
-            
-            for (NSString *key in [[entitlements allKeys] copy]) {
-                if (![freeCertificateAllowableEntitlements containsObject:key]) {
-                    [entitlements removeObjectForKey:key];
+            if (isFreeUser) {
+                // We should strip out entitlements the user should not have.
+                NSArray *freeCertificateAllowableEntitlements = [NSArray arrayWithObjects:
+                                                                 @"application-identifier",
+                                                                 @"com.apple.developer.team-identifier",
+                                                                 @"keychain-access-groups",
+                                                                 @"com.apple.security.application-groups",
+                                                                 @"com.apple.developer.default-data-protection",
+                                                                 @"com.apple.developer.healthkit",
+                                                                 @"com.apple.developer.homekit",
+                                                                 @"com.apple.external-accessory.wireless-configuration",
+                                                                 @"inter-app-audio",
+                                                                 @"get-task-allow",
+                                                                 nil];
+                
+                for (NSString *key in [[entitlements allKeys] copy]) {
+                    if (![freeCertificateAllowableEntitlements containsObject:key]) {
+                        [entitlements removeObjectForKey:key];
+                    }
                 }
             }
-        }
+            
+            // Remove get-task-allow, to avoid breaking e.g. H3lix.
+            // This works since the provisioning profile contains all entitlements+values we're allowed.
+            // We are allowed a subset of this profile's listing, not necessarily all of them!
+            if ([[entitlements allKeys] containsObject:@"get-task-allow"]) {
+                [entitlements removeObjectForKey:@"get-task-allow"];
+            }
         
-        // APG3427HIY -> App Groups. This can be used without a paid account.
-        BOOL wantsApplicationGroups = NO;
-        NSMutableArray *applicationGroups;
-        if ([[entitlements allKeys] containsObject:@"com.apple.security.application-groups"]) {
-            [enabledFeatures setObject:@1 forKey:@"APG3427HIY"];
+            // APG3427HIY -> App Groups. This can be used without a paid account.
+            BOOL wantsApplicationGroups = NO;
+            NSMutableArray *applicationGroups;
+            if ([[entitlements allKeys] containsObject:@"com.apple.security.application-groups"]) {
+                [enabledFeatures setObject:@1 forKey:@"APG3427HIY"];
+                
+                // We need to do some magic on the dev portal with these.
+                wantsApplicationGroups = YES;
+                applicationGroups = [[entitlements objectForKey:@"com.apple.security.application-groups"] mutableCopy];
+            }
             
-            // We need to do some magic on the dev portal with these.
-            wantsApplicationGroups = YES;
-            applicationGroups = [[entitlements objectForKey:@"com.apple.security.application-groups"] mutableCopy];
-        }
-        
-        if (!appIdExists) {
-            // /addAppId
-            NSLog(@"This appId doesn't exist yet, so making a new one.");
-            
-            [EEAppleServices addApplicationId:identifier name:name enabledFeatures:enabledFeatures teamID:[EEAppleServices currentTeamID] entitlements:entitlements withCompletionHandler:^(NSError *error, NSDictionary *plist) {
-                if (error) {
-                    NSError *err = [EEProvisioning _errorFromString:[@"addApplicationId: " stringByAppendingString:error.localizedDescription]];
-                    completionHandler(err, @"", nil);
-                    return;
-                }
+            if (!appIdExists) {
+                // /addAppId
+                NSLog(@"This appId doesn't exist yet, so making a new one.");
                 
-                int resultCode = [[plist objectForKey:@"resultCode"] intValue];
-                if (resultCode != 0) {
-                    NSError *err = [EEProvisioning _errorFromString:[@"addApplicationId: " stringByAppendingString:[plist objectForKey:@"userString"]]];
-                    completionHandler(err, @"", nil);
-                    return;
-                }
-                
-                // Assign to application group if needed.
-                NSString *newAppIdId;
-                @try {
-                    newAppIdId = [[plist objectForKey:@"appId"] objectForKey:@"appIdId"];
-                } @catch (NSException *e) {
-                    newAppIdId = @"";
-                }
-                
-                if (wantsApplicationGroups) {
+                [EEAppleServices addApplicationId:identifier name:name enabledFeatures:enabledFeatures teamID:[EEAppleServices currentTeamID] entitlements:entitlements withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                    if (error) {
+                        NSError *err = [EEProvisioning _errorFromString:[@"addApplicationId: " stringByAppendingString:error.localizedDescription]];
+                        completionHandler(err, @"", nil);
+                        return;
+                    }
                     
-                    [self _recursivelyAssignApplicationIdId:newAppIdId toApplicationGroups:applicationGroups interimAppGroups:[NSMutableArray array] withCompletionHandler:^(NSError *error, NSArray *output) {
+                    int resultCode = [[plist objectForKey:@"resultCode"] intValue];
+                    if (resultCode != 0) {
+                        NSError *err = [EEProvisioning _errorFromString:[@"addApplicationId: " stringByAppendingString:[plist objectForKey:@"userString"]]];
+                        completionHandler(err, @"", nil);
+                        return;
+                    }
+                    
+                    // Assign to application group if needed.
+                    NSString *newAppIdId;
+                    @try {
+                        newAppIdId = [[plist objectForKey:@"appId"] objectForKey:@"appIdId"];
+                    } @catch (NSException *e) {
+                        newAppIdId = @"";
+                    }
+                    
+                    if (wantsApplicationGroups) {
                         
-                        if (error) {
-                            completionHandler(error, nil, nil);
-                            return;
-                        }
+                        [self _recursivelyAssignApplicationIdId:newAppIdId toApplicationGroups:applicationGroups interimAppGroups:[NSMutableArray array] withCompletionHandler:^(NSError *error, NSArray *output) {
+                            
+                            if (error) {
+                                completionHandler(error, nil, nil);
+                                return;
+                            }
+                            
+                            // Update entitlements with new stuff
+                            [entitlements setObject:output forKey:@"com.apple.security.application-groups"];
+                            
+                            completionHandler(nil, newAppIdId, entitlements);
+                        }];
                         
-                        // Update entitlements with new stuff
-                        [entitlements setObject:output forKey:@"com.apple.security.application-groups"];
-                        
+                    } else {
                         completionHandler(nil, newAppIdId, entitlements);
-                    }];
-                    
-                } else {
-                    completionHandler(nil, newAppIdId, entitlements);
-                }
-            }];
-        } else {
-            // /updateAppId
-            NSLog(@"This appId already exists, so updating it.");
-            
-            [EEAppleServices updateApplicationIdId:appIdIdIfExists enabledFeatures:enabledFeatures teamID:[EEAppleServices currentTeamID] entitlements:entitlements withCompletionHandler:^(NSError *error, NSDictionary *plist) {
-                if (error) {
-                    NSError *err = [EEProvisioning _errorFromString:[@"updateApplicationIdId: " stringByAppendingString:error.localizedDescription]];
-                    completionHandler(err, @"", nil);
-                    return;
-                }
+                    }
+                }];
+            } else {
+                // /updateAppId
+                NSLog(@"This appId already exists, so updating it.");
                 
-                int resultCode = [[plist objectForKey:@"resultCode"] intValue];
-                if (resultCode != 0) {
-                    NSError *err = [EEProvisioning _errorFromString:[@"updateApplicationIdId: " stringByAppendingString:[plist objectForKey:@"userString"]]];
-                    completionHandler(err, @"", nil);
-                    return;
-                }
-                
-                // Assign to application group if needed.
-                NSString *newAppIdId;
-                @try {
-                    newAppIdId = [[plist objectForKey:@"appId"] objectForKey:@"appIdId"];
-                } @catch (NSException *e) {
-                    newAppIdId = @"";
-                }
-                
-                if (wantsApplicationGroups) {
-                    
-                    [self _recursivelyAssignApplicationIdId:newAppIdId toApplicationGroups:applicationGroups interimAppGroups:[NSMutableArray array] withCompletionHandler:^(NSError *error, NSArray *output) {
-                        
-                        if (error) {
-                            completionHandler(error, nil, nil);
-                            return;
-                        }
-                        
-                        // Update entitlements with new stuff
-                        [entitlements setObject:output forKey:@"com.apple.security.application-groups"];
-                    
+                [EEAppleServices updateApplicationIdId:appIdIdIfExists enabledFeatures:enabledFeatures teamID:[EEAppleServices currentTeamID] entitlements:entitlements withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                    if (error) {
+                        NSError *err = [EEProvisioning _errorFromString:[@"updateApplicationIdId: " stringByAppendingString:error.localizedDescription]];
+                        completionHandler(err, @"", nil);
+                        return;
+                    }
+                 
+                    int resultCode = [[plist objectForKey:@"resultCode"] intValue];
+                    if (resultCode != 0) {
+                        NSError *err = [EEProvisioning _errorFromString:[@"updateApplicationIdId: " stringByAppendingString:[plist objectForKey:@"userString"]]];
+                        completionHandler(err, @"", nil);
+                        return;
+                    }
+                 
+                    // Assign to application group if needed.
+                    NSString *newAppIdId;
+                    @try {
+                        newAppIdId = [[plist objectForKey:@"appId"] objectForKey:@"appIdId"];
+                    } @catch (NSException *e) {
+                        newAppIdId = @"";
+                    }
+                 
+                    if (wantsApplicationGroups) {
+                 
+                        [self _recursivelyAssignApplicationIdId:newAppIdId toApplicationGroups:applicationGroups interimAppGroups:[NSMutableArray array] withCompletionHandler:^(NSError *error, NSArray *output) {
+                 
+                            if (error) {
+                                completionHandler(error, nil, nil);
+                                return;
+                            }
+                 
+                            // Update entitlements with new stuff
+                            [entitlements setObject:output forKey:@"com.apple.security.application-groups"];
+                 
+                            completionHandler(nil, newAppIdId, entitlements);
+                        }];
+                 
+                    } else {
                         completionHandler(nil, newAppIdId, entitlements);
-                    }];
-                    
-                } else {
-                    completionHandler(nil, newAppIdId, entitlements);
-                }
-            }];
-        }
+                    }
+                }];
+            }
         }];
     }];
 }

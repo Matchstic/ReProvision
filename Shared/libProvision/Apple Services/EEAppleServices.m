@@ -366,6 +366,7 @@ static NSString *_teamid = @"";
     [extra setObject:teamID forKey:@"teamId"];
     [extra setObject:applicationIdentifier forKey:@"identifier"];
     [extra setObject:applicationName forKey:@"name"];
+    [extra setObject:@"explicit" forKey:@"type"];
     
     // Features
     for (NSString *key in [enabledFeatures allKeys]) {
@@ -385,6 +386,7 @@ static NSString *_teamid = @"";
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     [extra setObject:appIdId forKey:@"appIdId"];
+    [extra setObject:@"explicit" forKey:@"type"];
     
     // Features
     for (NSString *key in [enabledFeatures allKeys]) {
@@ -397,6 +399,15 @@ static NSString *_teamid = @"";
     [extra setObject:entitlements forKey:@"entitlements"];
     
     [EEAppleServices _doActionWithName:@"updateAppId.action" extraDictionary:extra andCompletionHandler:completionHandler];
+}
+
++ (void)deleteApplicationIdId:(NSString*)appIdId teamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
+    
+    NSMutableDictionary *extra = [NSMutableDictionary dictionary];
+    [extra setObject:teamID forKey:@"teamId"];
+    [extra setObject:appIdId forKey:@"appIdId"];
+    
+    [EEAppleServices _doActionWithName:@"deleteAppId.action" extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
 + (void)listAllApplicationGroupsForTeamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
