@@ -30,6 +30,8 @@
     self.tableView.tableHeaderView = nil;
     self.tableView.tableFooterView = nil;
     
+    self.tableView.backgroundColor = [UIColor whiteColor];
+    
     [self.tableView reloadData];
 }
 
@@ -62,14 +64,16 @@
     
     NSString *teamName = @"";
     NSString *teamID = @"";
+    NSString *membershipName = @"";
     
     // Grab Team ID info for this cell.
     NSDictionary *data = [self.dataSource objectAtIndex:indexPath.row];
     teamID = [data objectForKey:@"teamId"];
+    membershipName = [[[data objectForKey:@"memberships"] firstObject] objectForKey:@"name"];
     teamName = [NSString stringWithFormat:@"%@ (%@)", [data objectForKey:@"name"], [data objectForKey:@"type"]];
     
     cell.textLabel.text = teamName;
-    cell.detailTextLabel.text = teamID;
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ | %@", teamID, membershipName];
     
     // Add the checkmark if currently selected.
     if ([teamID isEqualToString:self.selectedTeamID]) {
@@ -83,6 +87,10 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
+    for (UITableViewCell *cell in self.tableView.visibleCells) {
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
+    
     NSDictionary *data = [self.dataSource objectAtIndex:indexPath.row];
     self.selectedTeamID = [data objectForKey:@"teamId"];
     
@@ -94,6 +102,10 @@
 
 -(BOOL)tableView:(UITableView *)tableView shouldDrawTopSeparatorForSection:(NSInteger)section {
     return NO;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 1.0;
 }
 
 
