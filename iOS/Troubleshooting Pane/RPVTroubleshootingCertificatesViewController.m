@@ -102,7 +102,7 @@
     
     [EEAppleServices signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (!error) {
-            [EEAppleServices listAllDevelopmentCertificatesForTeamID:[RPVResources getTeamID] withCompletionHandler:^(NSError *error, NSDictionary *dict) {
+            [EEAppleServices listAllDevelopmentCertificatesForTeamID:[RPVResources getTeamID] systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dict) {
                 
                 self.dataSource = [[dict objectForKey:@"certificates"] mutableCopy];
                 
@@ -127,7 +127,7 @@
 - (void)_revokeCertificate:(NSDictionary*)certificate withCompletion:(void (^)(NSError *error))completionHandler {
     [EEAppleServices signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (!error) {
-            [EEAppleServices revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:[RPVResources getTeamID] withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
+            [EEAppleServices revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:[RPVResources getTeamID] systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
                 
                 completionHandler(error);
             }];
@@ -394,7 +394,7 @@
     }
     
     NSString *serial = [serials firstObject];
-    [EEAppleServices revokeCertificateForSerialNumber:serial andTeamID:teamId withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+    [EEAppleServices revokeCertificateForSerialNumber:serial andTeamID:teamId systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             completionHandler(error);
             return;

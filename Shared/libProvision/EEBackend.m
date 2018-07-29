@@ -14,7 +14,7 @@
 
 @implementation EEBackend
 
-+ (void)provisionDevice:(NSString*)udid name:(NSString*)name username:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId withCallback:(void (^)(NSError *))completionHandler {
++ (void)provisionDevice:(NSString*)udid name:(NSString*)name username:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId systemType:(EESystemType)systemType withCallback:(void (^)(NSError *))completionHandler {
     
     EEProvisioning *provisioner = [EEProvisioning provisionerWithCredentials:username :password];
     [provisioner provisionDevice:udid name:name withTeamIDCheck:^ NSString* (NSArray* teams) {
@@ -25,12 +25,12 @@
         
         return teamId;
         
-    } andCallback:^(NSError *error) {
+    } systemType:systemType andCallback:^(NSError *error) {
         completionHandler(error);
     }];
 }
 
-+ (void)revokeDevelopmentCertificatesForCurrentMachineWithUsername:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId withCallback:(void (^)(NSError *))completionHandler {
++ (void)revokeDevelopmentCertificatesForCurrentMachineWithUsername:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId systemType:(EESystemType)systemType withCallback:(void (^)(NSError *))completionHandler {
     
     EEProvisioning *provisioner = [EEProvisioning provisionerWithCredentials:username :password];
     [provisioner revokeCertificatesWithTeamIDCheck:^ NSString* (NSArray* teams) {
@@ -41,12 +41,78 @@
         
         return teamId;
         
-    } andCallback:^(NSError *error) {
+    } systemType:systemType andCallback:^(NSError *error) {
         completionHandler(error);
     }];
 }
 
-+ (void)signBundleAtPath:(NSString*)path username:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId withCompletionHandler:(void (^)(NSError *))completionHandler {
++ (void)signBundleAtPath:(NSString*)path username:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId withCompletionHandler:(void (^)(NSError *error))completionHandler {
+    
+    // We need to handle application extensions, e.g. watchOS applications and VPN plugins etc.
+    // These are stored in the bundle's root directory at the following locations:
+    // - /Plugins
+    // - /Watch
+    // Therefore, recurse through those directories as required before continuing for the root directory.
+    
+    dispatch_group_t dispatch_group = dispatch_group_create();
+    NSMutableArray * __block subBundleErrors = [NSMutableArray array];
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/PlugIns", path]]) {
+        // Recurse through the plugins.
+        
+        for (NSString *subBundle in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[NSString stringWithFormat:@"%@/PlugIns", path] error:nil]) {
+            NSString *__block subBundlePath = [NSString stringWithFormat:@"%@/PlugIns/%@", path, subBundle];
+            
+            // Enter the dispatch group
+            dispatch_group_enter(dispatch_group);
+            
+            NSLog(@"Handling sub-bundle: %@", subBundlePath);
+            
+            // Sign the bundle
+            [self signBundleAtPath:subBundlePath username:username password:password priorChosenTeamID:teamId withCompletionHandler:^(NSError *error) {
+                if (error)
+                    [subBundleErrors addObject:error];
+                
+                NSLog(@"Finished sub-bundle: %@", subBundlePath);
+                dispatch_group_leave(dispatch_group);
+            }];
+        }
+    }
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/Watch", path]]) {
+        // Recurse through the watchOS stuff.
+        
+        for (NSString *subBundle in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[NSString stringWithFormat:@"%@/Watch", path] error:nil]) {
+            NSString * __block subBundlePath = [NSString stringWithFormat:@"%@/Watch/%@", path, subBundle];
+            
+            // Enter the dispatch group
+            dispatch_group_enter(dispatch_group);
+            
+            NSLog(@"Handling sub-bundle: %@", subBundlePath);
+            
+            // Sign the bundle
+            [self signBundleAtPath:subBundlePath username:username password:password priorChosenTeamID:teamId withCompletionHandler:^(NSError *error) {
+                if (error)
+                    [subBundleErrors addObject:error];
+                
+                NSLog(@"Handled sub-bundle: %@", subBundlePath);
+                dispatch_group_leave(dispatch_group);
+            }];
+        }
+    }
+    
+    // Wait on sub-bundles to finish, if needed.
+    dispatch_group_wait(dispatch_group, DISPATCH_TIME_FOREVER);
+    
+    if (subBundleErrors.count > 0) {
+        // Errors when handling sub-bundles!
+        for (NSError *err in subBundleErrors) {
+            NSLog(@"Error: %@", err.localizedDescription);
+        }
+        
+        completionHandler([subBundleErrors lastObject]);
+        return;
+    }
     
     // 1. Read Info.plist to gain the applicationId and binaryLocation.
     // 2. Get provisioning profile and certificate info
@@ -59,6 +125,22 @@
         completionHandler(error);
         return;
     }
+    
+    // Find the systemType for this bundle.
+    NSString *platformName = [infoplist objectForKey:@"DTPlatformName"];
+    EESystemType systemType = -1;
+    if ([platformName isEqualToString:@"iphoneos"]) {
+        systemType = EESystemTypeiOS;
+    } else if ([platformName isEqualToString:@"watchos"]) {
+        systemType = EESystemTypewatchOS;
+    } else if ([platformName isEqualToString:@"tvos"]) {
+        systemType = EESystemTypetvOS;
+    } else {
+        // Base case, assume iOS.
+        systemType = EESystemTypeiOS;
+    }
+    
+    NSLog(@"Platform: %@ for bundle: %@", platformName, [path lastPathComponent]);
     
     NSString *applicationId = [infoplist objectForKey:@"CFBundleIdentifier"];
     NSString *binaryLocation = [path stringByAppendingFormat:@"/%@", [infoplist objectForKey:@"CFBundleExecutable"]];
@@ -75,7 +157,7 @@
         
         return teamId;
         
-    } andCallback:^(NSError *error, NSData *embeddedMobileProvision, NSString *privateKey, NSDictionary *certificate, NSDictionary *entitlements) {
+    } systemType:systemType andCallback:^(NSError *error, NSData *embeddedMobileProvision, NSString *privateKey, NSDictionary *certificate, NSDictionary *entitlements) {
         if (error) {
             completionHandler(error);
             return;
@@ -98,7 +180,7 @@
         }
         
         if (![(NSData*)embeddedMobileProvision writeToFile:embeddedPath options:NSDataWritingAtomic error:&fileIOError]) {
-            
+        
             if (fileIOError) {
                 NSLog(@"%@", fileIOError);
             } else {

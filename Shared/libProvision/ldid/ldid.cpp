@@ -715,10 +715,10 @@ class MachHeader :
 
                 case LC_SEGMENT_64: {
                     auto segment(reinterpret_cast<struct segment_command_64 *>(load_command));
-                    code(segment->segname, NULL, GetOffset<void>((uint32_t)segment->fileoff), segment->filesize);
+                    code(segment->segname, NULL, GetOffset<void>((uint32_t)segment->fileoff), (unsigned long)segment->filesize);
                     auto section(reinterpret_cast<struct section_64 *>(segment + 1));
                     for (uint32_t i(0), e(Swap(segment->nsects)); i != e; ++i, ++section)
-                        code(segment->segname, section->sectname, GetOffset<void>((uint32_t)(segment->fileoff + section->offset)), section->size);
+                        code(segment->segname, section->sectname, GetOffset<void>((uint32_t)(segment->fileoff + section->offset)), (unsigned long)section->size);
                 } break;
             }
     }
@@ -958,7 +958,7 @@ class Map {
 
         struct stat stat;
         _syscall(fstat(file, &stat));
-        size_ = stat.st_size;
+        size_ = (size_t)stat.st_size;
 
         data_ = _syscall(mmap(NULL, size_, pflag, mflag, file, 0));
     }
@@ -1136,7 +1136,7 @@ static void Allocate(const void *idata, size_t isize, std::streambuf &output, co
                     auto segment_command(reinterpret_cast<struct segment_command_64 *>(&copy[0]));
                     if (strncmp(segment_command->segname, "__LINKEDIT", 16) != 0)
                         break;
-                    size_t size(mach_header.Swap(allocation.limit_ + allocation.alloc_ - mach_header.Swap(segment_command->fileoff)));
+                    size_t size((size_t)(mach_header.Swap(allocation.limit_ + allocation.alloc_ - mach_header.Swap(segment_command->fileoff))));
                     segment_command->filesize = size;
                     segment_command->vmsize = Align(size, 1 << allocation.align_);
                 } break;
@@ -1997,7 +1997,7 @@ class Expression {
             return false;
         _assert_(value == 0, "regexec()");
         for (size_t i(0); i != matches_.size(); ++i)
-            matches_[i].assign(data.data() + matches[i].rm_so, matches[i].rm_eo - matches[i].rm_so);
+            matches_[i].assign(data.data() + matches[i].rm_so, (unsigned long)(matches[i].rm_eo - matches[i].rm_so));
         return true;
     }
 
@@ -2179,7 +2179,9 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
 
             auto size(most(data, &header.bytes, sizeof(header.bytes)));
 
-            if (name != "_WatchKitStub/WK" && size == sizeof(header.bytes))
+            if (name.find("_WatchKitStub/WK") == std::string::npos
+                && size == sizeof(header.bytes)
+                && !Starts(name, "Watch"))
                 switch (Swap(header.magic)) {
                     case FAT_MAGIC:
                         // Java class file format

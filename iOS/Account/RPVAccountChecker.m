@@ -63,9 +63,19 @@
     return (__bridge NSString*)udid;
 }
 
+- (EESystemType)platformTypeForCurrentDevice {
+#ifdef TARGET_OS_IOS
+    return EESystemTypeiOS;
+#elif TARGET_OS_WATCHOS
+    return EESystemTypewatchOS;
+#elif TARGET_OS_TV
+    return EESystemTypetvOS;
+#endif
+}
+
 - (void)registerCurrentDeviceForTeamID:(NSString*)teamID withUsername:(NSString*)username password:(NSString*)password andCompletionHandler:(void (^)(NSError*))completionHandler {
     
-    [EEBackend provisionDevice:[self UDIDForCurrentDevice] name:[self nameForCurrentDevice] username:username password:password priorChosenTeamID:teamID withCallback:^(NSError *error) {
+    [EEBackend provisionDevice:[self UDIDForCurrentDevice] name:[self nameForCurrentDevice] username:username password:password priorChosenTeamID:teamID systemType:[self platformTypeForCurrentDevice] withCallback:^(NSError *error) {
         completionHandler(error);
     }];
     

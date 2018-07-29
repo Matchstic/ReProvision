@@ -80,7 +80,7 @@
     [keychainAccessGroups addObject:applicationident];
     
     [plist setValue:keychainAccessGroups forKey:@"keychain-access-groups"];
-    [plist setValue:@YES forKey:@"get-task-allow"];
+    //[plist setValue:@YES forKey:@"get-task-allow"];
     
     return plist;
 }
@@ -102,7 +102,7 @@
     
     // We can now sign!
 
-    ldid::DiskFolder folder([absolutePath cStringUsingEncoding:NSUTF8StringEncoding]);
+    ldid::DiskFolder folder([[absolutePath copy] cStringUsingEncoding:NSUTF8StringEncoding]);
     ldid::Bundle outputBundle = Sign("", folder, _PKCS12, entitlementsString, "");
     
     // TODO: Handle errors!

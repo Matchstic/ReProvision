@@ -66,68 +66,70 @@ static RPVApplicationSigning *sharedInstance;
 
 - (void)_resignApplicationsArray:(NSArray*)applications withTeamID:(NSString*)teamID username:(NSString*)username password:(NSString*)password {
     
-    for (id<RPVApplicationSigningProtocol> observer in self.observers) {
-        [observer applicationSigningDidStart];
-    }
-    
-    if (self.undertakingResignPipeline) {
-        NSError *error = [self _errorFromString:@"Already undertaking the re-sign pipeline!" errorCode:RPVErrorAlreadyUndertakingPipeline];
-        
+    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
         for (id<RPVApplicationSigningProtocol> observer in self.observers) {
-            [observer applicationSigningCompleteWithError:error];
+            [observer applicationSigningDidStart];
         }
-        return;
-    } else {
-        self.undertakingResignPipeline = YES;
-    }
-    
-    //////////////////////////////////////////////////////////////////////////////////////
-    // 1. Do pre-flight checks.
-    //////////////////////////////////////////////////////////////////////////////////////
-    
-    // TODO: Network connectivity.
-    
-    // Update install queue with new applications list
-    self.installQueue = [applications mutableCopy];
-    
-    //////////////////////////////////////////////////////////////////////////////////////
-    // 2. Initiate signing for applications if applicable.
-    //////////////////////////////////////////////////////////////////////////////////////
-    
-    // If no signing needed, just exit.
-    if (self.installQueue.count == 0) {
-        self.undertakingResignPipeline = NO;
-        NSError *error = [self _errorFromString:@"No applications need re-signing" errorCode:RPVErrorNoSigningRequired];
-        for (id<RPVApplicationSigningProtocol> observer in self.observers) {
-            [observer applicationSigningCompleteWithError:error];
-        }
-        return;
-    }
-    
-    // Move to a background task!
-    UIApplication *application = [UIApplication sharedApplication];
-    UIBackgroundTaskIdentifier __block bgTask = [application beginBackgroundTaskWithName:@"ReProvision Application Signing" expirationHandler:^{
         
-        // Clean up any unfinished task business by marking where you
-        // stopped or ending the task outright.
-        
-        [application endBackgroundTask:bgTask];
-        bgTask = UIBackgroundTaskInvalid;
-    }];
-    
-    self.currentBackgroundTaskIdentifier = bgTask;
-    
-    // Update progress handler to 0% for all applications.
-    for (RPVApplication *app in self.installQueue) {
-        for (id<RPVApplicationSigningProtocol> observer in self.observers) {
-            [observer applicationSigningUpdateProgress:0 forBundleIdentifier:app.bundleIdentifier];
+        if (self.undertakingResignPipeline) {
+            NSError *error = [self _errorFromString:@"Already undertaking the re-sign pipeline!" errorCode:RPVErrorAlreadyUndertakingPipeline];
+            
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningCompleteWithError:error];
+            }
+            return;
+        } else {
+            self.undertakingResignPipeline = YES;
         }
-    }
-    
-    // Start signing.
-    [self _initiateNextInstallFromQueueWithTeamID:teamID
-                                         username:username
-                                         password:password];
+        
+        //////////////////////////////////////////////////////////////////////////////////////
+        // 1. Do pre-flight checks.
+        //////////////////////////////////////////////////////////////////////////////////////
+        
+        // TODO: Network connectivity.
+        
+        // Update install queue with new applications list
+        self.installQueue = [applications mutableCopy];
+        
+        //////////////////////////////////////////////////////////////////////////////////////
+        // 2. Initiate signing for applications if applicable.
+        //////////////////////////////////////////////////////////////////////////////////////
+        
+        // If no signing needed, just exit.
+        if (self.installQueue.count == 0) {
+            self.undertakingResignPipeline = NO;
+            NSError *error = [self _errorFromString:@"No applications need re-signing" errorCode:RPVErrorNoSigningRequired];
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningCompleteWithError:error];
+            }
+            return;
+        }
+        
+        // Move to a background task!
+        UIApplication *application = [UIApplication sharedApplication];
+        UIBackgroundTaskIdentifier __block bgTask = [application beginBackgroundTaskWithName:@"ReProvision Application Signing" expirationHandler:^{
+            
+            // Clean up any unfinished task business by marking where you
+            // stopped or ending the task outright.
+            
+            [application endBackgroundTask:bgTask];
+            bgTask = UIBackgroundTaskInvalid;
+        }];
+        
+        self.currentBackgroundTaskIdentifier = bgTask;
+        
+        // Update progress handler to 0% for all applications.
+        for (RPVApplication *app in self.installQueue) {
+            for (id<RPVApplicationSigningProtocol> observer in self.observers) {
+                [observer applicationSigningUpdateProgress:0 forBundleIdentifier:app.bundleIdentifier];
+            }
+        }
+        
+        // Start signing.
+        [self _initiateNextInstallFromQueueWithTeamID:teamID
+                                             username:username
+                                             password:password];
+    });
 }
 
 - (void)resignSpecificApplications:(NSArray*)applications withTeamID:(NSString*)teamID username:(NSString*)username password:(NSString*)password {

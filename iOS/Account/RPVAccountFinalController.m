@@ -110,7 +110,7 @@
         NSLog(@"Is free user? %d", isFreeUser);
         
         if (isFreeUser) {
-            [EEAppleServices listAllDevelopmentCertificatesForTeamID:self.teamId withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
+            [EEAppleServices listAllDevelopmentCertificatesForTeamID:self.teamId systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
                 if (error) {
                     // TODO: Handle error!
                 }
@@ -288,7 +288,7 @@
 - (void)_revokeCertificate:(NSDictionary*)certificate withCompletion:(void (^)(NSError *error))completionHandler {
     [EEAppleServices signInWithUsername:self.username password:self.password andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (!error) {
-            [EEAppleServices revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:self.teamId withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
+            [EEAppleServices revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:self.teamId systemType:EESystemTypeiOS  withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
                 
                 completionHandler(error);
             }];

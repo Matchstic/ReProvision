@@ -294,7 +294,7 @@ PLIST_API plist_t plist_new_data(const char *val, uint64_t length)
 {
     plist_data_t data = plist_new_plist_data();
     data->type = PLIST_DATA;
-    data->buff = (uint8_t *) malloc(length);
+    data->buff = (uint8_t *) malloc((unsigned long)length);
     memcpy(data->buff, val, length);
     data->length = length;
     return plist_new_node(data);
@@ -331,7 +331,7 @@ static void plist_copy_node(node_t *node, void *parent_node_ptr)
     node_type = plist_get_node_type(node);
     switch (node_type) {
         case PLIST_DATA:
-            newdata->buff = (uint8_t *) malloc(data->length);
+            newdata->buff = (uint8_t *) malloc((unsigned long)data->length);
             memcpy(newdata->buff, data->buff, data->length);
             break;
         case PLIST_KEY:
@@ -848,7 +848,7 @@ int plist_data_compare(const void *a, const void *b)
     case PLIST_DATA:
         if (val_a->length != val_b->length)
             return FALSE;
-        if (!memcmp(val_a->buff, val_b->buff, val_a->length))
+        if (!memcmp(val_a->buff, val_b->buff, (unsigned long)val_a->length))
             return TRUE;
         else
             return FALSE;
@@ -915,7 +915,7 @@ static void plist_set_element_val(plist_t node, plist_type type, const void *val
         data->strval = strdup((char *) value);
         break;
     case PLIST_DATA:
-        data->buff = (uint8_t *) malloc(length);
+        data->buff = (uint8_t *) malloc((unsigned long)length);
         memcpy(data->buff, value, length);
         break;
     case PLIST_ARRAY:

@@ -259,21 +259,21 @@ static void node_to_xml(node_t* node, bytearray_t **outbuf, uint32_t depth)
 
         /* make sure we convert the following predefined xml entities */
         /* < = &lt; > = &gt; & = &amp; */
-        len = node_data->length;
+        len = (size_t)node_data->length;
         for (j = 0; j < len; j++) {
             switch (node_data->strval[j]) {
             case '<':
-                str_buf_append(*outbuf, node_data->strval + start, cur - start);
+                str_buf_append(*outbuf, node_data->strval + start, (size_t)(cur - start));
                 str_buf_append(*outbuf, "&lt;", 4);
                 start = cur+1;
                 break;
             case '>':
-                str_buf_append(*outbuf, node_data->strval + start, cur - start);
+                str_buf_append(*outbuf, node_data->strval + start, (size_t)(cur - start));
                 str_buf_append(*outbuf, "&gt;", 4);
                 start = cur+1;
                 break;
             case '&':
-                str_buf_append(*outbuf, node_data->strval + start, cur - start);
+                str_buf_append(*outbuf, node_data->strval + start, (size_t)(cur - start));
                 str_buf_append(*outbuf, "&amp;", 5);
                 start = cur+1;
                 break;
@@ -282,7 +282,7 @@ static void node_to_xml(node_t* node, bytearray_t **outbuf, uint32_t depth)
             }
             cur++;
         }
-        str_buf_append(*outbuf, node_data->strval + start, cur - start);
+        str_buf_append(*outbuf, node_data->strval + start, (size_t)(cur - start));
     } else if (node_data->type == PLIST_DATA) {
         str_buf_append(*outbuf, ">", 1);
         tagOpen = TRUE;

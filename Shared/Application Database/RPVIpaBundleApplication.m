@@ -68,7 +68,7 @@
 - (UIImage*)_loadApplicationIconFromURL:(NSURL*)url withInfoPlist:(NSDictionary*)infoPlist {
     // Check if this Info.plist has any icons.
     if (![infoPlist.allKeys containsObject:@"CFBundleIcons"] && ![infoPlist.allKeys containsObject:@"CFBundleIcons~ipad"]) {
-        return [UIImage _applicationIconImageForBundleIdentifier:nil format:2 scale:[UIScreen mainScreen].scale];
+        return [UIImage _applicationIconImageForBundleIdentifier:@"" format:2 scale:[UIScreen mainScreen].scale];
     } else {
         NSDictionary *icons;
         BOOL usingIpadIcons = NO;
@@ -133,7 +133,7 @@
         if (data)
             return [self _maskApplicationIcon:[UIImage imageWithData:data]];
         else
-            return [UIImage _applicationIconImageForBundleIdentifier:nil format:2 scale:[UIScreen mainScreen].scale];
+            return [UIImage _applicationIconImageForBundleIdentifier:@"" format:2 scale:[UIScreen mainScreen].scale];
     }
 }
 

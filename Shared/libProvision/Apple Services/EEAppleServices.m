@@ -42,9 +42,11 @@ static NSString *_teamid = @"";
     return output;
 }
 
-+ (void)_doActionWithName:(NSString*)action extraDictionary:(NSDictionary*)extra andCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)_doActionWithName:(NSString*)action systemType:(EESystemType)systemType extraDictionary:(NSDictionary*)extra andCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSString *urlStr = [NSString stringWithFormat:@"https://developerservices2.apple.com/services/QH65B2/ios/%@?clientId=XABBG36SBA", action];
+    
+    NSLog(@"Request to URL: %@", urlStr);
     
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlStr]];
     
@@ -67,14 +69,30 @@ static NSString *_teamid = @"";
     [dict setObject:[[NSUUID UUID] UUIDString] forKey:@"requestId"];
     [dict setObject:@[@"en_US"] forKey:@"userLocale"];
     
-    // TODO: Automatically switch this dependant on device type.
+    // Automatically switch this dependant on device type.
     /*
      * Available options:
      * mac
      * ios
-     * appletvos (?)
+     * tvos
+     * watchos
      */
-    [dict setObject:@"ios" forKey:@"DTDK_Platform"];
+    switch (systemType) {
+        case EESystemTypeiOS:
+            [dict setObject:@"ios" forKey:@"DTDK_Platform"];
+            //[dict setObject:@"ios" forKey:@"subPlatform"];
+            break;
+        case EESystemTypewatchOS:
+            [dict setObject:@"watchos" forKey:@"DTDK_Platform"];
+            //[dict setObject:@"watchOS" forKey:@"subPlatform"];
+            break;
+        case EESystemTypetvOS:
+            [dict setObject:@"tvos" forKey:@"DTDK_Platform"];
+            [dict setObject:@"tvOS" forKey:@"subPlatform"];
+            break;
+        default:
+            break;
+    }
     
     if (extra) {
         for (NSString *key in extra.allKeys) {
@@ -152,7 +170,7 @@ static NSString *_teamid = @"";
     
     [self _signInWithUsername:username password:password andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
-            // Oh shit.
+            // Oh no.
             NSLog(@"Error on sign-in! %@", error);
             completionHandler(error, plist);
             return;
@@ -338,29 +356,29 @@ static NSString *_teamid = @"";
 // Device methods
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-+ (void)addDevice:(NSString*)udid deviceName:(NSString*)name forTeamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)addDevice:(NSString*)udid deviceName:(NSString*)name forTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     [extra setObject:udid forKey:@"deviceNumber"];
     [extra setObject:name forKey:@"name"];
     
-    [EEAppleServices _doActionWithName:@"addDevice.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"addDevice.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Application ID methods.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-+ (void)listAllApplicationsForTeamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)listAllApplicationsForTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     
-    [EEAppleServices _doActionWithName:@"listAppIds.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"listAppIds.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
-+ (void)addApplicationId:(NSString*)applicationIdentifier name:(NSString*)applicationName enabledFeatures:(NSDictionary*)enabledFeatures teamID:(NSString*)teamID entitlements:(NSDictionary*)entitlements withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)addApplicationId:(NSString*)applicationIdentifier name:(NSString*)applicationName enabledFeatures:(NSDictionary*)enabledFeatures teamID:(NSString*)teamID entitlements:(NSDictionary*)entitlements systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
@@ -378,10 +396,10 @@ static NSString *_teamid = @"";
 
     [extra setObject:entitlements forKey:@"entitlements"];
     
-    [EEAppleServices _doActionWithName:@"addAppId.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"addAppId.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
-+ (void)updateApplicationIdId:(NSString*)appIdId enabledFeatures:(NSDictionary*)enabledFeatures teamID:(NSString*)teamID entitlements:(NSDictionary*)entitlements withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler; {
++ (void)updateApplicationIdId:(NSString*)appIdId enabledFeatures:(NSDictionary*)enabledFeatures teamID:(NSString*)teamID entitlements:(NSDictionary*)entitlements systemType:(EESystemType)systemType  withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler; {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
@@ -398,87 +416,96 @@ static NSString *_teamid = @"";
     
     [extra setObject:entitlements forKey:@"entitlements"];
     
-    [EEAppleServices _doActionWithName:@"updateAppId.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"updateAppId.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
-+ (void)deleteApplicationIdId:(NSString*)appIdId teamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)deleteApplicationIdId:(NSString*)appIdId teamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     [extra setObject:appIdId forKey:@"appIdId"];
     
-    [EEAppleServices _doActionWithName:@"deleteAppId.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"deleteAppId.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
-+ (void)listAllApplicationGroupsForTeamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)listAllApplicationGroupsForTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     // CHECKME: is this the right dictionary?
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     
-    [EEAppleServices _doActionWithName:@"listApplicationGroups.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"listApplicationGroups.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
-+ (void)addApplicationGroupWithIdentifier:(NSString*)identifier andName:(NSString*)groupName forTeamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)addApplicationGroupWithIdentifier:(NSString*)identifier andName:(NSString*)groupName forTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     [extra setObject:identifier forKey:@"identifier"];
     [extra setObject:groupName forKey:@"name"];
     
-    [EEAppleServices _doActionWithName:@"addApplicationGroup.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"addApplicationGroup.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
-+ (void)assignApplicationGroup:(NSString*)applicationGroup toApplicationIdId:(NSString*)appIdId teamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)assignApplicationGroup:(NSString*)applicationGroup toApplicationIdId:(NSString*)appIdId teamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     [extra setObject:appIdId forKey:@"appIdId"];
     [extra setObject:applicationGroup forKey:@"applicationGroups"];
     
-    [EEAppleServices _doActionWithName:@"assignApplicationGroupToAppId.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"assignApplicationGroupToAppId.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Certificates methods.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-+ (void)listAllDevelopmentCertificatesForTeamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)listAllDevelopmentCertificatesForTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     
-    [EEAppleServices _doActionWithName:@"listAllDevelopmentCerts.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"listAllDevelopmentCerts.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
-+ (void)listAllProvisioningProfilesForTeamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)listAllProvisioningProfilesForTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     
-    [EEAppleServices _doActionWithName:@"listProvisioningProfiles.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"listProvisioningProfiles.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
-+ (void)getProvisioningProfileForAppIdId:(NSString*)appIdId withTeamID:(NSString*)teamID andCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)getProvisioningProfileForAppIdId:(NSString*)appIdId withTeamID:(NSString*)teamID systemType:(EESystemType)systemType andCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     [extra setObject:appIdId forKey:@"appIdId"];
     
-    // This is assuming we are signing for the current platform.
-#ifdef TARGET_OS_IOS
-    [extra setObject:@"ios" forKey:@"subPlatform"];
-#elif TARGET_OS_WATCHOS
-    [extra setObject:@"watchos" forKey:@"subPlatform"];
-#elif TARGET_OS_TV
-    [extra setObject:@"tvos" forKey:@"subPlatform"];
-#endif
+    // Set sub-platform we're signing for
+    /*NSString *_systemType = @"";
+    switch (systemType) {
+        case EESystemTypeiOS:
+            _systemType = @"ios";
+            break;
+        case EESystemTypewatchOS:
+            _systemType = @"watchos";
+            break;
+        case EESystemTypetvOS:
+            _systemType = @"tvos";
+            break;
+        default:
+            break;
+    }
     
-    [EEAppleServices _doActionWithName:@"downloadTeamProvisioningProfile.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [extra setObject:_systemType forKey:@"subPlatform"];*/
+    
+    [EEAppleServices _doActionWithName:@"downloadTeamProvisioningProfile.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
-+ (void)deleteProvisioningProfileForApplication:(NSString*)applicationId andTeamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
-    [EEAppleServices listAllProvisioningProfilesForTeamID:teamID withCompletionHandler:^(NSError *error, NSDictionary *plist) {
++ (void)deleteProvisioningProfileForApplication:(NSString*)applicationId andTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
+    [EEAppleServices listAllProvisioningProfilesForTeamID:teamID systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             completionHandler(error, nil);
             return;
@@ -511,7 +538,7 @@ static NSString *_teamid = @"";
             [extra setObject:teamID forKey:@"teamId"];
             [extra setObject:provisioningProfileId forKey:@"provisioningProfileId"];
             
-            [EEAppleServices _doActionWithName:@"deleteProvisioningProfile.action" extraDictionary:extra andCompletionHandler:completionHandler];
+            [EEAppleServices _doActionWithName:@"deleteProvisioningProfile.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
         } else {
             NSDictionary *userInfo = @{
                                        NSLocalizedDescriptionKey: NSLocalizedString(@"No provisioning profile contains the provided bundle identifier.", nil),
@@ -528,16 +555,16 @@ static NSString *_teamid = @"";
     }];
 }
 
-+ (void)revokeCertificateForSerialNumber:(NSString*)serialNumber andTeamID:(NSString*)teamID withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)revokeCertificateForSerialNumber:(NSString*)serialNumber andTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     [extra setObject:serialNumber forKey:@"serialNumber"];
     
-    [EEAppleServices _doActionWithName:@"revokeDevelopmentCert.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"revokeDevelopmentCert.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
-+ (void)submitCodeSigningRequestForTeamID:(NSString*)teamId machineName:(NSString*)machineName machineID:(NSString*)machineID codeSigningRequest:(NSData*)csr withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
++ (void)submitCodeSigningRequestForTeamID:(NSString*)teamId machineName:(NSString*)machineName machineID:(NSString*)machineID codeSigningRequest:(NSData*)csr systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
     NSString *stringifiedCSR = [[NSString alloc] initWithData:csr encoding:NSUTF8StringEncoding];
     
@@ -547,7 +574,7 @@ static NSString *_teamid = @"";
     [extra setObject:machineID forKey:@"machineId"];
     [extra setObject:machineName forKey:@"machineName"];
     
-    [EEAppleServices _doActionWithName:@"submitDevelopmentCSR.action" extraDictionary:extra andCompletionHandler:completionHandler];
+    [EEAppleServices _doActionWithName:@"submitDevelopmentCSR.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
 @end

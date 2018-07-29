@@ -302,7 +302,7 @@ static plist_t parse_string_node(const char **bnode, uint64_t size)
     plist_data_t data = plist_new_plist_data();
 
     data->type = PLIST_STRING;
-    data->strval = (char *) malloc(sizeof(char) * (size + 1));
+    data->strval = (char *) malloc((unsigned long)(sizeof(char) * (size + 1)));
     if (!data->strval) {
         plist_free_data(data);
         PLIST_BIN_ERR("%s: Could not allocate %" PRIu64 " bytes\n", __func__, sizeof(char) * (size + 1));
@@ -387,7 +387,7 @@ static plist_t parse_unicode_node(const char **bnode, uint64_t size)
     long items_written = 0;
 
     data->type = PLIST_STRING;
-    unicodestr = (uint16_t*) malloc(sizeof(uint16_t) * size);
+    unicodestr = (uint16_t*) malloc((unsigned long)(sizeof(uint16_t) * size));
     if (!unicodestr) {
         plist_free_data(data);
         PLIST_BIN_ERR("%s: Could not allocate %" PRIu64 " bytes\n", __func__, sizeof(uint16_t) * size);
@@ -396,7 +396,7 @@ static plist_t parse_unicode_node(const char **bnode, uint64_t size)
     for (i = 0; i < size; i++)
         unicodestr[i] = be16toh(get_unaligned((uint16_t*)(*bnode+(i<<1))));
 
-    tmpstr = plist_utf16_to_utf8(unicodestr, size, &items_read, &items_written);
+    tmpstr = plist_utf16_to_utf8(unicodestr, (long)size, &items_read, &items_written);
     free(unicodestr);
     if (!tmpstr) {
         plist_free_data(data);
@@ -418,7 +418,7 @@ static plist_t parse_data_node(const char **bnode, uint64_t size)
 
     data->type = PLIST_DATA;
     data->length = size;
-    data->buff = (uint8_t *) malloc(sizeof(uint8_t) * size);
+    data->buff = (uint8_t *) malloc((unsigned long)(sizeof(uint8_t) * size));
     if (!data->strval) {
         plist_free_data(data);
         PLIST_BIN_ERR("%s: Could not allocate %" PRIu64 " bytes\n", __func__, sizeof(uint8_t) * size);
@@ -1015,7 +1015,7 @@ static void write_raw_data(bytearray_t * bplist, uint8_t mark, uint8_t * val, ui
         write_int(bplist, size);
     }
     if (BPLIST_UNICODE==mark) size <<= 1;
-    byte_array_append(bplist, val, size);
+    byte_array_append(bplist, val, (size_t)size);
 }
 
 static void write_data(bytearray_t * bplist, uint8_t * val, uint64_t size)
@@ -1032,7 +1032,7 @@ static void write_string(bytearray_t * bplist, char *val)
 static void write_unicode(bytearray_t * bplist, uint16_t * val, uint64_t size)
 {
     uint64_t i = 0;
-    uint16_t *buff = (uint16_t*)malloc(size << 1);
+    uint16_t *buff = (uint16_t*)malloc((unsigned long)(size << 1));
     for (i = 0; i < size; i++)
         buff[i] = be16toh(val[i]);
     write_raw_data(bplist, BPLIST_UNICODE, (uint8_t*)buff, size);
@@ -1225,12 +1225,12 @@ PLIST_API void plist_to_bin(plist_t plist, char **plist_bin, uint32_t * length)
     byte_array_append(bplist_buff, BPLIST_VERSION, BPLIST_VERSION_SIZE);
 
     //write objects and table
-    offsets = (uint64_t *) malloc(num_objects * sizeof(uint64_t));
+    offsets = (uint64_t *) malloc((unsigned long)(num_objects * sizeof(uint64_t)));
     assert(offsets != NULL);
     for (i = 0; i < num_objects; i++)
     {
 
-        plist_data_t data = plist_get_data(ptr_array_index(objects, i));
+        plist_data_t data = plist_get_data(ptr_array_index(objects, (size_t)i));
         offsets[i] = bplist_buff->len;
 
         switch (data->type)
@@ -1272,10 +1272,10 @@ PLIST_API void plist_to_bin(plist_t plist, char **plist_bin, uint32_t * length)
             write_data(bplist_buff, data->buff, data->length);
             break;
         case PLIST_ARRAY:
-            write_array(bplist_buff, ptr_array_index(objects, i), ref_table, ref_size);
+            write_array(bplist_buff, ptr_array_index(objects, (size_t)i), ref_table, ref_size);
             break;
         case PLIST_DICT:
-            write_dict(bplist_buff, ptr_array_index(objects, i), ref_table, ref_size);
+            write_dict(bplist_buff, ptr_array_index(objects, (size_t)i), ref_table, ref_size);
             break;
         case PLIST_DATE:
             write_date(bplist_buff, data->realval);
