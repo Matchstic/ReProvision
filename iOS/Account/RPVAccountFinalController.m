@@ -98,12 +98,18 @@
             NSString *teamIdToCheck = [team objectForKey:@"teamId"];
             
             if ([teamIdToCheck isEqualToString:self.teamId]) {
-                NSArray *currentMemberRoles = [[team objectForKey:@"currentTeamMember"] objectForKey:@"roles"];
+                NSArray *memberships = [team objectForKey:@"memberships"];
                 
-                if ([currentMemberRoles containsObject:@"XCODE_FREE_USER"]) {
-                    isFreeUser = YES;
-                    break;
+                for (NSDictionary *membership in memberships) {
+                    NSString *name = [membership objectForKey:@"name"];
+                    if ([name containsString:@"Free Provisioning Program"]) {
+                        isFreeUser = YES;
+                        break;
+                    }
                 }
+                
+                if (isFreeUser)
+                    break;
             }
         }
         
@@ -230,9 +236,10 @@
     NSString *applicationName = @"Unknown";
     if ([(NSString*)[dictionary objectForKey:@"machineName"] containsString:@"RPV"])
         applicationName = @"ReProvision";
-    else if ([(NSString*)[dictionary objectForKey:@"machineName"] containsString:@"CY"])
+    else if ([(NSString*)[dictionary objectForKey:@"machineName"] containsString:@"Cydia"]) {
+        machineName = @"Unknown";
         applicationName = @"Cydia Impactor or Extender";
-    else
+    } else
         applicationName = @"Xcode";
     
     cell.textLabel.text = [NSString stringWithFormat:@"Device: %@", machineName];
@@ -243,6 +250,10 @@
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     return YES;
+}
+
+-(BOOL)tableView:(UITableView *)tableView shouldDrawTopSeparatorForSection:(NSInteger)section {
+    return NO;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

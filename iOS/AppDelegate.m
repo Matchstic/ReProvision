@@ -28,12 +28,6 @@
 
 @implementation AppDelegate
 
-- (BOOL)application:(UIApplication *)arg1 willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-     NSLog(@"*** [ReProvision] :: applicationWillFinishLaunching, options: %@", launchOptions);
-    
-    return YES;
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     [[RPVApplicationSigning sharedInstance] addSigningUpdatesObserver:self];

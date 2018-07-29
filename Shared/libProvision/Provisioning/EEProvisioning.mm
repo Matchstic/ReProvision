@@ -723,12 +723,19 @@ free_all:
                 NSString *teamIdToCheck = [team objectForKey:@"teamId"];
                 
                 if ([teamIdToCheck isEqualToString:[EEAppleServices currentTeamID]]) {
-                    NSArray *currentMemberRoles = [[team objectForKey:@"currentTeamMember"] objectForKey:@"roles"];
+                    NSArray *memberships = [team objectForKey:@"memberships"];
                     
-                    if ([currentMemberRoles containsObject:@"XCODE_FREE_USER"]) {
-                        isFreeUser = YES;
-                        break;
+                    for (NSDictionary *membership in memberships) {
+                        NSString *name = [membership objectForKey:@"name"];
+                        if ([name containsString:@"Free Provisioning Program"]) {
+                            isFreeUser = YES;
+                            break;
+                        }
                     }
+                    
+                    // Exit now if needed.
+                    if (isFreeUser)
+                        break;
                 }
             }
             
