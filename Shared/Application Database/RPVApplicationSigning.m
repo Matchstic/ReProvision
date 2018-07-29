@@ -312,8 +312,15 @@ static RPVApplicationSigning *sharedInstance;
                 }
             }
             
-            // Give an error!
-            NSError *err = [self _errorFromString:error.localizedDescription errorCode:RPVErrorFailedToInstallSignedIPA];
+            // Give an error, but make it user-friendly.
+            NSString *errorMessage = error.localizedDescription;
+            if ([errorMessage containsString:@"invalid entitlements"]) {
+                errorMessage = @"Incorrect entitlements for this application. This is likely caused by ReProvision not supporting a capability this application needs.";
+            } else if ([errorMessage containsString:@"valid provisioning profile"]) {
+                errorMessage = @"This application hasn't been signed correctly for this device. This may occur if this device is not registered to the account used to sign with.";
+            }
+            
+            NSError *err = [self _errorFromString:errorMessage errorCode:RPVErrorFailedToInstallSignedIPA];
             for (id<RPVApplicationSigningProtocol> observer in self.observers) {
                 [observer applicationSigningDidEncounterError:err forBundleIdentifier:bundleIdentifier];
             }
