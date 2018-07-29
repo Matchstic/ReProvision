@@ -112,6 +112,16 @@
     return YES;
 }
 
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL succeeded))completionHandler {
+    
+    // Start background signing from shortcut menu
+    if ([shortcutItem.type isEqualToString:@"resignExpiringNow"]) {
+        [self daemonDidRequestNewBackgroundSigning];
+        
+        completionHandler(YES);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 // Application Signing delegate methods.
 //////////////////////////////////////////////////////////////////////////////////
