@@ -449,7 +449,7 @@
     NSData *codeSigningRequest;
     
     int ret = [self _generateCodeSigningRequest:&privateKey :&codeSigningRequest];
-    if (ret != 1) {
+    if (ret != 1 || !codeSigningRequest) {
         NSError *error = [EEProvisioning _errorFromString:@"submitDevelopmentCSR: Failed to generate a code signing request"];
         completionHandler(error, nil, nil);
         return;
@@ -484,56 +484,48 @@
         
         // Double check now that we have been approved.
         
-        BOOL doubleChecked = NO;
         NSDictionary *certRequest = [plist objectForKey:@"certRequest"];
-        NSString *statusString = [certRequest objectForKey:@"statusString"];
-        NSString *typeString = [certRequest objectForKey:@"typeString"];
         
-        doubleChecked = [statusString isEqualToString:@"Approved"] && [typeString isEqualToString:@"iOS Development"];
-        
-        if (doubleChecked) {
-            // Grab the certificate, and return it with the private key to the caller.
-            
-            NSString *certificateSerialID = [certRequest objectForKey:@"serialNum"];
-            
-            [EEAppleServices listAllDevelopmentCertificatesForTeamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
-                if (error) {
-                    completionHandler(error, nil, nil);
-                    return;
-                }
-                
-                // TODO: Check plist for errors.
-                
-                NSDictionary *certificate;
-                for (NSDictionary *dict in [plist objectForKey:@"certificates"]) {
-                    NSString *certSerialNumber = dict[@"serialNumber"];
-                    if ([certSerialNumber isEqualToString:certificateSerialID]) {
-                        // Got it!
-                        certificate = dict;
-                        break;
-                    }
-                }
-                
-                // Job done!
-                if (certificate) {
-                    NSString *stringifiedPrivateKey = [[NSString alloc] initWithData:privateKey encoding:NSUTF8StringEncoding];
-                    completionHandler(nil, stringifiedPrivateKey, certificate);
-                } else {
-                    NSString *desc = [NSString stringWithFormat:@"submitDevelopmentCSR: Cannot find new certificate with serial number '%@'", certificateSerialID];
-                    
-                    NSError *error = [EEProvisioning _errorFromString:desc];
-                    
-                    completionHandler(error, nil, nil);
-                }
-            }];
-            
-        } else {
-            NSString *desc = [NSString stringWithFormat:@"submitDevelopmentCSR: Received a result of '%@' for '%@'", statusString, typeString];
-            
-            NSError *error = [EEProvisioning _errorFromString:desc];
+        if (!certRequest) {
+            NSError *error = [EEProvisioning _errorFromString:@"Missing certificate on Apple's servers."];
             
             completionHandler(error, nil, nil);
+            return;
         }
+        
+        // Grab the certificate, and return it with the private key to the caller.
+        NSString *certificateSerialID = [certRequest objectForKey:@"serialNum"];
+        
+        [EEAppleServices listAllDevelopmentCertificatesForTeamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+            if (error) {
+                completionHandler(error, nil, nil);
+                return;
+            }
+            
+            // TODO: Check plist for errors.
+            
+            NSDictionary *certificate;
+            for (NSDictionary *dict in [plist objectForKey:@"certificates"]) {
+                NSString *certSerialNumber = dict[@"serialNumber"];
+                if ([certSerialNumber isEqualToString:certificateSerialID]) {
+                    // Got it!
+                    certificate = dict;
+                    break;
+                }
+            }
+            
+            // Job done!
+            if (certificate) {
+                NSString *stringifiedPrivateKey = [[NSString alloc] initWithData:privateKey encoding:NSUTF8StringEncoding];
+                completionHandler(nil, stringifiedPrivateKey, certificate);
+            } else {
+                NSString *desc = [NSString stringWithFormat:@"submitDevelopmentCSR: Cannot find new certificate with serial number '%@'", certificateSerialID];
+                
+                NSError *error = [EEProvisioning _errorFromString:desc];
+                
+                completionHandler(error, nil, nil);
+            }
+        }];
     }];
 }
 

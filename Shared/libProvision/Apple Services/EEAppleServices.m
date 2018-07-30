@@ -44,7 +44,8 @@ static NSString *_teamid = @"";
 
 + (void)_doActionWithName:(NSString*)action systemType:(EESystemType)systemType extraDictionary:(NSDictionary*)extra andCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
-    NSString *os = systemType == EESystemTypeiOS ? @"ios" : @"tvos";
+    // watchOS is treated as iOS
+    NSString *os = systemType == EESystemTypeiOS || systemType == EESystemTypewatchOS ? @"ios" : @"tvos";
     NSString *urlStr = [NSString stringWithFormat:@"https://developerservices2.apple.com/services/QH65B2/%@/%@?clientId=XABBG36SBA", os, action];
     
     NSLog(@"Request to URL: %@", urlStr);
