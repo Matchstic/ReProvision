@@ -7,6 +7,7 @@
 //
 
 #import "RPVAccountChecker.h"
+#import "RPVResources.h"
 #import "EEAppleServices.h"
 #import "EEBackend.h"
 
@@ -78,7 +79,13 @@
     [EEBackend provisionDevice:[self UDIDForCurrentDevice] name:[self nameForCurrentDevice] username:username password:password priorChosenTeamID:teamID systemType:[self platformTypeForCurrentDevice] withCallback:^(NSError *error) {
         completionHandler(error);
     }];
+}
+
+- (void)registerCurrentWatchForTeamID:(NSString*)teamID withUsername:(NSString*)username password:(NSString*)password andCompletionHandler:(void (^)(NSError*))completionHandler {
     
+    [EEBackend provisionDevice:[RPVResources activePairedWatchUDID] name:[RPVResources activePairedWatchName] username:username password:password priorChosenTeamID:teamID systemType:EESystemTypewatchOS withCallback:^(NSError *error) {
+        completionHandler(error);
+    }];
 }
 
 @end

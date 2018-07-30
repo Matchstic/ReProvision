@@ -172,9 +172,26 @@
     
         [[RPVAccountChecker sharedInstance] registerCurrentDeviceForTeamID:self.teamId withUsername:self.username password:self.password andCompletionHandler:^(NSError *error) {
             // Error only happens if user already has registered this device!
-            [self _storeUserDetails];
+            [self _checkAppleWatchRegistration];
         }];
     });
+}
+
+- (void)_checkAppleWatchRegistration {
+    if ([RPVResources hasActivePairedWatch]) {
+        dispatch_async(dispatch_get_main_queue(), ^(){
+            self.titleLabel.text = @"Checking Apple Watch Status";
+            self.subtitleLabel.text = @"Verifying...";
+            
+            [[RPVAccountChecker sharedInstance] registerCurrentWatchForTeamID:self.teamId withUsername:self.username password:self.password andCompletionHandler:^(NSError *error) {
+                // Error only happens if user already has registered this device!
+                [self _storeUserDetails];
+            }];
+        });
+    } else {
+        // No paired watch, continue.
+        [self _storeUserDetails];
+    }
 }
 
 - (void)_storeUserDetails {

@@ -9,8 +9,23 @@
 #import "SAMKeychain.h"
 
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
 
 #include <notify.h>
+#include <dlfcn.h>
+
+// For Apple Watch support
+@interface NRDevice : NSObject
+- (id)valueForProperty:(id)arg1;
+@end
+
+@interface NRPairedDeviceRegistry : NSObject
++ (instancetype)sharedInstance;
+- (NRDevice*)getActivePairedDevice;
+- (bool)isPaired;
+@end
+
+static dispatch_once_t nanoRegistryOnceToken;
 
 #define SERVICENAME @"com.matchstic.ReProvision"
 
@@ -125,6 +140,47 @@
     [SAMKeychain deletePasswordForService:SERVICENAME account:username];
     
     [self _broadcastNotification:@"RPVDisplayAccountSignInController" withUserInfo:nil];
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// Apple Watch
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
++ (BOOL)hasActivePairedWatch {
+#if TARGET_OS_SIMULATOR
+    return NO;
+#else
+    // Load NanoRegistry if needed.
+    dispatch_once(&nanoRegistryOnceToken, ^{
+        dlopen("/System/Library/PrivateFrameworks/NanoRegistry.framework/NanoRegistry", RTLD_NOW);
+    });
+    
+    NRPairedDeviceRegistry *sharedRegistry = [objc_getClass("NRPairedDeviceRegistry") sharedInstance];
+    return [sharedRegistry isPaired];
+#endif
+}
+
++ (NSString*)activePairedWatchUDID {
+    return [self _valueForActivePairedWatchWithProperty:@"UDID"];
+}
+
++ (NSString*)activePairedWatchName {
+    return [self _valueForActivePairedWatchWithProperty:@"name"];
+}
+
++ (id)_valueForActivePairedWatchWithProperty:(NSString*)property {
+#if TARGET_OS_SIMULATOR
+    return @"";
+#else
+    // Load NanoRegistry if needed.
+    dispatch_once(&nanoRegistryOnceToken, ^{
+        dlopen("/System/Library/PrivateFrameworks/NanoRegistry.framework/NanoRegistry", RTLD_NOW);
+    });
+    
+    NRPairedDeviceRegistry *sharedRegistry = [objc_getClass("NRPairedDeviceRegistry") sharedInstance];
+    NRDevice *currentWatchDevice = [sharedRegistry getActivePairedDevice];
+    return [currentWatchDevice valueForProperty:property];
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////

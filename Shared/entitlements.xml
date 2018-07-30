@@ -55,6 +55,9 @@
 
 	<key>com.apple.localnotification.schedulingproxy</key>
 	<true/>
+	
+	<key>com.apple.nano.nanoregistry</key>
+	<true/>
 
 </dict>
 </plist>
