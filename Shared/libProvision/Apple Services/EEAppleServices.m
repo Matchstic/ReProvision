@@ -44,7 +44,8 @@ static NSString *_teamid = @"";
 
 + (void)_doActionWithName:(NSString*)action systemType:(EESystemType)systemType extraDictionary:(NSDictionary*)extra andCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
     
-    NSString *urlStr = [NSString stringWithFormat:@"https://developerservices2.apple.com/services/QH65B2/ios/%@?clientId=XABBG36SBA", action];
+    NSString *os = systemType == EESystemTypeiOS ? @"ios" : @"tvos";
+    NSString *urlStr = [NSString stringWithFormat:@"https://developerservices2.apple.com/services/QH65B2/%@/%@?clientId=XABBG36SBA", os, action];
     
     NSLog(@"Request to URL: %@", urlStr);
     
@@ -366,6 +367,18 @@ static NSString *_teamid = @"";
     [EEAppleServices _doActionWithName:@"addDevice.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }
 
++ (void)listDevicesForTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
+    
+    NSMutableDictionary *extra = [NSMutableDictionary dictionary];
+    [extra setObject:teamID forKey:@"teamId"];
+    [extra setObject:@"500" forKey:@"pageSize"];
+    [extra setObject:@"1" forKey:@"pageNumber"];
+    [extra setObject:@"name=asc" forKey:@"sort"];
+    [extra setObject:@"false" forKey:@"includeRemovedDevices"];
+    
+    [EEAppleServices _doActionWithName:@"listDevices.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Application ID methods.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -482,24 +495,6 @@ static NSString *_teamid = @"";
     NSMutableDictionary *extra = [NSMutableDictionary dictionary];
     [extra setObject:teamID forKey:@"teamId"];
     [extra setObject:appIdId forKey:@"appIdId"];
-    
-    // Set sub-platform we're signing for
-    /*NSString *_systemType = @"";
-    switch (systemType) {
-        case EESystemTypeiOS:
-            _systemType = @"ios";
-            break;
-        case EESystemTypewatchOS:
-            _systemType = @"watchos";
-            break;
-        case EESystemTypetvOS:
-            _systemType = @"tvos";
-            break;
-        default:
-            break;
-    }
-    
-    [extra setObject:_systemType forKey:@"subPlatform"];*/
     
     [EEAppleServices _doActionWithName:@"downloadTeamProvisioningProfile.action" systemType:systemType extraDictionary:extra andCompletionHandler:completionHandler];
 }

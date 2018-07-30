@@ -26,6 +26,9 @@ typedef enum : NSUInteger {
  */
 + (void)signInWithUsername:(NSString*)username password:(NSString*)password andCompletionHandler:(void (^)(NSError*, NSDictionary*))completionHandler;
 
+/**
+ * TODO: Docs!
+ */
 + (void)updateCurrentTeamIDWithTeamIDCheck:(NSString* (^)(NSArray*))teamIDCallback andCallback:(void (^)(NSError*, NSString *))completionHandler;
 
 /**
@@ -33,7 +36,15 @@ typedef enum : NSUInteger {
  */
 + (void)listTeamsWithCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler;
 
+/**
+ * TODO: Docs!
+ */
 + (void)addDevice:(NSString*)udid deviceName:(NSString*)name forTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler;
+
+/**
+ * TODO: Docs!
+ */
++ (void)listDevicesForTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler;
 
 /**
  * TODO: Docs!
@@ -50,6 +61,9 @@ typedef enum : NSUInteger {
  */
 + (void)updateApplicationIdId:(NSString*)appIdId enabledFeatures:(NSDictionary*)enabledFeatures teamID:(NSString*)teamID entitlements:(NSDictionary*)entitlements systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler;
 
+/**
+ * TODO: Docs!
+ */
 + (void)deleteApplicationIdId:(NSString*)appIdId teamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler;
 
 /**
@@ -72,6 +86,9 @@ typedef enum : NSUInteger {
  */
 + (void)listAllDevelopmentCertificatesForTeamID:(NSString*)teamID systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler;
 
+/**
+ * TODO: Docs!
+ */
 + (void)viewDeveloperWithCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler;
 
 /**
