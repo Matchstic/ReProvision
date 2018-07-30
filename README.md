@@ -15,6 +15,8 @@ Provisioning is undertaken via the user's Apple ID credentials, and supports bot
 
 Battery optimisations are also in place through the usage of a background daemon to handle automatic signing.
 
+Please note that only jailbroken devices are supported at this time. 
+
 #### tvOS [TODO]
 
 - Same features as for iOS, minus that for the Apple Watch
