@@ -11,12 +11,13 @@ Provisioning is undertaken via the user's Apple ID credentials, and supports bot
 - Automatic re-signing of locally provisioned applications.
 - Basic settings to configure alerts shown by the automatic re-signing.
 - Ability to install any `.ipa` file downloaded through Safari from the device.
+- Support for re-signing Apple Watch applications
 
 Battery optimisations are also in place through the usage of a background daemon to handle automatic signing.
 
 #### tvOS [TODO]
 
-- Same features as for iOS
+- Same features as for iOS, minus that for the Apple Watch
 
 #### macOS [TODO]
 
