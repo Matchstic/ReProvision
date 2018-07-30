@@ -21,6 +21,7 @@
 @property (nonatomic, readonly) NSURL *bundleURL;
 @property (nonatomic, readonly) _LSDiskUsage *diskUsage;
 @property (nonatomic, readonly) NSString *shortVersionString;
+@property (nonatomic, readonly) NSNumber *staticDiskUsage;
 
 + (instancetype)applicationProxyForIdentifier:(NSString*)arg1;
 
@@ -61,7 +62,14 @@
 }
 
 - (NSNumber*)applicationInstalledSize {
-    return self.proxy != nil ? [self.proxy.diskUsage staticUsage] : @0;
+    if (!self.proxy) {
+        return @0;
+    }
+    
+    if ([self.proxy respondsToSelector:@selector(diskUsage)])
+        return [self.proxy.diskUsage staticUsage];
+    else
+        return self.proxy.staticDiskUsage;
 }
 
 - (UIImage*)applicationIcon {
