@@ -71,7 +71,7 @@ HOOK_MESSAGE(id, UNUserNotificationCenter, initWithBundleIdentifier_, NSString *
             }
         }];
     } else {
-        // TODO: Is this correct for local notifications on iOS 9?
+        // iOS 9
         if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
             [[UIApplication sharedApplication] registerUserNotificationSettings:[objc_getClass("UIUserNotificationSettings") settingsForTypes:7 categories:nil]];
             [[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -117,18 +117,20 @@ HOOK_MESSAGE(id, UNUserNotificationCenter, initWithBundleIdentifier_, NSString *
     
     // Send one in-app also.
     // Cancel any existing notification.
-    [RMessage dismissActiveNotification];
-    [RMessage showNotificationWithTitle:title
-                               subtitle:body
-                              iconImage:nil
-                                   type:RMessageTypeNormal
-                         customTypeName:@"ios9"
-                               duration:3.0
-                               callback:nil
-                            buttonTitle:nil
-                         buttonCallback:nil
-                             atPosition:RMessagePositionTop
-                   canBeDismissedByUser:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RMessage dismissActiveNotification];
+        [RMessage showNotificationWithTitle:title
+                                   subtitle:body
+                                  iconImage:nil
+                                       type:RMessageTypeCustom
+                             customTypeName:@"ios9"
+                                   duration:3.0
+                                   callback:nil
+                                buttonTitle:nil
+                             buttonCallback:nil
+                                 atPosition:RMessagePositionTop
+                       canBeDismissedByUser:YES];
+    });
 }
 
 - (void)_newSendNotificationWithTitle:(NSString*)title body:(NSString*)body andNotificationID:(NSString*)identifier {
