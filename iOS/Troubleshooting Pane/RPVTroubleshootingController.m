@@ -65,6 +65,12 @@
     
     [items addObject:submitDevelopmentCSR];
     
+    NSMutableArray *pkcs12 = [NSMutableArray array];
+    [pkcs12 addObject:@"No valid PKCS12 certificate..."];
+    [pkcs12 addObject:@"This error occurs when the certificate used for signing applications is out-of-sync with the certificate on Apple's servers.\n\nTo resolve, tap 'Manage Certificates' above, and remove the certificate for this device."];
+    
+    [items addObject:pkcs12];
+    
     NSMutableArray *devices = [NSMutableArray array];
     [devices addObject:@"Missing application on Apple Watch"];
     [devices addObject:@"After signing an application that supports the Apple Watch, the corresponding Watch application should be automatically installed.\n\nIf this fails without an error, and you've recently paired a new Apple Watch, you may need to manually register it to your Apple ID.\n\nTo do this, please tap below."];
