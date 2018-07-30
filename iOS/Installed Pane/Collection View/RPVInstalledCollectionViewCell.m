@@ -311,6 +311,10 @@
 }
 
 - (void)_flashNotificationWithColour:(UIColor*)colour {
+    // If we're backgrounded, no need to flash else we get a bug.
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground)
+        return;
+    
     dispatch_async(dispatch_get_main_queue(), ^(){
         self.notificationView.backgroundColor = colour;
         self.notificationView.alpha = 0.0;
