@@ -12,6 +12,8 @@
 
 @interface RPVApplicationDetailController : UIViewController
 
+@property (nonatomic, readwrite) BOOL lockWhenInstalling;
+
 - (instancetype)initWithApplication:(RPVApplication*)application;
 
 - (void)setCurrentSigningPercent:(int)percent;

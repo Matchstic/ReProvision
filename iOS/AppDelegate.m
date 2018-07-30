@@ -90,6 +90,7 @@
     
     // Update with current states.
     [detailController setButtonTitle:@"INSTALL"];
+    detailController.lockWhenInstalling = YES;
     
     // Add to the rootViewController of the application, as an effective overlay.
     detailController.view.alpha = 0.0;

@@ -70,6 +70,7 @@
     
     if (self) {
         self.application = application;
+        self.lockWhenInstalling = NO;
         
         // Signing Notifications.
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_onSigningStatusUpdate:) name:@"com.matchstic.reprovision/signingUpdate" object:nil];
@@ -84,7 +85,7 @@
 }
 
 - (void)setButtonTitle:(NSString*)title {
-    if (!self.viewLoaded) {
+    if (!self.isViewLoaded) {
         [self loadView];
     }
     
@@ -356,7 +357,7 @@
     
     // Verison label
     
-    CGFloat detailItemWidth = self.contentView.frame.size.width/3 - itemInsetX*2;
+    CGFloat detailItemWidth = contentViewWidth/3 - itemInsetX*2;
     self.versionTitle.frame = CGRectMake(contentViewWidth/2 - detailItemWidth - itemInsetX, y, detailItemWidth, 20);
     self.applicationVersionLabel.frame = CGRectMake(self.versionTitle.frame.origin.x, y + 20 + innerItemInsetY, detailItemWidth, 20);
     
@@ -480,6 +481,12 @@
             self.signingButton.enabled = NO;
             
             self.applicationBundleIdentifierLabel.hidden = YES;
+            
+            // If necessary, "lock" user exit controls.
+            if (self.lockWhenInstalling) {
+                self.closeButton.hidden = YES;
+                self.closeGestureRecogniser.enabled = NO;
+            }
         }
         
         // Update progess bar!
@@ -495,6 +502,12 @@
                 self.signingButton.enabled = YES;
                 
                 self.applicationBundleIdentifierLabel.hidden = NO;
+                
+                // If necessary, "unlock" user exit controls.
+                if (self.lockWhenInstalling) {
+                    self.closeButton.hidden = NO;
+                    self.closeGestureRecogniser.enabled = YES;
+                }
             }
         }];
     });
