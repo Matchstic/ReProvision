@@ -251,6 +251,7 @@ static CGFloat inset = 20;
     
     if (!application) {
         self.expiryDate = nil;
+        self.bundleIdentifier = @"";
         
         // No application to display
         self.displayNameLabel.textColor = [UIColor darkGrayColor];

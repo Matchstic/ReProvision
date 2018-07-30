@@ -90,6 +90,9 @@
         return;
     
     self.timeRemainingLabel.text = [RPVResources getFormattedTimeRemainingForExpirationDate:self.expiryDate];
+    
+    // Relayout to handle this.
+    [self setNeedsLayout];
 }
 
 - (void)layoutSubviews {
@@ -247,6 +250,7 @@
     
     if (!application) {
         self.expiryDate = nil;
+        self.bundleIdentifier = @"";
         
         // No application to display
         self.displayNameLabel.textColor = [UIColor whiteColor];
