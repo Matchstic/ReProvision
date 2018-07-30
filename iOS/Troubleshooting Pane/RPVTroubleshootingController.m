@@ -7,11 +7,14 @@
 //
 
 #import "RPVTroubleshootingController.h"
+#import "RPVResources.h"
 #import <TORoundedTableView/TORoundedTableView.h>
 #import <TORoundedTableView/TORoundedTableViewCell.h>
 #import <TORoundedTableView/TORoundedTableViewCapCell.h>
 
 #import "RPVTroubleshootingCertificatesViewController.h"
+#import "RPVAccountChecker.h"
+#import "RPVNotificationManager.h"
 
 @interface RPVTroubleshootingController ()
 @property (nonatomic, strong) NSArray *dataSource;
@@ -61,6 +64,13 @@
     [submitDevelopmentCSR addObject:@"Manage Certificates"];
     
     [items addObject:submitDevelopmentCSR];
+    
+    NSMutableArray *devices = [NSMutableArray array];
+    [devices addObject:@"Missing application on Apple Watch"];
+    [devices addObject:@"After signing an application that supports the Apple Watch, the corresponding Watch application should be automatically installed.\n\nIf this fails without an error, and you've recently paired a new Apple Watch, you may need to manually register it to your Apple ID.\n\nTo do this, please tap below."];
+    [devices addObject:@"Register Apple Watch"];
+    
+    [items addObject:devices];
     
     NSMutableArray *dotAppInfoPlist = [NSMutableArray array];
     [dotAppInfoPlist addObject:@".app/Info.plist"];
@@ -214,8 +224,28 @@
                 [self.navigationController pushViewController:certsController animated:YES];
                 
                 break;
+            } case 1: {
+                // Register active Apple Watch
+                if ([RPVResources hasActivePairedWatch])
+                    [[RPVAccountChecker sharedInstance] registerCurrentWatchForTeamID:[RPVResources getTeamID] withUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error) {
+                        // Error only happens if user already has registered this device!
+                    
+                        NSString *notificationString = @"";
+                        if (error) {
+                            notificationString = @"Your Apple Watch has already been registered!";
+                        } else {
+                            notificationString = @"Your Apple Watch has been registered.";
+                        }
+                    
+                        [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"" body:notificationString isDebugMessage:NO isUrgentMessage:YES andNotificationID:nil];
+                    }];
+                else
+                    [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Error" body:@"No Apple Watch is currently paired!" isDebugMessage:NO isUrgentMessage:YES andNotificationID:nil];
                 
-            } default:
+                break;
+            }
+                
+            default:
                 break;
         }
     }
