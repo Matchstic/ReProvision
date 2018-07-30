@@ -11,13 +11,18 @@ Provisioning is undertaken via the user's Apple ID credentials, and supports bot
 - Automatic re-signing of locally provisioned applications.
 - Basic settings to configure alerts shown by the automatic re-signing.
 - Ability to install any `.ipa` file downloaded through Safari from the device.
-- Support for re-signing Apple Watch applications
+- Support for re-signing Apple Watch applications.
+- 3D Touch menu for starting a new re-signing routine directly from the Homescreen.
 
 Battery optimisations are also in place through the usage of a background daemon to handle automatic signing.
 
+Please note that only jailbroken devices are supported at this time. Follow [issues/44](https://github.com/Matchstic/ReProvision/issues/44) for progress regarding stock devices.
+
 #### tvOS [TODO]
 
-- Same features as for iOS, minus that for the Apple Watch
+- Automatic re-signing of locally provisioned applications.
+- Basic settings to configure alerts shown by the automatic re-signing.
+- Ability to install any `.ipa` file downloaded to the device.
 
 #### macOS [TODO]
 
