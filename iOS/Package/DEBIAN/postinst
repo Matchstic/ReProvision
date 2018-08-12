@@ -1,5 +1,18 @@
 #!/bin/bash
 
+function finish() {
+	f="${1}"
+
+	# No control fd: bail out
+	[[ -z "${f}" || -z "${CYDIA}" ]] && return
+	cydia=(${CYDIA})
+
+	# Cydia control fd version != 1: bail out
+	[[ ${cydia[1]} -eq 1 ]] || return
+
+	echo "finish:${f}" >&${cydia[0]}
+}
+
 # Reload application cache
 echo "Reloading application cache"
 uicache
@@ -14,3 +27,7 @@ chown root /Library/LaunchDaemons/com.matchstic.reprovisiond.plist
 
 # Classic easter egg
 echo "Do, or do not. There is no try."
+
+# Finally, request Cydia to restart SpringBoard after installation.
+# This is ensure we catch cases where users need to log in after install.
+finish restart

@@ -40,6 +40,10 @@
 		C964EA2C212085A200AC98E6 /* libssl_tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C964EA2B212085A200AC98E6 /* libssl_tvOS.a */; };
 		C964EA2E212085A400AC98E6 /* libcrypto_tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C964EA2D212085A400AC98E6 /* libcrypto_tvOS.a */; };
 		C964EA302120874E00AC98E6 /* PackageVersion.plist in Resources */ = {isa = PBXBuildFile; fileRef = C964EA2F2120874E00AC98E6 /* PackageVersion.plist */; };
+		C964EA3121208B2A00AC98E6 /* RPVTroubleshootingNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E7C2AB20ECFC1A00FDF3B0 /* RPVTroubleshootingNavigationViewController.m */; };
+		C964EA3221208B2C00AC98E6 /* RPVTroubleshootingController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E7C2AE20ECFC3C00FDF3B0 /* RPVTroubleshootingController.m */; };
+		C964EA3321208B2E00AC98E6 /* RPVTroubleshootingCertificatesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9E7C2B120ED016000FDF3B0 /* RPVTroubleshootingCertificatesViewController.m */; };
+		C964EA3421208CC700AC98E6 /* RPVAccountChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = C92D374F205036F300F9F152 /* RPVAccountChecker.m */; };
 		C96B0CD52005704F00F713AF /* RPVApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD42005704F00F713AF /* RPVApplication.m */; };
 		C96B0CD8200570DA00F713AF /* RPVApplicationDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD7200570DA00F713AF /* RPVApplicationDatabase.m */; };
 		C96B0CDB2005782A00F713AF /* RPVApplicationSigning.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CDA2005782A00F713AF /* RPVApplicationSigning.m */; };
@@ -48,7 +52,6 @@
 		C96CCE3E211A2838008A249A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C96CCE3C211A2838008A249A /* Main.storyboard */; };
 		C96CCE40211A2839008A249A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C96CCE3F211A2839008A249A /* Assets.xcassets */; };
 		C96CCE43211A2839008A249A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE42211A2839008A249A /* main.m */; };
-		C96CCE4F211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE4E211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.m */; };
 		C96CCE54211A2C9B008A249A /* RPVSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE50211A2C9B008A249A /* RPVSettingsController.m */; };
 		C96CCE55211A2C9B008A249A /* RPVAdvancedController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE51211A2C9B008A249A /* RPVAdvancedController.m */; };
 		C96CCE57211A33B0008A249A /* Preferences.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C96CCE56211A33B0008A249A /* Preferences.tbd */; };
@@ -367,8 +370,6 @@
 		C96CCE3F211A2839008A249A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C96CCE41211A2839008A249A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C96CCE42211A2839008A249A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C96CCE4D211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVTroubleshootingNavigationViewController.h; sourceTree = "<group>"; };
-		C96CCE4E211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVTroubleshootingNavigationViewController.m; sourceTree = "<group>"; };
 		C96CCE50211A2C9B008A249A /* RPVSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVSettingsController.m; sourceTree = "<group>"; };
 		C96CCE51211A2C9B008A249A /* RPVAdvancedController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVAdvancedController.m; sourceTree = "<group>"; };
 		C96CCE52211A2C9B008A249A /* RPVAdvancedController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVAdvancedController.h; sourceTree = "<group>"; };
@@ -681,8 +682,6 @@
 				C92D3752205096DB00F9F152 /* RPVAccountTeamIDViewController.m */,
 				C9FDB29920518712005934CD /* RPVAccountFinalController.h */,
 				C9FDB29A20518712005934CD /* RPVAccountFinalController.m */,
-				C92D374E205036F300F9F152 /* RPVAccountChecker.h */,
-				C92D374F205036F300F9F152 /* RPVAccountChecker.m */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -815,13 +814,12 @@
 			children = (
 				C96CCE33211A2838008A249A /* AppDelegate.h */,
 				C96CCE34211A2838008A249A /* AppDelegate.m */,
+				C96CCE3F211A2839008A249A /* Assets.xcassets */,
+				C96CCE3C211A2838008A249A /* Main.storyboard */,
 				C9630A11211AE17E00FEEB61 /* Application Detail Pane */,
 				C96CCEA1211A3738008A249A /* Notifications */,
-				C96CCE4C211A2AAB008A249A /* Troubleshooting Pane */,
 				C96CCE47211A2A32008A249A /* Installed Pane */,
 				C96CCE48211A2A3A008A249A /* Settings Panes */,
-				C96CCE3C211A2838008A249A /* Main.storyboard */,
-				C96CCE3F211A2839008A249A /* Assets.xcassets */,
 				C96CCE5B211A33D6008A249A /* Supporting Files */,
 			);
 			path = tvOS;
@@ -852,21 +850,12 @@
 			path = "Settings Panes";
 			sourceTree = "<group>";
 		};
-		C96CCE4C211A2AAB008A249A /* Troubleshooting Pane */ = {
-			isa = PBXGroup;
-			children = (
-				C96CCE4D211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.h */,
-				C96CCE4E211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.m */,
-			);
-			path = "Troubleshooting Pane";
-			sourceTree = "<group>";
-		};
 		C96CCE5B211A33D6008A249A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				C964EA2F2120874E00AC98E6 /* PackageVersion.plist */,
 				C96CCE42211A2839008A249A /* main.m */,
 				C96CCE41211A2839008A249A /* Info.plist */,
+				C964EA2F2120874E00AC98E6 /* PackageVersion.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -933,6 +922,7 @@
 			children = (
 				C96FBFE020EB9DF0007E2EC3 /* RPVInstalledViewController.h */,
 				C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */,
+				C9E7C2A920ECFBF100FDF3B0 /* Troubleshooting Pane */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -942,6 +932,8 @@
 			children = (
 				C9313C1D20052B13000AD4C3 /* RPVResources.h */,
 				C9313C1E20052B13000AD4C3 /* RPVResources.m */,
+				C92D374E205036F300F9F152 /* RPVAccountChecker.h */,
+				C92D374F205036F300F9F152 /* RPVAccountChecker.m */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -983,7 +975,6 @@
 				C9E9BB7220C5D07A00EE27D9 /* Root Controllers */,
 				C9E952C020FA977E00E850B6 /* Application Detail Pane */,
 				C90C2218200533B300255B08 /* Installed Pane */,
-				C9E7C2A920ECFBF100FDF3B0 /* Troubleshooting Pane */,
 				C9313C1320052912000AD4C3 /* Settings Panes */,
 				C9313C2020052B1D000AD4C3 /* Supporting Files */,
 			);
@@ -1799,6 +1790,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C964EA3421208CC700AC98E6 /* RPVAccountChecker.m in Sources */,
+				C964EA3321208B2E00AC98E6 /* RPVTroubleshootingCertificatesViewController.m in Sources */,
+				C964EA3221208B2C00AC98E6 /* RPVTroubleshootingController.m in Sources */,
+				C964EA3121208B2A00AC98E6 /* RPVTroubleshootingNavigationViewController.m in Sources */,
 				C96CCE62211A3482008A249A /* RPVApplicationSigning.m in Sources */,
 				C96CCE63211A3482008A249A /* RPVBackgroundSigningManager.m in Sources */,
 				C96CCE64211A3482008A249A /* RPVApplication.m in Sources */,
@@ -1864,7 +1859,6 @@
 				C96CCE99211A3482008A249A /* SSZipArchive.m in Sources */,
 				C96CCE3B211A2838008A249A /* RPVSettingsNavigationViewController.m in Sources */,
 				C96CCE35211A2838008A249A /* AppDelegate.m in Sources */,
-				C96CCE4F211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.m in Sources */,
 				C96CCE55211A2C9B008A249A /* RPVAdvancedController.m in Sources */,
 				C96CCE54211A2C9B008A249A /* RPVSettingsController.m in Sources */,
 				C9C5921D21206E1000DF2E19 /* RPVInstalledViewController.m in Sources */,
