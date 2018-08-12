@@ -14,6 +14,5 @@ end
 
 target 'tvOS' do
 platform :tvos, '9.0'
-pod 'KIOpenSSL'
 pod 'MarqueeLabel'
 end

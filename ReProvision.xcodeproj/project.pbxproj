@@ -29,6 +29,17 @@
 		C9630A05211ADFE800FEEB61 /* RPVInstalledMainHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96309FD211ADFE800FEEB61 /* RPVInstalledMainHeaderView.m */; };
 		C9630A06211ADFE800FEEB61 /* RPVInstalledCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C9630A02211ADFE800FEEB61 /* RPVInstalledCollectionViewCell.m */; };
 		C9630A14211AE19D00FEEB61 /* RPVApplicationDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9630A13211AE19D00FEEB61 /* RPVApplicationDetailController.m */; };
+		C964EA1521207FE100AC98E6 /* RPVDaemonListener.m in Sources */ = {isa = PBXBuildFile; fileRef = C9D5BACD20EE3D54000D5970 /* RPVDaemonListener.m */; };
+		C964EA1621207FE100AC98E6 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9E7C2C620EE296500FDF3B0 /* main.mm */; };
+		C964EA1B21207FE100AC98E6 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9F3FA6820EE6A48002AD7B9 /* CoreFoundation.framework */; };
+		C964EA1C21207FE100AC98E6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9E7C2BC20EE296500FDF3B0 /* Foundation.framework */; };
+		C964EA1E21207FE100AC98E6 /* RPVDaemonListener.h in Headers */ = {isa = PBXBuildFile; fileRef = C9D5BACC20EE3D54000D5970 /* RPVDaemonListener.h */; };
+		C964EA272120811F00AC98E6 /* AssertionServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C964EA252120811F00AC98E6 /* AssertionServices.tbd */; };
+		C964EA282120811F00AC98E6 /* BackBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C964EA262120811F00AC98E6 /* BackBoardServices.tbd */; };
+		C964EA2A2120817300AC98E6 /* SpringBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C964EA292120817300AC98E6 /* SpringBoardServices.tbd */; };
+		C964EA2C212085A200AC98E6 /* libssl_tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C964EA2B212085A200AC98E6 /* libssl_tvOS.a */; };
+		C964EA2E212085A400AC98E6 /* libcrypto_tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C964EA2D212085A400AC98E6 /* libcrypto_tvOS.a */; };
+		C964EA302120874E00AC98E6 /* PackageVersion.plist in Resources */ = {isa = PBXBuildFile; fileRef = C964EA2F2120874E00AC98E6 /* PackageVersion.plist */; };
 		C96B0CD52005704F00F713AF /* RPVApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD42005704F00F713AF /* RPVApplication.m */; };
 		C96B0CD8200570DA00F713AF /* RPVApplicationDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD7200570DA00F713AF /* RPVApplicationDatabase.m */; };
 		C96B0CDB2005782A00F713AF /* RPVApplicationSigning.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CDA2005782A00F713AF /* RPVApplicationSigning.m */; };
@@ -254,6 +265,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		C964EA232120803000AC98E6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9C6EA3A2004257E00211FDD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C964EA1321207FE100AC98E6;
+			remoteInfo = "tvOS Daemon";
+		};
 		C996746720EE32BE00EEFBD2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C9C6EA3A2004257E00211FDD /* Project object */;
@@ -327,6 +345,13 @@
 		C9630A02211ADFE800FEEB61 /* RPVInstalledCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionViewCell.m; sourceTree = "<group>"; };
 		C9630A12211AE19D00FEEB61 /* RPVApplicationDetailController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVApplicationDetailController.h; sourceTree = "<group>"; };
 		C9630A13211AE19D00FEEB61 /* RPVApplicationDetailController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVApplicationDetailController.m; sourceTree = "<group>"; };
+		C964EA2221207FE100AC98E6 /* reprovisiond */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = reprovisiond; sourceTree = BUILT_PRODUCTS_DIR; };
+		C964EA252120811F00AC98E6 /* AssertionServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = AssertionServices.tbd; path = Shared/Daemon/tvLib/AssertionServices.tbd; sourceTree = "<group>"; };
+		C964EA262120811F00AC98E6 /* BackBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = BackBoardServices.tbd; path = Shared/Daemon/tvLib/BackBoardServices.tbd; sourceTree = "<group>"; };
+		C964EA292120817300AC98E6 /* SpringBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = SpringBoardServices.tbd; path = Shared/Daemon/tvLib/SpringBoardServices.tbd; sourceTree = "<group>"; };
+		C964EA2B212085A200AC98E6 /* libssl_tvOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl_tvOS.a; path = tvOS/lib/libssl_tvOS.a; sourceTree = "<group>"; };
+		C964EA2D212085A400AC98E6 /* libcrypto_tvOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto_tvOS.a; path = tvOS/lib/libcrypto_tvOS.a; sourceTree = "<group>"; };
+		C964EA2F2120874E00AC98E6 /* PackageVersion.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
 		C96B0CD32005704E00F713AF /* RPVApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RPVApplication.h; path = "Shared/Application Database/RPVApplication.h"; sourceTree = "<group>"; };
 		C96B0CD42005704F00F713AF /* RPVApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RPVApplication.m; path = "Shared/Application Database/RPVApplication.m"; sourceTree = "<group>"; };
 		C96B0CD6200570DA00F713AF /* RPVApplicationDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVApplicationDatabase.h; path = "Shared/Application Database/RPVApplicationDatabase.h"; sourceTree = "<group>"; };
@@ -542,10 +567,24 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C964EA1721207FE100AC98E6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C964EA2A2120817300AC98E6 /* SpringBoardServices.tbd in Frameworks */,
+				C964EA272120811F00AC98E6 /* AssertionServices.tbd in Frameworks */,
+				C964EA282120811F00AC98E6 /* BackBoardServices.tbd in Frameworks */,
+				C964EA1B21207FE100AC98E6 /* CoreFoundation.framework in Frameworks */,
+				C964EA1C21207FE100AC98E6 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C96CCE2E211A2838008A249A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C964EA2C212085A200AC98E6 /* libssl_tvOS.a in Frameworks */,
+				C964EA2E212085A400AC98E6 /* libcrypto_tvOS.a in Frameworks */,
 				C96CCE9D211A36EE008A249A /* libMobileGestalt.tbd in Frameworks */,
 				C96CCE9B211A36D3008A249A /* MobileCoreServices.framework in Frameworks */,
 				C96CCE57211A33B0008A249A /* Preferences.tbd in Frameworks */,
@@ -591,8 +630,13 @@
 		25B27802FF2D573B29DEC669 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C964EA2D212085A400AC98E6 /* libcrypto_tvOS.a */,
+				C964EA2B212085A200AC98E6 /* libssl_tvOS.a */,
+				C964EA292120817300AC98E6 /* SpringBoardServices.tbd */,
 				C9C5921F21206F0200DF2E19 /* AssertionServices.tbd */,
 				C9C5922021206F0300DF2E19 /* BackBoardServices.tbd */,
+				C964EA252120811F00AC98E6 /* AssertionServices.tbd */,
+				C964EA262120811F00AC98E6 /* BackBoardServices.tbd */,
 				C9C5922121206F0300DF2E19 /* SpringBoardServices.tbd */,
 				C96CCE9C211A36ED008A249A /* libMobileGestalt.tbd */,
 				C96CCE9A211A36D3008A249A /* MobileCoreServices.framework */,
@@ -820,6 +864,7 @@
 		C96CCE5B211A33D6008A249A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C964EA2F2120874E00AC98E6 /* PackageVersion.plist */,
 				C96CCE42211A2839008A249A /* main.m */,
 				C96CCE41211A2839008A249A /* Info.plist */,
 			);
@@ -920,6 +965,7 @@
 				C9C6EA422004257E00211FDD /* ReProvision.app */,
 				C9C6EB342004282900211FDD /* ReProvision.app */,
 				C96CCE31211A2838008A249A /* ReProvision.app */,
+				C964EA2221207FE100AC98E6 /* reprovisiond */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1289,6 +1335,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		C964EA1D21207FE100AC98E6 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C964EA1E21207FE100AC98E6 /* RPVDaemonListener.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9E7C2B920EE296400FDF3B0 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1300,20 +1354,40 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		C964EA1321207FE100AC98E6 /* tvOS Daemon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C964EA1F21207FE100AC98E6 /* Build configuration list for PBXNativeTarget "tvOS Daemon" */;
+			buildPhases = (
+				C964EA1421207FE100AC98E6 /* Sources */,
+				C964EA1721207FE100AC98E6 /* Frameworks */,
+				C964EA1D21207FE100AC98E6 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "tvOS Daemon";
+			productName = iosdaemon;
+			productReference = C964EA2221207FE100AC98E6 /* reprovisiond */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		C96CCE30211A2838008A249A /* tvOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C96CCE46211A2839008A249A /* Build configuration list for PBXNativeTarget "tvOS" */;
 			buildPhases = (
 				E2B46DEA621ED4BB8F11BBD0 /* [CP] Check Pods Manifest.lock */,
+				C9C5922621207C7900DF2E19 /* Copy daemon */,
 				C96CCE2D211A2838008A249A /* Sources */,
 				C96CCE2E211A2838008A249A /* Frameworks */,
 				C96CCE2F211A2838008A249A /* Resources */,
 				66CE6BF796F9357C5A3B715D /* [CP] Embed Pods Frameworks */,
 				D5BECAC2D5666F9D213C0BB4 /* [CP] Copy Pods Resources */,
+				C9C5922721207CA200DF2E19 /* Sign application and create .deb */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C964EA242120803000AC98E6 /* PBXTargetDependency */,
 			);
 			name = tvOS;
 			productName = reprovision.tvos;
@@ -1363,9 +1437,9 @@
 			productReference = C9C6EB342004282900211FDD /* ReProvision.app */;
 			productType = "com.apple.product-type.application";
 		};
-		C9E7C2BB20EE296400FDF3B0 /* Daemon */ = {
+		C9E7C2BB20EE296400FDF3B0 /* iOS Daemon */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C9E7C2CF20EE296500FDF3B0 /* Build configuration list for PBXNativeTarget "Daemon" */;
+			buildConfigurationList = C9E7C2CF20EE296500FDF3B0 /* Build configuration list for PBXNativeTarget "iOS Daemon" */;
 			buildPhases = (
 				C9E7C2B720EE296400FDF3B0 /* Sources */,
 				C9E7C2B820EE296400FDF3B0 /* Frameworks */,
@@ -1375,7 +1449,7 @@
 			);
 			dependencies = (
 			);
-			name = Daemon;
+			name = "iOS Daemon";
 			productName = iosdaemon;
 			productType = "com.apple.product-type.library.dynamic";
 		};
@@ -1388,6 +1462,9 @@
 				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = "Matt Clarke";
 				TargetAttributes = {
+					C964EA1321207FE100AC98E6 = {
+						ProvisioningStyle = Automatic;
+					};
 					C96CCE30211A2838008A249A = {
 						CreatedOnToolsVersion = 9.4.1;
 						ProvisioningStyle = Manual;
@@ -1430,9 +1507,10 @@
 			projectRoot = "";
 			targets = (
 				C9C6EA412004257E00211FDD /* iOS */,
-				C9E7C2BB20EE296400FDF3B0 /* Daemon */,
+				C9E7C2BB20EE296400FDF3B0 /* iOS Daemon */,
 				C9C6EB332004282900211FDD /* macOS */,
 				C96CCE30211A2838008A249A /* tvOS */,
+				C964EA1321207FE100AC98E6 /* tvOS Daemon */,
 			);
 		};
 /* End PBXProject section */
@@ -1444,6 +1522,7 @@
 			files = (
 				C96CCE40211A2839008A249A /* Assets.xcassets in Resources */,
 				C96CCE3E211A2838008A249A /* Main.storyboard in Resources */,
+				C964EA302120874E00AC98E6 /* PackageVersion.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1607,6 +1686,34 @@
 			shellPath = /bin/sh;
 			shellScript = "echo \"Copying daemon into Package\"\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/reprovisiond\"\n\ncp -R $builtpath \"${PROJECT_DIR}/iOS/Package/usr/bin\"\n\n# We now need to sign the daemon with appropriate entitlements via ldid2\necho \"Signing with entitlements.plist...\"\nif type \"${iOSOpenDevPath}/bin/ldid2\" > /dev/null;\nthen\n${iOSOpenDevPath}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/Daemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelif type \"/usr/bin/ldid2\" > /dev/null;\nthen\n/usr/bin/ldid2 -S\"${PROJECT_DIR}/Shared/Daemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelif type \"/usr/local/bin/ldid2\" > /dev/null;\nthen\n/usr/local/bin/ldid2 -S\"${PROJECT_DIR}/Shared/Daemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelif type \"ldid2\" > /dev/null;\nthen\nldid2 -S\"${PROJECT_DIR}/Shared/Daemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelse\necho \"Could not find ldid2 on your system (searched /usr/bin, /usr/local/bin, ${iOSOpenDevPath}/bin/)\"\nexit 1\nfi";
 		};
+		C9C5922621207C7900DF2E19 /* Copy daemon */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy daemon";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"Copying daemon into Package\"\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/reprovisiond\"\n\ncp -R $builtpath \"${PROJECT_DIR}/tvOS/Package/usr/bin\"\n\n# We now need to sign the daemon with appropriate entitlements via ldid2\necho \"Signing with entitlements.plist...\"\nif type \"${iOSOpenDevPath}/bin/ldid2\" > /dev/null;\nthen\n${iOSOpenDevPath}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/Daemon/entitlements.plist\" \"${PROJECT_DIR}/tvOS/Package/usr/bin/reprovisiond\"\nelif type \"/usr/bin/ldid2\" > /dev/null;\nthen\n/usr/bin/ldid2 -S\"${PROJECT_DIR}/Shared/Daemon/entitlements.plist\" \"${PROJECT_DIR}/tvOS/Package/usr/bin/reprovisiond\"\nelif type \"/usr/local/bin/ldid2\" > /dev/null;\nthen\n/usr/local/bin/ldid2 -S\"${PROJECT_DIR}/Shared/Daemon/entitlements.plist\" \"${PROJECT_DIR}/tvOS/Package/usr/bin/reprovisiond\"\nelif type \"ldid2\" > /dev/null;\nthen\nldid2 -S\"${PROJECT_DIR}/Shared/Daemon/entitlements.plist\" \"${PROJECT_DIR}/tvOS/Package/usr/bin/reprovisiond\"\nelse\necho \"Could not find ldid2 on your system (searched /usr/bin, /usr/local/bin, ${iOSOpenDevPath}/bin/)\"\nexit 1\nfi";
+		};
+		C9C5922721207CA200DF2E19 /* Sign application and create .deb */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Sign application and create .deb";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"Copying application into Package\"\n\n# Clean out existing .app\nrm -rf \"${PROJECT_DIR}/tvOS/Package/Applications/${CONTENTS_FOLDER_PATH}\"\n\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/${CONTENTS_FOLDER_PATH}\"\ncp -R $builtpath \"${PROJECT_DIR}/tvOS/Package/Applications/\"\n\n# Sign with entitlements\necho \"Signing with entitlements.xml...\"\nif type \"${iOSOpenDevPath}/bin/ldid2\" > /dev/null;\nthen\n${iOSOpenDevPath}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/tvOS/Package/Applications/${EXECUTABLE_PATH}\"\nelif type \"/usr/bin/ldid2\" > /dev/null;\nthen\n/usr/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/tvOS/Package/Applications/${EXECUTABLE_PATH}\"\nelif type \"/usr/local/bin/ldid2\" > /dev/null;\nthen\n/usr/local/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/tvOS/Package/Applications/${EXECUTABLE_PATH}\"\nelif type \"ldid2\" > /dev/null;\nthen\nldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/tvOS/Package/Applications/${EXECUTABLE_PATH}\"\nelse\necho \"Could not find ldid2 on your system (searched /usr/bin, /usr/local/bin, ${iOSOpenDevPath}/bin/)\"\nexit 1\nfi\n\n# Build package!\n${iOSOpenDevPath}/bin/iosod build -p \"${PROJECT_DIR}/tvOS/PackageVersion.plist\" \"${PROJECT_DIR}/tvOS/Package\" \"${PROJECT_DIR}/tvOS/NitoPackages\"";
+		};
 		D5BECAC2D5666F9D213C0BB4 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1679,6 +1786,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		C964EA1421207FE100AC98E6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C964EA1521207FE100AC98E6 /* RPVDaemonListener.m in Sources */,
+				C964EA1621207FE100AC98E6 /* main.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C96CCE2D211A2838008A249A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1922,9 +2038,14 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		C964EA242120803000AC98E6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C964EA1321207FE100AC98E6 /* tvOS Daemon */;
+			targetProxy = C964EA232120803000AC98E6 /* PBXContainerItemProxy */;
+		};
 		C996746820EE32BE00EEFBD2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = C9E7C2BB20EE296400FDF3B0 /* Daemon */;
+			target = C9E7C2BB20EE296400FDF3B0 /* iOS Daemon */;
 			targetProxy = C996746720EE32BE00EEFBD2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1965,6 +2086,87 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		C964EA2021207FE100AC98E6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				ENABLE_BITCODE = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				EXECUTABLE_EXTENSION = "";
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = "$(iOSOpenDevPath)/frameworks/**";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Shared/Daemon/Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/include",
+					"$(iOSOpenDevPath)/include/**",
+				);
+				INSTALL_PATH = /usr/bin;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/reprovisiond";
+				LIBRARY_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/lib/**",
+					"$(PROJECT_DIR)/Shared/Daemon",
+					"$(PROJECT_DIR)/Shared/Daemon/lib",
+					"$(PROJECT_DIR)/Shared/Daemon/tvLib",
+				);
+				MACH_O_TYPE = mh_execute;
+				PRODUCT_NAME = reprovisiond;
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = NO;
+				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Debug;
+		};
+		C964EA2121207FE100AC98E6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = YES;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				ENABLE_BITCODE = NO;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.gch (*) .DS_Store CVS .svn .git .hg *.xcodeproj *.xcode *.pbproj *.pbxproj";
+				EXECUTABLE_EXTENSION = "";
+				EXECUTABLE_PREFIX = "";
+				EXECUTABLE_SUFFIX = "";
+				FRAMEWORK_SEARCH_PATHS = "$(iOSOpenDevPath)/frameworks/**";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Shared/Daemon/Prefix.pch;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/include",
+					"$(iOSOpenDevPath)/include/**",
+				);
+				INSTALL_PATH = /usr/bin;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/reprovisiond";
+				LIBRARY_SEARCH_PATHS = (
+					"$(iOSOpenDevPath)/lib/**",
+					"$(PROJECT_DIR)/Shared/Daemon",
+					"$(PROJECT_DIR)/Shared/Daemon/lib",
+					"$(PROJECT_DIR)/Shared/Daemon/tvLib",
+				);
+				MACH_O_TYPE = mh_execute;
+				PRODUCT_NAME = reprovisiond;
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Release;
+		};
 		C96CCE44211A2839008A249A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 70CCF3D795CC8B7FFCF520E7 /* Pods-tvOS.debug.xcconfig */;
@@ -1976,18 +2178,24 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
-				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/tvOS/Headers";
+				FRAMEWORK_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/tvOS/Headers",
+					"${PROJECT_DIR}/tvOS/include",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/tvOS",
+					"$(PROJECT_DIR)/tvOS/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.matchstic.reprovision.tvos;
 				PRODUCT_NAME = ReProvision;
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
+				iOSOpenDevPath = /opt/iOSOpenDev;
 			};
 			name = Debug;
 		};
@@ -2002,18 +2210,24 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
-				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/tvOS/Headers";
+				FRAMEWORK_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/tvOS/Headers",
+					"${PROJECT_DIR}/tvOS/include",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/tvOS",
+					"$(PROJECT_DIR)/tvOS/lib",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.matchstic.reprovision.tvos;
 				PRODUCT_NAME = ReProvision;
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
+				iOSOpenDevPath = /opt/iOSOpenDev;
 			};
 			name = Release;
 		};
@@ -2301,6 +2515,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C964EA1F21207FE100AC98E6 /* Build configuration list for PBXNativeTarget "tvOS Daemon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C964EA2021207FE100AC98E6 /* Debug */,
+				C964EA2121207FE100AC98E6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C96CCE46211A2839008A249A /* Build configuration list for PBXNativeTarget "tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2337,7 +2560,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C9E7C2CF20EE296500FDF3B0 /* Build configuration list for PBXNativeTarget "Daemon" */ = {
+		C9E7C2CF20EE296500FDF3B0 /* Build configuration list for PBXNativeTarget "iOS Daemon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C9E7C2CD20EE296500FDF3B0 /* Debug */,
