@@ -27,6 +27,7 @@
 
 - (id)localizedName;
 - (id)primaryIconDataForVariant:(int)arg1;
+- (id)iconDataForVariant:(int)arg1;
 @end
 
 @interface UIImage (Private)
@@ -82,6 +83,10 @@
     }
     
     return icon;
+}
+
+- (UIImage*)tvOSApplicationIcon {
+    return [UIImage _applicationIconImageForBundleIdentifier:[self bundleIdentifier] format:2 scale:[UIScreen mainScreen].scale];
 }
 
 - (NSDate*)applicationExpiryDate {

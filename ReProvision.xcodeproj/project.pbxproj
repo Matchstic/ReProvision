@@ -10,6 +10,7 @@
 		A26601C23E41FF5D32A6DF6C /* libPods-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0BF9DAD92CB745EF24C11FC /* libPods-iOS.a */; };
 		C90AD51E20697F23008B2F2B /* RPVNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C90AD51D20697F23008B2F2B /* RPVNotificationManager.m */; };
 		C90AD5212069968E008B2F2B /* RPVBackgroundSigningManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C90AD5202069968E008B2F2B /* RPVBackgroundSigningManager.m */; };
+		C91FFB3F211F8C82005A850E /* RPVStickyScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = C91FFB3E211F8C82005A850E /* RPVStickyScrollView.m */; };
 		C92D374120502B3900F9F152 /* RPVAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C92D374020502B3900F9F152 /* RPVAccountViewController.m */; };
 		C92D374520502B5600F9F152 /* RPVAccount2FAViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C92D374420502B5600F9F152 /* RPVAccount2FAViewController.m */; };
 		C92D374820502B6300F9F152 /* RPVAccountPrivacyPolicyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C92D374720502B6300F9F152 /* RPVAccountPrivacyPolicyViewController.m */; };
@@ -23,9 +24,82 @@
 		C9313C1F20052B13000AD4C3 /* RPVResources.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C1E20052B13000AD4C3 /* RPVResources.m */; };
 		C938D396200842F7003802FF /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C938D395200842F7003802FF /* MobileCoreServices.framework */; };
 		C93F3B6C20F21C9000B573E6 /* HookUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = C93F3B6920F21C9000B573E6 /* HookUtil.c */; };
+		C9630A03211ADFE800FEEB61 /* RPVInstalledTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96309F9211ADFE700FEEB61 /* RPVInstalledTableViewCell.m */; };
+		C9630A04211ADFE800FEEB61 /* RPVInstalledSectionHeaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96309FC211ADFE800FEEB61 /* RPVInstalledSectionHeaderViewController.m */; };
+		C9630A05211ADFE800FEEB61 /* RPVInstalledMainHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96309FD211ADFE800FEEB61 /* RPVInstalledMainHeaderView.m */; };
+		C9630A06211ADFE800FEEB61 /* RPVInstalledCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C9630A02211ADFE800FEEB61 /* RPVInstalledCollectionViewCell.m */; };
+		C9630A14211AE19D00FEEB61 /* RPVApplicationDetailController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9630A13211AE19D00FEEB61 /* RPVApplicationDetailController.m */; };
 		C96B0CD52005704F00F713AF /* RPVApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD42005704F00F713AF /* RPVApplication.m */; };
 		C96B0CD8200570DA00F713AF /* RPVApplicationDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD7200570DA00F713AF /* RPVApplicationDatabase.m */; };
 		C96B0CDB2005782A00F713AF /* RPVApplicationSigning.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CDA2005782A00F713AF /* RPVApplicationSigning.m */; };
+		C96CCE35211A2838008A249A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE34211A2838008A249A /* AppDelegate.m */; };
+		C96CCE3B211A2838008A249A /* RPVSettingsNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE3A211A2838008A249A /* RPVSettingsNavigationViewController.m */; };
+		C96CCE3E211A2838008A249A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C96CCE3C211A2838008A249A /* Main.storyboard */; };
+		C96CCE40211A2839008A249A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C96CCE3F211A2839008A249A /* Assets.xcassets */; };
+		C96CCE43211A2839008A249A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE42211A2839008A249A /* main.m */; };
+		C96CCE4F211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE4E211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.m */; };
+		C96CCE54211A2C9B008A249A /* RPVSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE50211A2C9B008A249A /* RPVSettingsController.m */; };
+		C96CCE55211A2C9B008A249A /* RPVAdvancedController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE51211A2C9B008A249A /* RPVAdvancedController.m */; };
+		C96CCE57211A33B0008A249A /* Preferences.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C96CCE56211A33B0008A249A /* Preferences.tbd */; };
+		C96CCE62211A3482008A249A /* RPVApplicationSigning.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CDA2005782A00F713AF /* RPVApplicationSigning.m */; };
+		C96CCE63211A3482008A249A /* RPVBackgroundSigningManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C90AD5202069968E008B2F2B /* RPVBackgroundSigningManager.m */; };
+		C96CCE64211A3482008A249A /* RPVApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD42005704F00F713AF /* RPVApplication.m */; };
+		C96CCE65211A3482008A249A /* RPVIpaBundleApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = C9F3F41D2103B0D500A27256 /* RPVIpaBundleApplication.m */; };
+		C96CCE66211A3482008A249A /* RPVApplicationDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = C96B0CD7200570DA00F713AF /* RPVApplicationDatabase.m */; };
+		C96CCE67211A3482008A249A /* EEAppleServices.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA782004280A00211FDD /* EEAppleServices.m */; };
+		C96CCE68211A3482008A249A /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA7A2004280A00211FDD /* NSData+GZIP.m */; };
+		C96CCE69211A3482008A249A /* EEBackend.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA822004280A00211FDD /* EEBackend.m */; };
+		C96CCE6A211A3482008A249A /* ldid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA842004280A00211FDD /* ldid.cpp */; };
+		C96CCE6B211A3482008A249A /* lookup2.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA862004280A00211FDD /* lookup2.c */; };
+		C96CCE6C211A3482008A249A /* Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA892004280A00211FDD /* Array.cpp */; };
+		C96CCE6D211A3482008A249A /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA8B2004280A00211FDD /* base64.c */; };
+		C96CCE6E211A3482008A249A /* Boolean.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA8D2004280A00211FDD /* Boolean.cpp */; };
+		C96CCE6F211A3482008A249A /* bplist.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA8F2004280A00211FDD /* bplist.c */; };
+		C96CCE70211A3482008A249A /* bytearray.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA902004280A00211FDD /* bytearray.c */; };
+		C96CCE71211A3482008A249A /* Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA922004280A00211FDD /* Data.cpp */; };
+		C96CCE72211A3482008A249A /* Date.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA942004280A00211FDD /* Date.cpp */; };
+		C96CCE73211A3482008A249A /* Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA962004280A00211FDD /* Dictionary.cpp */; };
+		C96CCE74211A3482008A249A /* hashtable.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA982004280A00211FDD /* hashtable.c */; };
+		C96CCE75211A3482008A249A /* Integer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA9A2004280A00211FDD /* Integer.cpp */; };
+		C96CCE76211A3482008A249A /* Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA9C2004280A00211FDD /* Key.cpp */; };
+		C96CCE77211A3482008A249A /* iterator.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAA02004280A00211FDD /* iterator.c */; };
+		C96CCE78211A3482008A249A /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAA22004280A00211FDD /* list.c */; };
+		C96CCE79211A3482008A249A /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAA42004280A00211FDD /* node.c */; };
+		C96CCE7A211A3482008A249A /* node_iterator.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAA62004280A00211FDD /* node_iterator.c */; };
+		C96CCE7B211A3482008A249A /* node_list.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAA82004280A00211FDD /* node_list.c */; };
+		C96CCE7C211A3482008A249A /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAAB2004280A00211FDD /* Node.cpp */; };
+		C96CCE7D211A3482008A249A /* plist.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAAE2004280A00211FDD /* plist.c */; };
+		C96CCE7E211A3482008A249A /* ptrarray.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAB12004280A00211FDD /* ptrarray.c */; };
+		C96CCE7F211A3482008A249A /* Real.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAB32004280A00211FDD /* Real.cpp */; };
+		C96CCE80211A3482008A249A /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAB62004280A00211FDD /* String.cpp */; };
+		C96CCE81211A3482008A249A /* Structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAB82004280A00211FDD /* Structure.cpp */; };
+		C96CCE82211A3482008A249A /* time64.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EABA2004280A00211FDD /* time64.c */; };
+		C96CCE83211A3482008A249A /* Uid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EABD2004280A00211FDD /* Uid.cpp */; };
+		C96CCE84211A3482008A249A /* xplist.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EABF2004280A00211FDD /* xplist.c */; };
+		C96CCE85211A3482008A249A /* EEProvisioning.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAC22004280A00211FDD /* EEProvisioning.mm */; };
+		C96CCE86211A3482008A249A /* SAMKeychainQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAC62004280A00211FDD /* SAMKeychainQuery.m */; };
+		C96CCE87211A3482008A249A /* SAMKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAC82004280A00211FDD /* SAMKeychain.m */; };
+		C96CCE88211A3482008A249A /* EESigning.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EACB2004280A00211FDD /* EESigning.mm */; };
+		C96CCE89211A3482008A249A /* aes_ni.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAD12004280A00211FDD /* aes_ni.c */; };
+		C96CCE8A211A3482008A249A /* aescrypt.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAD32004280A00211FDD /* aescrypt.c */; };
+		C96CCE8B211A3482008A249A /* aeskey.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAD42004280A00211FDD /* aeskey.c */; };
+		C96CCE8C211A3482008A249A /* aestab.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAD62004280A00211FDD /* aestab.c */; };
+		C96CCE8D211A3482008A249A /* fileenc.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EADA2004280A00211FDD /* fileenc.c */; };
+		C96CCE8E211A3482008A249A /* hmac.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EADC2004280A00211FDD /* hmac.c */; };
+		C96CCE8F211A3482008A249A /* prng.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EADE2004280A00211FDD /* prng.c */; };
+		C96CCE90211A3482008A249A /* pwd2key.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAE02004280A00211FDD /* pwd2key.c */; };
+		C96CCE91211A3482008A249A /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAE22004280A00211FDD /* sha1.c */; };
+		C96CCE92211A3482008A249A /* crypt.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAE42004280A00211FDD /* crypt.c */; };
+		C96CCE93211A3482008A249A /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAE62004280A00211FDD /* ioapi.c */; };
+		C96CCE94211A3482008A249A /* ioapi_buf.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAE82004280A00211FDD /* ioapi_buf.c */; };
+		C96CCE95211A3482008A249A /* ioapi_mem.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAEA2004280A00211FDD /* ioapi_mem.c */; };
+		C96CCE96211A3482008A249A /* minishared.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAEC2004280A00211FDD /* minishared.c */; };
+		C96CCE97211A3482008A249A /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAEE2004280A00211FDD /* unzip.c */; };
+		C96CCE98211A3482008A249A /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAF02004280A00211FDD /* zip.c */; };
+		C96CCE99211A3482008A249A /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EAF32004280A00211FDD /* SSZipArchive.m */; };
+		C96CCE9B211A36D3008A249A /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96CCE9A211A36D3008A249A /* MobileCoreServices.framework */; };
+		C96CCE9D211A36EE008A249A /* libMobileGestalt.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C96CCE9C211A36ED008A249A /* libMobileGestalt.tbd */; };
+		C96CCEA0211A3736008A249A /* RPVNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C96CCE9E211A3735008A249A /* RPVNotificationManager.m */; };
 		C96FBFE220EB9DF0007E2EC3 /* RPVInstalledViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */; };
 		C96FBFE820EB9F0F007E2EC3 /* RPVInstalledMainHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE420EB9F0F007E2EC3 /* RPVInstalledMainHeaderView.m */; };
 		C96FBFE920EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE620EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m */; };
@@ -36,6 +110,8 @@
 		C9AB43BF20F012E00016F78F /* SpringBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C9AB43C020F012E00016F78F /* BackBoardServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43BE20F012E00016F78F /* BackBoardServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C9AB43C220F016CC0016F78F /* AssertionServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9AB43C120F016CC0016F78F /* AssertionServices.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C9C5921D21206E1000DF2E19 /* RPVInstalledViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */; };
+		C9C5921E21206E1300DF2E19 /* RPVResources.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C1E20052B13000AD4C3 /* RPVResources.m */; };
 		C9C6EA6C2004261300211FDD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA602004261300211FDD /* AppDelegate.m */; };
 		C9C6EA6D2004261300211FDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA612004261300211FDD /* Assets.xcassets */; };
 		C9C6EA6E2004261300211FDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA622004261300211FDD /* LaunchScreen.storyboard */; };
@@ -173,6 +249,7 @@
 		C9F3FA6920EE6A48002AD7B9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9F3FA6820EE6A48002AD7B9 /* CoreFoundation.framework */; };
 		C9FDB29B20518712005934CD /* RPVAccountFinalController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9FDB29A20518712005934CD /* RPVAccountFinalController.m */; };
 		C9FDB2A2205195E8005934CD /* libMobileGestalt.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FDB2A1205195E8005934CD /* libMobileGestalt.tbd */; };
+		DAE0BDC9DC0389DB581AA13D /* libPods-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DF76467802713F8A7F1F8A4E /* libPods-tvOS.a */; };
 		FDC46406FBD5ED313E3C450E /* libPods-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 56C208AF9B386EA848EA9D18 /* libPods-macOS.a */; };
 /* End PBXBuildFile section */
 
@@ -190,6 +267,8 @@
 		1BED720855DAA03FC578B695 /* Pods-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iOS/Pods-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		1C46832E058CCB73D45E85EB /* Pods-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-iOS/Pods-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		56C208AF9B386EA848EA9D18 /* libPods-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		70CCF3D795CC8B7FFCF520E7 /* Pods-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-tvOS/Pods-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		9ACE7579004DA34002E4DEEE /* Pods-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-tvOS/Pods-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		B0BF9DAD92CB745EF24C11FC /* libPods-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B809A0BC7D3B055DCE0E28C4 /* Pods-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-macOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-macOS/Pods-macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		BA8B6832F905206352FC8D1C /* Pods-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-macOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-macOS/Pods-macOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -197,6 +276,8 @@
 		C90AD51D20697F23008B2F2B /* RPVNotificationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVNotificationManager.m; sourceTree = "<group>"; };
 		C90AD51F2069968E008B2F2B /* RPVBackgroundSigningManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVBackgroundSigningManager.h; path = "Shared/Application Database/RPVBackgroundSigningManager.h"; sourceTree = "<group>"; };
 		C90AD5202069968E008B2F2B /* RPVBackgroundSigningManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RPVBackgroundSigningManager.m; path = "Shared/Application Database/RPVBackgroundSigningManager.m"; sourceTree = "<group>"; };
+		C91FFB3D211F8C82005A850E /* RPVStickyScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVStickyScrollView.h; sourceTree = "<group>"; };
+		C91FFB3E211F8C82005A850E /* RPVStickyScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVStickyScrollView.m; sourceTree = "<group>"; };
 		C92D373F20502B3900F9F152 /* RPVAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVAccountViewController.h; sourceTree = "<group>"; };
 		C92D374020502B3900F9F152 /* RPVAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVAccountViewController.m; sourceTree = "<group>"; };
 		C92D374320502B5600F9F152 /* RPVAccount2FAViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVAccount2FAViewController.h; sourceTree = "<group>"; };
@@ -236,12 +317,42 @@
 		C938D395200842F7003802FF /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		C93F3B6620F21C9000B573E6 /* HookUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HookUtil.h; sourceTree = "<group>"; };
 		C93F3B6920F21C9000B573E6 /* HookUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = HookUtil.c; sourceTree = "<group>"; };
+		C96309F9211ADFE700FEEB61 /* RPVInstalledTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledTableViewCell.m; sourceTree = "<group>"; };
+		C96309FA211ADFE700FEEB61 /* RPVInstalledTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledTableViewCell.h; sourceTree = "<group>"; };
+		C96309FC211ADFE800FEEB61 /* RPVInstalledSectionHeaderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledSectionHeaderViewController.m; sourceTree = "<group>"; };
+		C96309FD211ADFE800FEEB61 /* RPVInstalledMainHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledMainHeaderView.m; sourceTree = "<group>"; };
+		C96309FE211ADFE800FEEB61 /* RPVInstalledSectionHeaderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledSectionHeaderViewController.h; sourceTree = "<group>"; };
+		C96309FF211ADFE800FEEB61 /* RPVInstalledMainHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledMainHeaderView.h; sourceTree = "<group>"; };
+		C9630A01211ADFE800FEEB61 /* RPVInstalledCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionViewCell.h; sourceTree = "<group>"; };
+		C9630A02211ADFE800FEEB61 /* RPVInstalledCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledCollectionViewCell.m; sourceTree = "<group>"; };
+		C9630A12211AE19D00FEEB61 /* RPVApplicationDetailController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVApplicationDetailController.h; sourceTree = "<group>"; };
+		C9630A13211AE19D00FEEB61 /* RPVApplicationDetailController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVApplicationDetailController.m; sourceTree = "<group>"; };
 		C96B0CD32005704E00F713AF /* RPVApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RPVApplication.h; path = "Shared/Application Database/RPVApplication.h"; sourceTree = "<group>"; };
 		C96B0CD42005704F00F713AF /* RPVApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RPVApplication.m; path = "Shared/Application Database/RPVApplication.m"; sourceTree = "<group>"; };
 		C96B0CD6200570DA00F713AF /* RPVApplicationDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVApplicationDatabase.h; path = "Shared/Application Database/RPVApplicationDatabase.h"; sourceTree = "<group>"; };
 		C96B0CD7200570DA00F713AF /* RPVApplicationDatabase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RPVApplicationDatabase.m; path = "Shared/Application Database/RPVApplicationDatabase.m"; sourceTree = "<group>"; };
 		C96B0CD92005782A00F713AF /* RPVApplicationSigning.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RPVApplicationSigning.h; path = "Shared/Application Database/RPVApplicationSigning.h"; sourceTree = "<group>"; };
 		C96B0CDA2005782A00F713AF /* RPVApplicationSigning.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RPVApplicationSigning.m; path = "Shared/Application Database/RPVApplicationSigning.m"; sourceTree = "<group>"; };
+		C96CCE31211A2838008A249A /* ReProvision.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReProvision.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C96CCE33211A2838008A249A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		C96CCE34211A2838008A249A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		C96CCE39211A2838008A249A /* RPVSettingsNavigationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVSettingsNavigationViewController.h; sourceTree = "<group>"; };
+		C96CCE3A211A2838008A249A /* RPVSettingsNavigationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVSettingsNavigationViewController.m; sourceTree = "<group>"; };
+		C96CCE3D211A2838008A249A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C96CCE3F211A2839008A249A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C96CCE41211A2839008A249A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C96CCE42211A2839008A249A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C96CCE4D211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVTroubleshootingNavigationViewController.h; sourceTree = "<group>"; };
+		C96CCE4E211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVTroubleshootingNavigationViewController.m; sourceTree = "<group>"; };
+		C96CCE50211A2C9B008A249A /* RPVSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVSettingsController.m; sourceTree = "<group>"; };
+		C96CCE51211A2C9B008A249A /* RPVAdvancedController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVAdvancedController.m; sourceTree = "<group>"; };
+		C96CCE52211A2C9B008A249A /* RPVAdvancedController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVAdvancedController.h; sourceTree = "<group>"; };
+		C96CCE53211A2C9B008A249A /* RPVSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVSettingsController.h; sourceTree = "<group>"; };
+		C96CCE56211A33B0008A249A /* Preferences.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = Preferences.tbd; path = tvOS/Preferences.tbd; sourceTree = "<group>"; };
+		C96CCE9A211A36D3008A249A /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.4.sdk/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = DEVELOPER_DIR; };
+		C96CCE9C211A36ED008A249A /* libMobileGestalt.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libMobileGestalt.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.4.sdk/usr/lib/libMobileGestalt.tbd; sourceTree = DEVELOPER_DIR; };
+		C96CCE9E211A3735008A249A /* RPVNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RPVNotificationManager.m; path = tvOS/Notifications/RPVNotificationManager.m; sourceTree = SOURCE_ROOT; };
+		C96CCE9F211A3735008A249A /* RPVNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RPVNotificationManager.h; path = tvOS/Notifications/RPVNotificationManager.h; sourceTree = SOURCE_ROOT; };
 		C96FBFE020EB9DF0007E2EC3 /* RPVInstalledViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledViewController.h; sourceTree = "<group>"; };
 		C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledViewController.m; sourceTree = "<group>"; };
 		C96FBFE420EB9F0F007E2EC3 /* RPVInstalledMainHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledMainHeaderView.m; sourceTree = "<group>"; };
@@ -424,9 +535,21 @@
 		C9FDB29A20518712005934CD /* RPVAccountFinalController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVAccountFinalController.m; sourceTree = "<group>"; };
 		C9FDB29C2051941D005934CD /* libMobileGestalt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libMobileGestalt.h; sourceTree = "<group>"; };
 		C9FDB2A1205195E8005934CD /* libMobileGestalt.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libMobileGestalt.tbd; path = usr/lib/libMobileGestalt.tbd; sourceTree = SDKROOT; };
+		DF76467802713F8A7F1F8A4E /* libPods-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C96CCE2E211A2838008A249A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C96CCE9D211A36EE008A249A /* libMobileGestalt.tbd in Frameworks */,
+				C96CCE9B211A36D3008A249A /* MobileCoreServices.framework in Frameworks */,
+				C96CCE57211A33B0008A249A /* Preferences.tbd in Frameworks */,
+				DAE0BDC9DC0389DB581AA13D /* libPods-tvOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9C6EA3F2004257E00211FDD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -465,6 +588,9 @@
 		25B27802FF2D573B29DEC669 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C96CCE9C211A36ED008A249A /* libMobileGestalt.tbd */,
+				C96CCE9A211A36D3008A249A /* MobileCoreServices.framework */,
+				C96CCE56211A33B0008A249A /* Preferences.tbd */,
 				C9AB43C120F016CC0016F78F /* AssertionServices.tbd */,
 				C9AB43BE20F012E00016F78F /* BackBoardServices.tbd */,
 				C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */,
@@ -477,6 +603,7 @@
 				B0BF9DAD92CB745EF24C11FC /* libPods-iOS.a */,
 				56C208AF9B386EA848EA9D18 /* libPods-macOS.a */,
 				C9E7C2BC20EE296500FDF3B0 /* Foundation.framework */,
+				DF76467802713F8A7F1F8A4E /* libPods-tvOS.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -484,8 +611,6 @@
 		C90C2218200533B300255B08 /* Installed Pane */ = {
 			isa = PBXGroup;
 			children = (
-				C96FBFE020EB9DF0007E2EC3 /* RPVInstalledViewController.h */,
-				C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */,
 				C96FBFEB20EBA52A007E2EC3 /* Table View */,
 				C96FBFEA20EBA51E007E2EC3 /* Collection View */,
 				C96FBFE320EB9EED007E2EC3 /* Section Headers */,
@@ -531,8 +656,6 @@
 				C9E952E020FBCA2700E850B6 /* HTML */,
 				C93F3B6520F21C9000B573E6 /* HookUtil */,
 				C9313C2120052C29000AD4C3 /* Headers */,
-				C9313C1D20052B13000AD4C3 /* RPVResources.h */,
-				C9313C1E20052B13000AD4C3 /* RPVResources.m */,
 				C9C6EA692004261300211FDD /* main.m */,
 				C9C6EA682004261300211FDD /* Info.plist */,
 				C996746520EE314B00EEFBD2 /* PackageVersion.plist */,
@@ -580,6 +703,44 @@
 			path = HookUtil;
 			sourceTree = "<group>";
 		};
+		C96309F8211ADFE700FEEB61 /* Table View */ = {
+			isa = PBXGroup;
+			children = (
+				C96309FA211ADFE700FEEB61 /* RPVInstalledTableViewCell.h */,
+				C96309F9211ADFE700FEEB61 /* RPVInstalledTableViewCell.m */,
+			);
+			path = "Table View";
+			sourceTree = "<group>";
+		};
+		C96309FB211ADFE800FEEB61 /* Section Headers */ = {
+			isa = PBXGroup;
+			children = (
+				C96309FF211ADFE800FEEB61 /* RPVInstalledMainHeaderView.h */,
+				C96309FD211ADFE800FEEB61 /* RPVInstalledMainHeaderView.m */,
+				C96309FE211ADFE800FEEB61 /* RPVInstalledSectionHeaderViewController.h */,
+				C96309FC211ADFE800FEEB61 /* RPVInstalledSectionHeaderViewController.m */,
+			);
+			path = "Section Headers";
+			sourceTree = "<group>";
+		};
+		C9630A00211ADFE800FEEB61 /* Collection View */ = {
+			isa = PBXGroup;
+			children = (
+				C9630A01211ADFE800FEEB61 /* RPVInstalledCollectionViewCell.h */,
+				C9630A02211ADFE800FEEB61 /* RPVInstalledCollectionViewCell.m */,
+			);
+			path = "Collection View";
+			sourceTree = "<group>";
+		};
+		C9630A11211AE17E00FEEB61 /* Application Detail Pane */ = {
+			isa = PBXGroup;
+			children = (
+				C9630A12211AE19D00FEEB61 /* RPVApplicationDetailController.h */,
+				C9630A13211AE19D00FEEB61 /* RPVApplicationDetailController.m */,
+			);
+			path = "Application Detail Pane";
+			sourceTree = "<group>";
+		};
 		C96B0CD22005702900F713AF /* Application Database */ = {
 			isa = PBXGroup;
 			children = (
@@ -597,6 +758,75 @@
 			);
 			name = "Application Database";
 			path = ..;
+			sourceTree = "<group>";
+		};
+		C96CCE32211A2838008A249A /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				C96CCE33211A2838008A249A /* AppDelegate.h */,
+				C96CCE34211A2838008A249A /* AppDelegate.m */,
+				C9630A11211AE17E00FEEB61 /* Application Detail Pane */,
+				C96CCEA1211A3738008A249A /* Notifications */,
+				C96CCE4C211A2AAB008A249A /* Troubleshooting Pane */,
+				C96CCE47211A2A32008A249A /* Installed Pane */,
+				C96CCE48211A2A3A008A249A /* Settings Panes */,
+				C96CCE3C211A2838008A249A /* Main.storyboard */,
+				C96CCE3F211A2839008A249A /* Assets.xcassets */,
+				C96CCE5B211A33D6008A249A /* Supporting Files */,
+			);
+			path = tvOS;
+			sourceTree = "<group>";
+		};
+		C96CCE47211A2A32008A249A /* Installed Pane */ = {
+			isa = PBXGroup;
+			children = (
+				C91FFB3D211F8C82005A850E /* RPVStickyScrollView.h */,
+				C91FFB3E211F8C82005A850E /* RPVStickyScrollView.m */,
+				C9630A00211ADFE800FEEB61 /* Collection View */,
+				C96309FB211ADFE800FEEB61 /* Section Headers */,
+				C96309F8211ADFE700FEEB61 /* Table View */,
+			);
+			path = "Installed Pane";
+			sourceTree = "<group>";
+		};
+		C96CCE48211A2A3A008A249A /* Settings Panes */ = {
+			isa = PBXGroup;
+			children = (
+				C96CCE39211A2838008A249A /* RPVSettingsNavigationViewController.h */,
+				C96CCE3A211A2838008A249A /* RPVSettingsNavigationViewController.m */,
+				C96CCE52211A2C9B008A249A /* RPVAdvancedController.h */,
+				C96CCE51211A2C9B008A249A /* RPVAdvancedController.m */,
+				C96CCE53211A2C9B008A249A /* RPVSettingsController.h */,
+				C96CCE50211A2C9B008A249A /* RPVSettingsController.m */,
+			);
+			path = "Settings Panes";
+			sourceTree = "<group>";
+		};
+		C96CCE4C211A2AAB008A249A /* Troubleshooting Pane */ = {
+			isa = PBXGroup;
+			children = (
+				C96CCE4D211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.h */,
+				C96CCE4E211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.m */,
+			);
+			path = "Troubleshooting Pane";
+			sourceTree = "<group>";
+		};
+		C96CCE5B211A33D6008A249A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C96CCE42211A2839008A249A /* main.m */,
+				C96CCE41211A2839008A249A /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		C96CCEA1211A3738008A249A /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				C96CCE9F211A3735008A249A /* RPVNotificationManager.h */,
+				C96CCE9E211A3735008A249A /* RPVNotificationManager.m */,
+			);
+			path = Notifications;
 			sourceTree = "<group>";
 		};
 		C96FBFE320EB9EED007E2EC3 /* Section Headers */ = {
@@ -638,12 +868,40 @@
 			path = Notifications;
 			sourceTree = "<group>";
 		};
+		C9C5921A21206D7500DF2E19 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C9C5921C21206D8B00DF2E19 /* Resources */,
+				C9C5921B21206D8000DF2E19 /* UI */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		C9C5921B21206D8000DF2E19 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				C96FBFE020EB9DF0007E2EC3 /* RPVInstalledViewController.h */,
+				C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		C9C5921C21206D8B00DF2E19 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C9313C1D20052B13000AD4C3 /* RPVResources.h */,
+				C9313C1E20052B13000AD4C3 /* RPVResources.m */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		C9C6EA392004257E00211FDD = {
 			isa = PBXGroup;
 			children = (
 				C9C6EA5E2004261300211FDD /* iOS */,
 				C9C6EB352004282A00211FDD /* macOS */,
 				C9C6EA742004280A00211FDD /* Shared */,
+				C96CCE32211A2838008A249A /* tvOS */,
 				C9C6EA432004257E00211FDD /* Products */,
 				DCE41DBEB53648B12AD3BE45 /* Pods */,
 				25B27802FF2D573B29DEC669 /* Frameworks */,
@@ -655,6 +913,7 @@
 			children = (
 				C9C6EA422004257E00211FDD /* ReProvision.app */,
 				C9C6EB342004282900211FDD /* ReProvision.app */,
+				C96CCE31211A2838008A249A /* ReProvision.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -682,8 +941,9 @@
 		C9C6EA742004280A00211FDD /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				C9C5921A21206D7500DF2E19 /* Classes */,
 				C96B0CD22005702900F713AF /* Application Database */,
-				C9E7C2BE20EE296500FDF3B0 /* iosdaemon */,
+				C9E7C2BE20EE296500FDF3B0 /* Daemon */,
 				C9C6EA752004280A00211FDD /* libProvision */,
 			);
 			path = Shared;
@@ -933,7 +1193,7 @@
 			path = "Troubleshooting Pane";
 			sourceTree = "<group>";
 		};
-		C9E7C2BE20EE296500FDF3B0 /* iosdaemon */ = {
+		C9E7C2BE20EE296500FDF3B0 /* Daemon */ = {
 			isa = PBXGroup;
 			children = (
 				C9D5BACC20EE3D54000D5970 /* RPVDaemonListener.h */,
@@ -941,7 +1201,7 @@
 				C9E7C2C620EE296500FDF3B0 /* main.mm */,
 				C9E7C2C320EE296500FDF3B0 /* Supporting Files */,
 			);
-			path = iosdaemon;
+			path = Daemon;
 			sourceTree = "<group>";
 		};
 		C9E7C2C320EE296500FDF3B0 /* Supporting Files */ = {
@@ -1014,6 +1274,8 @@
 				1C46832E058CCB73D45E85EB /* Pods-iOS.release.xcconfig */,
 				B809A0BC7D3B055DCE0E28C4 /* Pods-macOS.debug.xcconfig */,
 				BA8B6832F905206352FC8D1C /* Pods-macOS.release.xcconfig */,
+				70CCF3D795CC8B7FFCF520E7 /* Pods-tvOS.debug.xcconfig */,
+				9ACE7579004DA34002E4DEEE /* Pods-tvOS.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -1032,12 +1294,32 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		C96CCE30211A2838008A249A /* tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C96CCE46211A2839008A249A /* Build configuration list for PBXNativeTarget "tvOS" */;
+			buildPhases = (
+				E2B46DEA621ED4BB8F11BBD0 /* [CP] Check Pods Manifest.lock */,
+				C96CCE2D211A2838008A249A /* Sources */,
+				C96CCE2E211A2838008A249A /* Frameworks */,
+				C96CCE2F211A2838008A249A /* Resources */,
+				66CE6BF796F9357C5A3B715D /* [CP] Embed Pods Frameworks */,
+				D5BECAC2D5666F9D213C0BB4 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = tvOS;
+			productName = reprovision.tvos;
+			productReference = C96CCE31211A2838008A249A /* ReProvision.app */;
+			productType = "com.apple.product-type.application";
+		};
 		C9C6EA412004257E00211FDD /* iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9C6EA5B2004257E00211FDD /* Build configuration list for PBXNativeTarget "iOS" */;
 			buildPhases = (
-				C996746A20EE32D500EEFBD2 /* Move daemon binary into Package */,
 				E7B8235B02A4CDD86F4E0C07 /* [CP] Check Pods Manifest.lock */,
+				C996746A20EE32D500EEFBD2 /* Move daemon binary into Package */,
 				C9C6EA3E2004257E00211FDD /* Sources */,
 				C9C6EA3F2004257E00211FDD /* Frameworks */,
 				C9C6EA402004257E00211FDD /* Resources */,
@@ -1075,9 +1357,9 @@
 			productReference = C9C6EB342004282900211FDD /* ReProvision.app */;
 			productType = "com.apple.product-type.application";
 		};
-		C9E7C2BB20EE296400FDF3B0 /* iOS Daemon */ = {
+		C9E7C2BB20EE296400FDF3B0 /* Daemon */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C9E7C2CF20EE296500FDF3B0 /* Build configuration list for PBXNativeTarget "iOS Daemon" */;
+			buildConfigurationList = C9E7C2CF20EE296500FDF3B0 /* Build configuration list for PBXNativeTarget "Daemon" */;
 			buildPhases = (
 				C9E7C2B720EE296400FDF3B0 /* Sources */,
 				C9E7C2B820EE296400FDF3B0 /* Frameworks */,
@@ -1087,7 +1369,7 @@
 			);
 			dependencies = (
 			);
-			name = "iOS Daemon";
+			name = Daemon;
 			productName = iosdaemon;
 			productType = "com.apple.product-type.library.dynamic";
 		};
@@ -1100,6 +1382,10 @@
 				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = "Matt Clarke";
 				TargetAttributes = {
+					C96CCE30211A2838008A249A = {
+						CreatedOnToolsVersion = 9.4.1;
+						ProvisioningStyle = Manual;
+					};
 					C9C6EA412004257E00211FDD = {
 						CreatedOnToolsVersion = 9.1;
 						ProvisioningStyle = Manual;
@@ -1138,13 +1424,23 @@
 			projectRoot = "";
 			targets = (
 				C9C6EA412004257E00211FDD /* iOS */,
-				C9E7C2BB20EE296400FDF3B0 /* iOS Daemon */,
+				C9E7C2BB20EE296400FDF3B0 /* Daemon */,
 				C9C6EB332004282900211FDD /* macOS */,
+				C96CCE30211A2838008A249A /* tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		C96CCE2F211A2838008A249A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C96CCE40211A2839008A249A /* Assets.xcassets in Resources */,
+				C96CCE3E211A2838008A249A /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9C6EA402004257E00211FDD /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1184,10 +1480,30 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-iOS/Pods-iOS-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/MBCircularProgressBar/MBCircularProgressBar.bundle",
+				"${PODS_ROOT}/RMessage/RMessage/Resources/RMessageView.xib",
+				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundErrorIcon.png",
+				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundErrorIcon@2x.png",
+				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundSuccessIcon.png",
+				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundSuccessIcon@2x.png",
+				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundWarningIcon.png",
+				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationBackgroundWarningIcon@2x.png",
+				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationButtonBackground.png",
+				"${PODS_ROOT}/RMessage/RMessage/Assets/NotificationButtonBackground@2x.png",
+				"${PODS_ROOT}/RMessage/RMessage/Assets/RMessageDefaultDesign.json",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MBCircularProgressBar.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RMessageView.nib",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundErrorIcon.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundErrorIcon@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundSuccessIcon.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundSuccessIcon@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundWarningIcon.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationBackgroundWarningIcon@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationButtonBackground.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NotificationButtonBackground@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RMessageDefaultDesign.json",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1207,6 +1523,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-macOS/Pods-macOS-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		66CE6BF796F9357C5A3B715D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-tvOS/Pods-tvOS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		6AF445F51B952D440DE74E52 /* [CP] Copy Pods Resources */ = {
@@ -1270,6 +1601,39 @@
 			shellPath = /bin/sh;
 			shellScript = "echo \"Copying daemon into Package\"\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/reprovisiond\"\n\ncp -R $builtpath \"${PROJECT_DIR}/iOS/Package/usr/bin\"\n\n# We now need to sign the daemon with appropriate entitlements via ldid2\necho \"Signing with entitlements.plist...\"\nif type \"${iOSOpenDevPath}/bin/ldid2\" > /dev/null;\nthen\n${iOSOpenDevPath}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/iosdaemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelif type \"/usr/bin/ldid2\" > /dev/null;\nthen\n/usr/bin/ldid2 -S\"${PROJECT_DIR}/Shared/iosdaemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelif type \"/usr/local/bin/ldid2\" > /dev/null;\nthen\n/usr/local/bin/ldid2 -S\"${PROJECT_DIR}/Shared/iosdaemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelif type \"ldid2\" > /dev/null;\nthen\nldid2 -S\"${PROJECT_DIR}/Shared/iosdaemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\nelse\necho \"Could not find ldid2 on your system (searched /usr/bin, /usr/local/bin, ${iOSOpenDevPath}/bin/)\"\nexit 1\nfi";
 		};
+		D5BECAC2D5666F9D213C0BB4 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-tvOS/Pods-tvOS-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E2B46DEA621ED4BB8F11BBD0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-tvOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		E7B8235B02A4CDD86F4E0C07 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1309,6 +1673,84 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		C96CCE2D211A2838008A249A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C96CCE62211A3482008A249A /* RPVApplicationSigning.m in Sources */,
+				C96CCE63211A3482008A249A /* RPVBackgroundSigningManager.m in Sources */,
+				C96CCE64211A3482008A249A /* RPVApplication.m in Sources */,
+				C96CCE65211A3482008A249A /* RPVIpaBundleApplication.m in Sources */,
+				C96CCE66211A3482008A249A /* RPVApplicationDatabase.m in Sources */,
+				C96CCE67211A3482008A249A /* EEAppleServices.m in Sources */,
+				C96CCE68211A3482008A249A /* NSData+GZIP.m in Sources */,
+				C96CCE69211A3482008A249A /* EEBackend.m in Sources */,
+				C96CCE6A211A3482008A249A /* ldid.cpp in Sources */,
+				C96CCE6B211A3482008A249A /* lookup2.c in Sources */,
+				C96CCE6C211A3482008A249A /* Array.cpp in Sources */,
+				C96CCE6D211A3482008A249A /* base64.c in Sources */,
+				C96CCE6E211A3482008A249A /* Boolean.cpp in Sources */,
+				C96CCE6F211A3482008A249A /* bplist.c in Sources */,
+				C96CCE70211A3482008A249A /* bytearray.c in Sources */,
+				C96CCE71211A3482008A249A /* Data.cpp in Sources */,
+				C96CCE72211A3482008A249A /* Date.cpp in Sources */,
+				C96CCE73211A3482008A249A /* Dictionary.cpp in Sources */,
+				C9630A06211ADFE800FEEB61 /* RPVInstalledCollectionViewCell.m in Sources */,
+				C9630A05211ADFE800FEEB61 /* RPVInstalledMainHeaderView.m in Sources */,
+				C96CCE74211A3482008A249A /* hashtable.c in Sources */,
+				C96CCE75211A3482008A249A /* Integer.cpp in Sources */,
+				C96CCE76211A3482008A249A /* Key.cpp in Sources */,
+				C96CCE77211A3482008A249A /* iterator.c in Sources */,
+				C96CCE78211A3482008A249A /* list.c in Sources */,
+				C96CCE79211A3482008A249A /* node.c in Sources */,
+				C96CCE7A211A3482008A249A /* node_iterator.c in Sources */,
+				C9630A04211ADFE800FEEB61 /* RPVInstalledSectionHeaderViewController.m in Sources */,
+				C96CCE7B211A3482008A249A /* node_list.c in Sources */,
+				C96CCE7C211A3482008A249A /* Node.cpp in Sources */,
+				C96CCE7D211A3482008A249A /* plist.c in Sources */,
+				C96CCE7E211A3482008A249A /* ptrarray.c in Sources */,
+				C96CCE7F211A3482008A249A /* Real.cpp in Sources */,
+				C96CCE80211A3482008A249A /* String.cpp in Sources */,
+				C96CCE81211A3482008A249A /* Structure.cpp in Sources */,
+				C96CCE82211A3482008A249A /* time64.c in Sources */,
+				C96CCE83211A3482008A249A /* Uid.cpp in Sources */,
+				C9630A14211AE19D00FEEB61 /* RPVApplicationDetailController.m in Sources */,
+				C96CCE84211A3482008A249A /* xplist.c in Sources */,
+				C96CCEA0211A3736008A249A /* RPVNotificationManager.m in Sources */,
+				C96CCE85211A3482008A249A /* EEProvisioning.mm in Sources */,
+				C96CCE86211A3482008A249A /* SAMKeychainQuery.m in Sources */,
+				C96CCE87211A3482008A249A /* SAMKeychain.m in Sources */,
+				C96CCE88211A3482008A249A /* EESigning.mm in Sources */,
+				C96CCE89211A3482008A249A /* aes_ni.c in Sources */,
+				C96CCE8A211A3482008A249A /* aescrypt.c in Sources */,
+				C96CCE8B211A3482008A249A /* aeskey.c in Sources */,
+				C96CCE8C211A3482008A249A /* aestab.c in Sources */,
+				C96CCE8D211A3482008A249A /* fileenc.c in Sources */,
+				C9630A03211ADFE800FEEB61 /* RPVInstalledTableViewCell.m in Sources */,
+				C96CCE8E211A3482008A249A /* hmac.c in Sources */,
+				C96CCE8F211A3482008A249A /* prng.c in Sources */,
+				C96CCE90211A3482008A249A /* pwd2key.c in Sources */,
+				C96CCE91211A3482008A249A /* sha1.c in Sources */,
+				C96CCE92211A3482008A249A /* crypt.c in Sources */,
+				C96CCE93211A3482008A249A /* ioapi.c in Sources */,
+				C91FFB3F211F8C82005A850E /* RPVStickyScrollView.m in Sources */,
+				C96CCE94211A3482008A249A /* ioapi_buf.c in Sources */,
+				C96CCE95211A3482008A249A /* ioapi_mem.c in Sources */,
+				C96CCE96211A3482008A249A /* minishared.c in Sources */,
+				C96CCE97211A3482008A249A /* unzip.c in Sources */,
+				C96CCE98211A3482008A249A /* zip.c in Sources */,
+				C96CCE99211A3482008A249A /* SSZipArchive.m in Sources */,
+				C96CCE3B211A2838008A249A /* RPVSettingsNavigationViewController.m in Sources */,
+				C96CCE35211A2838008A249A /* AppDelegate.m in Sources */,
+				C96CCE4F211A2AC3008A249A /* RPVTroubleshootingNavigationViewController.m in Sources */,
+				C96CCE55211A2C9B008A249A /* RPVAdvancedController.m in Sources */,
+				C96CCE54211A2C9B008A249A /* RPVSettingsController.m in Sources */,
+				C9C5921D21206E1000DF2E19 /* RPVInstalledViewController.m in Sources */,
+				C9C5921E21206E1300DF2E19 /* RPVResources.m in Sources */,
+				C96CCE43211A2839008A249A /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9C6EA3E2004257E00211FDD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1476,12 +1918,20 @@
 /* Begin PBXTargetDependency section */
 		C996746820EE32BE00EEFBD2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = C9E7C2BB20EE296400FDF3B0 /* iOS Daemon */;
+			target = C9E7C2BB20EE296400FDF3B0 /* Daemon */;
 			targetProxy = C996746720EE32BE00EEFBD2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		C96CCE3C211A2838008A249A /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C96CCE3D211A2838008A249A /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 		C9C6EA622004261300211FDD /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1509,6 +1959,58 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		C96CCE44211A2839008A249A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 70CCF3D795CC8B7FFCF520E7 /* Pods-tvOS.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/tvOS/Headers";
+				INFOPLIST_FILE = "$(SRCROOT)/tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/tvOS",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.matchstic.reprovision.tvos;
+				PRODUCT_NAME = ReProvision;
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		C96CCE45211A2839008A249A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9ACE7579004DA34002E4DEEE /* Pods-tvOS.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/tvOS/Headers";
+				INFOPLIST_FILE = "$(SRCROOT)/tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/tvOS",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.matchstic.reprovision.tvos;
+				PRODUCT_NAME = ReProvision;
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
 		C9C6EA592004257E00211FDD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1793,6 +2295,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C96CCE46211A2839008A249A /* Build configuration list for PBXNativeTarget "tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C96CCE44211A2839008A249A /* Debug */,
+				C96CCE45211A2839008A249A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C9C6EA3D2004257E00211FDD /* Build configuration list for PBXProject "ReProvision" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1820,7 +2331,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C9E7C2CF20EE296500FDF3B0 /* Build configuration list for PBXNativeTarget "iOS Daemon" */ = {
+		C9E7C2CF20EE296500FDF3B0 /* Build configuration list for PBXNativeTarget "Daemon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C9E7C2CD20EE296500FDF3B0 /* Debug */,

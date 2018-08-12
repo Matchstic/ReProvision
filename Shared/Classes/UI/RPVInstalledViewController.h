@@ -7,7 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+
+#if TARGET_OS_TV
+#import "RPVInstalledSectionHeaderViewController.h"
+#else
 #import "RPVInstalledSectionHeaderView.h"
+#endif
+
 #import "RPVApplicationSigning.h"
 
 @interface RPVInstalledViewController : UIViewController <RPVInstalledSectionHeaderDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, RPVApplicationSigningProtocol>

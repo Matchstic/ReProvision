@@ -20,8 +20,16 @@
 
 #import "RPVApplicationDetailController.h"
 
+#if TARGET_OS_TV
+#import "RPVStickyScrollView.h"
+#endif
+
 // Fake data source stuff...
+#if TARGET_OS_TV
+#define USE_FAKE_DATA 1
+#else
 #define USE_FAKE_DATA 0
+#endif
 
 #define TABLE_VIEWS_INSET 20
 
@@ -38,12 +46,19 @@
 @property (nonatomic, strong) CAGradientLayer *topBackgroundGradientLayer;
 
 @property (nonatomic, strong) RPVInstalledMainHeaderView *mainHeaderView;
-@property (nonatomic, strong) RPVInstalledSectionHeaderView *expiringSectionHeaderView;
 @property (nonatomic, strong) UICollectionView *expiringCollectionView;
-@property (nonatomic, strong) RPVInstalledSectionHeaderView *recentSectionHeaderView;
 @property (nonatomic, strong) UITableView *recentTableView;
-@property (nonatomic, strong) RPVInstalledSectionHeaderView *otherApplicationsSectionHeaderView;
 @property (nonatomic, strong) UITableView *otherApplicationsTableView;
+
+#if TARGET_OS_TV
+@property (nonatomic, strong) RPVInstalledSectionHeaderViewController *expiringSectionHeader;
+@property (nonatomic, strong) RPVInstalledSectionHeaderViewController *recentSectionHeader;
+@property (nonatomic, strong) RPVInstalledSectionHeaderViewController *otherApplicationsSectionHeader;
+#else
+@property (nonatomic, strong) RPVInstalledSectionHeaderView *expiringSectionHeaderView;
+@property (nonatomic, strong) RPVInstalledSectionHeaderView *recentSectionHeaderView;
+@property (nonatomic, strong) RPVInstalledSectionHeaderView *otherApplicationsSectionHeaderView;
+#endif
 
 // Data sources
 @property (nonatomic, strong) NSMutableArray *expiringSoonDataSource;
@@ -68,14 +83,24 @@
     
     // Reload data sources.
     [self _reloadDataSources];
+#if TARGET_OS_TV
+    [self.recentSectionHeader requestNewButtonEnabledState];
+    [self.expiringSectionHeader requestNewButtonEnabledState];
+    [self.otherApplicationsSectionHeader requestNewButtonEnabledState];
+#else
     [self.recentSectionHeaderView requestNewButtonEnabledState];
     [self.expiringSectionHeaderView requestNewButtonEnabledState];
     [self.otherApplicationsSectionHeaderView requestNewButtonEnabledState];
+#endif
     
     // Handle reloading data when the user has signed in.
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_reloadDataForUserDidSignIn:) name:@"com.matchstic.reprovision.ios/userDidSignIn" object:nil];
     // Reload data when the resign threshold changes.
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_reloadDataForUserDidSignIn:) name:@"com.matchstic.reprovision.ios/resigningThresholdDidChange" object:nil];
+    
+#if TARGET_OS_TV
+    [[self navigationItem] setTitle:@"Installed"];
+#endif
 }
 
 - (void)didReceiveMemoryWarning {
@@ -87,13 +112,20 @@
     [super loadView];
     
     // Root view is a scrollview, sized to mainHeader + header + expiringcollection + header + tableview (no scrolling)
+#if TARGET_OS_TV
+    self.rootScrollView = [[RPVStickyScrollView alloc] initWithFrame:CGRectZero];
+    self.rootScrollView.backgroundColor = [UIColor clearColor];
+#else
     self.rootScrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
-    self.rootScrollView.delegate = self;
     self.rootScrollView.backgroundColor = [UIColor colorWithWhite:0.96 alpha:1.0];
+#endif
+    self.rootScrollView.delegate = self;
     self.rootScrollView.alwaysBounceVertical = YES;
+#if !TARGET_OS_TV
     if (@available(iOS 11.0, *)) {
         self.rootScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
+#endif
     [self.view addSubview:self.rootScrollView];
     
     // Background view for fancy UI
@@ -112,56 +144,100 @@
     [self.topBackgroundView.layer insertSublayer:self.topBackgroundGradientLayer atIndex:0];
     
     // Topmost header for date and title
+#if !TARGET_OS_TV
     self.mainHeaderView = [[RPVInstalledMainHeaderView alloc] initWithFrame:CGRectZero];
     [self.mainHeaderView configureWithTitle:@"Installed"];
     [self.rootScrollView addSubview:self.mainHeaderView];
+#endif
     
     // Section header for expiring apps
+#if TARGET_OS_TV
+    self.expiringSectionHeader = [[RPVInstalledSectionHeaderViewController alloc] init];
+    [self.expiringSectionHeader configureWithTitle:@"Expiring Soon" buttonLabel:@"Sign" section:1 andDelegate:self];
+    self.expiringSectionHeader.invertColours = YES;
+    [self.rootScrollView addSubview:self.expiringSectionHeader.view];
+#else
     self.expiringSectionHeaderView = [[RPVInstalledSectionHeaderView alloc] initWithFrame:CGRectZero];
-    [self.expiringSectionHeaderView configureWithTitle:@"Expiring Soon" buttonLabel:@"SIGN" section:1 andDelegate:self];
+    [self.expiringSectionHeaderView configureWithTitle:@"Expiring Soon" buttonLabel:@"Sign" section:1 andDelegate:self];
     self.expiringSectionHeaderView.invertColours = YES;
     [self.rootScrollView addSubview:self.expiringSectionHeaderView];
+#endif
     
     // Collectionview for expiring items
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
     layout.itemSize = [self _collectionCellSize];
+#if TARGET_OS_TV
+    layout.minimumLineSpacing = 22;
+#else
     layout.minimumLineSpacing = 15;
+#endif
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     
     self.expiringCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
     self.expiringCollectionView.backgroundColor = [UIColor clearColor];
     self.expiringCollectionView.delegate = self;
     self.expiringCollectionView.dataSource = self;
+#if TARGET_OS_TV
+    self.expiringCollectionView.clipsToBounds = NO;
+#endif
     [self.rootScrollView addSubview:self.expiringCollectionView];
     
     // Section header for recent items
+#if TARGET_OS_TV
+    self.recentSectionHeader = [[RPVInstalledSectionHeaderViewController alloc] init];
+    [self.recentSectionHeader configureWithTitle:@"Recently Signed" buttonLabel:@"Sign" section:2 andDelegate:self];
+    self.recentSectionHeader.invertColours = NO;
+    [self.rootScrollView addSubview:self.recentSectionHeader.view];
+#else
     self.recentSectionHeaderView = [[RPVInstalledSectionHeaderView alloc] initWithFrame:CGRectZero];
-    [self.recentSectionHeaderView configureWithTitle:@"Recently Signed" buttonLabel:@"SIGN" section:2 andDelegate:self];
+    [self.recentSectionHeaderView configureWithTitle:@"Recently Signed" buttonLabel:@"Sign" section:2 andDelegate:self];
     self.recentSectionHeaderView.invertColours = NO;
     [self.rootScrollView addSubview:self.recentSectionHeaderView];
+#endif
 
     // Table View for recent items.
+#if TARGET_OS_TV
+    self.recentTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+#else
     self.recentTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+#endif
     self.recentTableView.delegate = self;
     self.recentTableView.dataSource = self;
     self.recentTableView.scrollEnabled = NO;
     self.recentTableView.backgroundColor = [UIColor clearColor];
+#if TARGET_OS_TV
+#else
     self.recentTableView.separatorColor = [UIColor clearColor];
+#endif
     [self.rootScrollView addSubview:self.recentTableView];
     
     // Section header for other apps
+#if TARGET_OS_TV
+    self.otherApplicationsSectionHeader = [[RPVInstalledSectionHeaderViewController alloc] init];
+    [self.otherApplicationsSectionHeader configureWithTitle:@"Other Applications" buttonLabel:@"Add" section:3 andDelegate:self];
+    self.otherApplicationsSectionHeader.invertColours = NO;
+    [self.rootScrollView addSubview:self.otherApplicationsSectionHeader.view];
+#else
     self.otherApplicationsSectionHeaderView = [[RPVInstalledSectionHeaderView alloc] initWithFrame:CGRectZero];
-    [self.otherApplicationsSectionHeaderView configureWithTitle:@"Other Applications" buttonLabel:@"ADD" section:3 andDelegate:self];
+    [self.otherApplicationsSectionHeaderView configureWithTitle:@"Other Applications" buttonLabel:@"Add" section:3 andDelegate:self];
     self.otherApplicationsSectionHeaderView.invertColours = NO;
     [self.rootScrollView addSubview:self.otherApplicationsSectionHeaderView];
+#endif
     
     // Table view for applications that are sideloaded on another Team ID.
+#if TARGET_OS_TV
+    self.otherApplicationsTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+#else
     self.otherApplicationsTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+#endif
     self.otherApplicationsTableView.delegate = self;
     self.otherApplicationsTableView.dataSource = self;
     self.otherApplicationsTableView.scrollEnabled = NO;
     self.otherApplicationsTableView.backgroundColor = [UIColor clearColor];
+#if TARGET_OS_TV
+#else
     self.otherApplicationsTableView.separatorColor = [UIColor clearColor];
+#endif
     self.otherApplicationsTableView.allowsSelectionDuringEditing = YES;
     [self.rootScrollView addSubview:self.otherApplicationsTableView];
 }
@@ -169,26 +245,45 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
+#if TARGET_OS_TV
+    self.rootScrollView.frame = self.view.bounds;
+#else
     CGFloat rootHeight = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? self.view.bounds.size.height : self.view.bounds.size.height - [(UITabBarController*)self.parentViewController tabBar].frame.size.height;
     self.rootScrollView.frame = CGRectMake(0, 0, self.view.bounds.size.width, rootHeight);
+#endif
     
+#if TARGET_OS_TV
+    CGFloat yOffset = 160.0; // top tab bar
+    
+    CGFloat mainHeaderHeight = 0;
+    CGFloat sectionHeaderHeight = 80;
+#else
     CGFloat yOffset = [UIApplication sharedApplication].statusBarFrame.size.height + 10.0;
     CGFloat mainHeaderHeight = 80;
     CGFloat sectionHeaderHeight = 50;
+#endif
     
     self.mainHeaderView.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, mainHeaderHeight);
     
     yOffset += mainHeaderHeight + 5;
     
+#if TARGET_OS_TV
+    self.expiringSectionHeader.view.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, sectionHeaderHeight);
+#else
     self.expiringSectionHeaderView.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, sectionHeaderHeight);
+#endif
     
     yOffset += sectionHeaderHeight;
     
+    CGFloat tvOSInset = 0.0;
+#if TARGET_OS_TV
+    tvOSInset = 20.0;
+#endif
     if (self.expiringSoonDataSource.count == 0) {
         self.expiringCollectionView.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, [self _tableViewCellHeight]);
         [self.expiringCollectionView.collectionViewLayout invalidateLayout];
     } else {
-        self.expiringCollectionView.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, [self _collectionCellSize].height + 30);
+        self.expiringCollectionView.frame = CGRectMake(0 - tvOSInset, yOffset, self.view.bounds.size.width + tvOSInset, [self _collectionCellSize].height + 50);
     }
     
     yOffset += self.expiringCollectionView.frame.size.height; // CollectionView's insets handle extra offsetting.
@@ -203,24 +298,48 @@
     
     yOffset += 5;
     
+#if TARGET_OS_TV
+    self.recentSectionHeader.view.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, sectionHeaderHeight);
+#else
     self.recentSectionHeaderView.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, sectionHeaderHeight);
+#endif
     
     yOffset += sectionHeaderHeight + 5;
     
     // Table View's frame height is: insetTop + (n*itemheight) + insetBottom
+#if TARGET_OS_TV
     CGFloat height = [self tableView:self.recentTableView numberOfRowsInSection:0] * [self _tableViewCellHeight];
+    height += [self tableView:self.recentTableView numberOfRowsInSection:0] * 20.0; // interim insets
+    
+    // Grouped header insets
+    yOffset -= 20.0;
+#else
+    CGFloat height = [self tableView:self.recentTableView numberOfRowsInSection:0] * [self _tableViewCellHeight];
+#endif
     self.recentTableView.frame = CGRectMake(TABLE_VIEWS_INSET, yOffset, self.view.bounds.size.width - (TABLE_VIEWS_INSET*2), height);
     self.recentTableView.contentSize = CGSizeMake(self.view.bounds.size.width - (TABLE_VIEWS_INSET*2), height);
     
     yOffset += height + 15;
     
     // Other applications table view.
+#if TARGET_OS_TV
+    self.otherApplicationsSectionHeader.view.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, sectionHeaderHeight);
+#else
     self.otherApplicationsSectionHeaderView.frame = CGRectMake(0, yOffset, self.view.bounds.size.width, sectionHeaderHeight);
+#endif
     
     yOffset += sectionHeaderHeight + 5;
     
     // Table View's frame height is: insetTop + (n*itemheight) + insetBottom
+#if TARGET_OS_TV
     CGFloat otherAppsHeight = [self tableView:self.otherApplicationsTableView numberOfRowsInSection:0] * [self _tableViewCellHeight];
+    otherAppsHeight += [self tableView:self.otherApplicationsTableView numberOfRowsInSection:0] * 20.0; // interim insets
+    
+    // Grouped header insets
+    yOffset -= 30.0;
+#else
+    CGFloat otherAppsHeight = [self tableView:self.otherApplicationsTableView numberOfRowsInSection:0] * [self _tableViewCellHeight];
+#endif
     self.otherApplicationsTableView.frame = CGRectMake(TABLE_VIEWS_INSET, yOffset, self.view.bounds.size.width - (TABLE_VIEWS_INSET*2), otherAppsHeight);
     self.otherApplicationsTableView.contentSize = CGSizeMake(self.view.bounds.size.width - (TABLE_VIEWS_INSET*2), otherAppsHeight);
     
@@ -228,20 +347,66 @@
     
     // Finally, set content size for overall scrolling region.
     self.rootScrollView.contentSize = CGSizeMake(self.view.bounds.size.width, yOffset);
+    
+#if TARGET_OS_TV
+    [self.rootScrollView setContentOffset:CGPointMake(0, 20) animated:NO];
+#endif
 }
 
+#if TARGET_OS_TV
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+    
+    // Check for tabbar hide and show!
+    static NSString *kUITabBarButtonClassName = @"UITabBarButton";
+    
+    NSString *prevFocusViewClassName = NSStringFromClass([context.previouslyFocusedView class]);
+    NSString *nextFocusedView = NSStringFromClass([context.nextFocusedView class]);
+    
+    RPVStickyScrollView *stickyScrollView = (RPVStickyScrollView*)self.rootScrollView;
+    
+    if (![prevFocusViewClassName isEqualToString:kUITabBarButtonClassName] &&
+        [nextFocusedView isEqualToString:kUITabBarButtonClassName]) {
+        
+        stickyScrollView.stickyYPosition = 20.0;
+        [coordinator addCoordinatedAnimations:^{
+            [stickyScrollView setContentOffset:CGPointMake(0, 20.0)];
+        } completion:^{
+            
+        }];
+    } else {
+        stickyScrollView.stickyYPosition = 140.0;
+        [coordinator addCoordinatedAnimations:^{
+            if (stickyScrollView.contentOffset.y < 140.0)
+                [stickyScrollView setContentOffset:CGPointMake(0, 140.0)];
+        } completion:^{
+            
+        }];
+    }
+}
+#endif
+
 - (CGSize)_collectionCellSize {
+#if TARGET_OS_TV
+    return CGSizeMake(400, 350);
+#else
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? CGSizeMake(195, 183) : CGSizeMake(130, 122);
+#endif
 }
 
 - (CGFloat)_tableViewCellHeight {
+#if TARGET_OS_TV
+    return 120;
+#else
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 95 : 75;
+#endif
 }
 
 // Status bar colouration
+#if !TARGET_OS_TV
 - (UIStatusBarStyle)preferredStatusBarStyle {
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? UIStatusBarStyleDefault : UIStatusBarStyleLightContent;
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////
 // Data sources.
@@ -251,9 +416,15 @@
     [self _reloadDataSources];
     
     // Reload header enabled states
+#if TARGET_OS_TV
+    [self.recentSectionHeader requestNewButtonEnabledState];
+    [self.expiringSectionHeader requestNewButtonEnabledState];
+    [self.otherApplicationsSectionHeader requestNewButtonEnabledState];
+#else
     [self.recentSectionHeaderView requestNewButtonEnabledState];
     [self.expiringSectionHeaderView requestNewButtonEnabledState];
     [self.otherApplicationsSectionHeaderView requestNewButtonEnabledState];
+#endif
 }
 
 - (void)_reloadDataSources {
@@ -303,7 +474,11 @@
     self.otherApplicationsDataSource = [NSMutableArray array];
     
     for (int i = 0; i < 2; i++) {
+#if TARGET_OS_TV
+        LSApplicationProxy *proxy = [LSApplicationProxy applicationProxyForIdentifier:@"com.matchstic.reprovision.tvos"];
+#else
         LSApplicationProxy *proxy = [LSApplicationProxy applicationProxyForIdentifier:@"com.matchstic.reprovision.ios"];
+#endif
         RPVApplication *application = [[RPVApplication alloc] initWithApplicationProxy:proxy];
         
         [self.recentlySignedDataSource addObject:application];
@@ -382,7 +557,7 @@
     // Show detail view
     if (self.expiringSoonDataSource.count > 0) {
         RPVApplication *application = [self.expiringSoonDataSource objectAtIndex:indexPath.row];
-        NSString *buttonTitle = @"SIGN";
+        NSString *buttonTitle = @"Sign";
         
         [self _showApplicationDetailController:application withButtonTitle:buttonTitle];
     }
@@ -530,9 +705,15 @@
                 // Reload data, and reload tables etc.
                 
                 [self _reloadDataSources];
+#if TARGET_OS_TV
+                [self.recentSectionHeader requestNewButtonEnabledState];
+                [self.expiringSectionHeader requestNewButtonEnabledState];
+                [self.otherApplicationsSectionHeader requestNewButtonEnabledState];
+#else
                 [self.recentSectionHeaderView requestNewButtonEnabledState];
                 [self.expiringSectionHeaderView requestNewButtonEnabledState];
                 [self.otherApplicationsSectionHeaderView requestNewButtonEnabledState];
+#endif
                 
                 return;
             }

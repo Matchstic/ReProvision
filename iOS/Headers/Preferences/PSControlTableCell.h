@@ -1,3 +1,4 @@
+#import <UIKit/UIKit.h>
 #import "PSTableCell.h"
 
 @interface PSControlTableCell : PSTableCell

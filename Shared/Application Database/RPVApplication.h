@@ -23,6 +23,7 @@
 
 // Make sure to call this one asynchronously
 - (UIImage*)applicationIcon;
+- (UIImage*)tvOSApplicationIcon;
 
 - (NSDate*)applicationExpiryDate;
 
