@@ -9,7 +9,11 @@
 #import "RPVDaemonListener.h"
 #import <notify.h>
 
+#if TARGET_OS_TV
+#define APPLICATION_IDENTIFIER "com.matchstic.reprovision.tvos"
+#else
 #define APPLICATION_IDENTIFIER "com.matchstic.reprovision.ios"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 // Private API
