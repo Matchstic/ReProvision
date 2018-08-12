@@ -21,11 +21,12 @@
 - (NSString*)applicationVersion;
 - (NSNumber*)applicationInstalledSize;
 
-// Make sure to call this one asynchronously
+// Make sure to call these two asynchronously
 - (UIImage*)applicationIcon;
 - (UIImage*)tvOSApplicationIcon;
 
 - (NSDate*)applicationExpiryDate;
+- (BOOL)hasEmbeddedMobileprovision;
 
 - (NSURL*)locationOfApplicationOnFilesystem;
 

@@ -66,7 +66,7 @@
     [items addObject:submitDevelopmentCSR];
     
     NSMutableArray *pkcs12 = [NSMutableArray array];
-    [pkcs12 addObject:@"No valid PKCS12 certificate..."];
+    [pkcs12 addObject:@"No valid PKCS12 certificate"];
     [pkcs12 addObject:@"This error occurs when the certificate used for signing applications is out-of-sync with the certificate on Apple's servers.\n\nTo resolve, tap 'Manage Certificates' above, and remove the certificate for this device."];
     
     [items addObject:pkcs12];

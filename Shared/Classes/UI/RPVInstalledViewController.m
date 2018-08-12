@@ -451,6 +451,13 @@
         
         // Also grab any other sideloaded applications
         self.otherApplicationsDataSource = [[[RPVApplicationDatabase sharedInstance] getAllSideloadedApplicationsNotMatchingTeamID:[RPVResources getTeamID]] mutableCopy];
+        
+        // Ensure they all actually have a mobileprovision!
+        for (RPVApplication *application in [self.otherApplicationsDataSource copy]) {
+            if (![application hasEmbeddedMobileprovision])
+                [self.otherApplicationsDataSource removeObject:application];
+        }
+        
         [self.otherApplicationsTableView reloadData];
     } else {
         [self _debugCreateFakeDataSources];

@@ -108,6 +108,15 @@
     return [provision objectForKey:@"ExpirationDate"];
 }
 
+- (BOOL)hasEmbeddedMobileprovision {
+    if (!self.proxy) {
+        return NO;
+    }
+    
+    NSString *provisionPath = [[self.proxy.bundleURL path] stringByAppendingString:@"/embedded.mobileprovision"];
+    return [[NSFileManager defaultManager] fileExistsAtPath:provisionPath];
+}
+
 - (NSURL*)locationOfApplicationOnFilesystem {
     return self.proxy.bundleURL;
 }
