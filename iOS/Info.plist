@@ -26,10 +26,6 @@
 	<true/>
 	<key>SBContinuousAssertionAllowsIdleBand</key>
 	<true/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>unboundedTaskCompletion</string>
-	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
