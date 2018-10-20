@@ -30,7 +30,7 @@ Please note that only jailbroken devices are supported at this time. Follow [iss
 
 ### Pre-Requisites
 
-For compiling the iOS project into a Debian archive, `ldid2` and (currently) `iOSOpenDev`. I plan to integrate these two dependencies into this repository.
+~~For compiling the iOS project into a Debian archive, `ldid2` and (currently) `iOSOpenDev`. I plan to integrate these two dependencies into this repository.~~ These are now integrated into this repository under `/bin`.
 
 CocoaPods is also utilised.
 

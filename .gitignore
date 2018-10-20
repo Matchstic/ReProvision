@@ -11,5 +11,4 @@ Podfile.lock
 
 Legacy/
 Output/
-iOS/Package/Applications/ReProvision.app/
-iOS/Package/usr/bin/reprovisiond
+iOS/Package/Applications/ReProvision.app
