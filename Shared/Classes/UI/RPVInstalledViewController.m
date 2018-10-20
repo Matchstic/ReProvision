@@ -221,6 +221,7 @@
     self.otherApplicationsSectionHeaderView = [[RPVInstalledSectionHeaderView alloc] initWithFrame:CGRectZero];
     [self.otherApplicationsSectionHeaderView configureWithTitle:@"Other Applications" buttonLabel:@"Add" section:3 andDelegate:self];
     self.otherApplicationsSectionHeaderView.invertColours = NO;
+    self.otherApplicationsSectionHeaderView.showButton = NO;
     [self.rootScrollView addSubview:self.otherApplicationsSectionHeaderView];
 #endif
     
@@ -566,7 +567,7 @@
         RPVApplication *application = [self.expiringSoonDataSource objectAtIndex:indexPath.row];
         NSString *buttonTitle = @"Sign";
         
-        [self _showApplicationDetailController:application withButtonTitle:buttonTitle];
+        [self _showApplicationDetailController:application withButtonTitle:buttonTitle isDestructiveResign:NO];
     }
 }
 
@@ -620,8 +621,10 @@
     
     RPVApplication *application;
     NSString *buttonTitle = @"";
+    BOOL isDestructiveResign = NO;
     if ([tableView isEqual:self.otherApplicationsTableView] && self.otherApplicationsDataSource.count > 0) {
         buttonTitle = @"ADD";
+        isDestructiveResign = YES;
         application = [self.otherApplicationsDataSource objectAtIndex:indexPath.row];
     } else if ([tableView isEqual:self.recentTableView] && self.recentlySignedDataSource.count > 0) {
         buttonTitle = @"SIGN";
@@ -630,11 +633,12 @@
         return;
     }
     
-    [self _showApplicationDetailController:application withButtonTitle:buttonTitle];
+    [self _showApplicationDetailController:application withButtonTitle:buttonTitle isDestructiveResign:isDestructiveResign];
 }
 
-- (void)_showApplicationDetailController:(RPVApplication*)application withButtonTitle:(NSString*)buttonTitle {
+- (void)_showApplicationDetailController:(RPVApplication*)application withButtonTitle:(NSString*)buttonTitle isDestructiveResign:(BOOL)isDestructiveResign {
     RPVApplicationDetailController *detailController = [[RPVApplicationDetailController alloc] initWithApplication:application];
+    detailController.warnUserOnResign = isDestructiveResign;
     
     // Update with current states.
     [detailController setButtonTitle:buttonTitle];

@@ -48,6 +48,8 @@
         [self.button addTarget:self action:@selector(_buttonNotHighlighted:) forControlEvents:UIControlEventTouchUpOutside];
         
         [self addSubview:self.button];
+        
+        self.showButton = YES;
     }
     
     if (!self.seperatorLine) {
@@ -165,6 +167,8 @@
     }
     
     self.titleLabel.frame = CGRectMake(insetMargin, 0, self.frame.size.width - self.button.frame.size.width - (3 * insetMargin), self.frame.size.height);
+    
+    self.button.hidden = !self.showButton;
 }
 
 @end
