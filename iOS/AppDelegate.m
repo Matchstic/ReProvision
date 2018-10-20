@@ -14,6 +14,7 @@
 
 #import "RPVIpaBundleApplication.h"
 #import "RPVApplicationDetailController.h"
+#import "RPVApplicationDatabase.h"
 
 #import <RMessageView.h>
 #import "SAMKeychain.h"
@@ -159,7 +160,9 @@
 
 - (void)applicationSigningDidEncounterError:(NSError *)error forBundleIdentifier:(NSString *)bundleIdentifier {
     NSLog(@"'%@' had error: %@", bundleIdentifier, error);
-    [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Error" body:[NSString stringWithFormat:@"For '%@'\n%@", bundleIdentifier, error.localizedDescription] isDebugMessage:NO isUrgentMessage:YES andNotificationID:nil];
+    
+    NSString *applicationName = [[[RPVApplicationDatabase sharedInstance] getApplicationWithBundleIdentifier:bundleIdentifier] applicationName];
+    [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Error" body:[NSString stringWithFormat:@"For '%@':\n%@", applicationName, error.localizedDescription] isDebugMessage:NO isUrgentMessage:YES andNotificationID:nil];
     
     // Ensure the UI goes back to when signing was not occuring
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
