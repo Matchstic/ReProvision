@@ -203,7 +203,7 @@
     /* values of zero use the openssl default values */
     pkcs12bundle = PKCS12_create(
                                  (char*)"",       // We give a password of "" here as ldid expects that
-                                 (char*)"Extender",  // friendly certname
+                                 (char*)"ReProvision",  // friendly certname
                                  cert_privkey,// the certificate private key
                                  cert,        // the main certificate
                                  cacertstack, // stack of CA cert chain
