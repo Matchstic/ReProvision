@@ -79,6 +79,12 @@
     
     [items addObject:submitDevelopmentCSR];
     
+    NSMutableArray *noBackgroundSigning = [NSMutableArray array];
+    [noBackgroundSigning addObject:@"No background signing"];
+    [noBackgroundSigning addObject:@"Automatic background signing may fail sometimes. This is usually caused by the background daemon not running.\n\nTo resolve this, try re-installing ReProvision to kickstart the daemon, and ensure that you've not disabled it via iCleaner Pro."];
+    
+    [items addObject:noBackgroundSigning];
+    
     NSMutableArray *pkcs12 = [NSMutableArray array];
     [pkcs12 addObject:@"No valid PKCS12 certificate"];
     [pkcs12 addObject:@"This error occurs when the certificate used for signing applications is out-of-sync with the certificate on Apple's servers.\n\nTo resolve, tap 'Manage Certificates' above, and remove the certificate for this device."];
