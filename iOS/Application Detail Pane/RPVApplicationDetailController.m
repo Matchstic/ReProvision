@@ -439,7 +439,33 @@
 }
 
 - (void)_userDidTapMajorButton:(id)button {
-    [self _initiateSigningForCurrentApplication];
+    if (self.warnUserOnResign) {
+        UIAlertController * alert = [UIAlertController
+                                     alertControllerWithTitle:@"Warning"
+                                     message:[NSString stringWithFormat:@"This will remove the current certificate of '%@', and replaces it with a new certificate from your Apple ID.\n\nAre you sure you want to continue?", [self.application applicationName]]
+                                     preferredStyle:UIAlertControllerStyleAlert];
+
+        UIAlertAction* continueButton = [UIAlertAction
+                                    actionWithTitle:@"Continue"
+                                    style:UIAlertActionStyleDestructive
+                                    handler:^(UIAlertAction * action) {
+                                        [self _initiateSigningForCurrentApplication];
+                                    }];
+        
+        UIAlertAction* cancelButton = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction * action) {
+
+                                   }];
+        
+        [alert addAction:continueButton];
+        [alert addAction:cancelButton];
+        
+        [self presentViewController:alert animated:YES completion:nil];
+    } else {
+        [self _initiateSigningForCurrentApplication];
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

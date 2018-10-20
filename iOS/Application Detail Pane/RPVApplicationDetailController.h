@@ -13,6 +13,7 @@
 @interface RPVApplicationDetailController : UIViewController
 
 @property (nonatomic, readwrite) BOOL lockWhenInstalling;
+@property (nonatomic, readwrite) BOOL warnUserOnResign;
 
 - (instancetype)initWithApplication:(RPVApplication*)application;
 
