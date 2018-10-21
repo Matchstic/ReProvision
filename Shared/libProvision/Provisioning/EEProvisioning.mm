@@ -710,7 +710,7 @@ free_all:
             // Check to see if the current Team ID is from a free profile.
             NSArray *teams = [dictionary objectForKey:@"teams"];
             
-            BOOL isFreeUser = NO;
+            BOOL isFreeUser = YES;
             for (NSDictionary *team in teams) {
                 NSString *teamIdToCheck = [team objectForKey:@"teamId"];
                 
@@ -719,14 +719,15 @@ free_all:
                     
                     for (NSDictionary *membership in memberships) {
                         NSString *name = [membership objectForKey:@"name"];
-                        if ([name containsString:@"Free Provisioning Program"]) {
-                            isFreeUser = YES;
+                        NSString *platform = [membership objectForKey:@"platform"];
+                        if ([name containsString:@"Apple Developer Program"] && [platform isEqualToString:@"ios"]) {
+                            isFreeUser = NO;
                             break;
                         }
                     }
                     
                     // Exit now if needed.
-                    if (isFreeUser)
+                    if (!isFreeUser)
                         break;
                 }
             }
