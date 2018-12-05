@@ -8,7 +8,7 @@ Screenshots/
 iOS/CydiaPackages/
 Pods/
 Podfile.lock
-
 Legacy/
 Output/
-iOS/Package/Applications/ReProvision.app
+iOS/Package/Applications/ReProvision.app/
+iOS/Package/usr/bin/reprovisiond
