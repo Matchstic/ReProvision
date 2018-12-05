@@ -100,16 +100,64 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     CFPreferencesAppSynchronize(CFSTR(APPLICATION_IDENTIFIER));
     self.settings = (__bridge NSDictionary *)CFPreferencesCopyMultiple(CFPreferencesCopyKeyList(CFSTR(APPLICATION_IDENTIFIER), kCFPreferencesCurrentUser, kCFPreferencesAnyHost), CFSTR(APPLICATION_IDENTIFIER), kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
 }
+
+- (void)setPreferenceKey:(NSString*)key withValue:(id)value {
+    if (!key || !value) {
+        NSLog(@"Not setting value, as one of the arguments is null");
+        return;
+    }
+    
+    NSMutableDictionary *mutableSettings = [self.settings mutableCopy];
+    
+    [mutableSettings setObject:value forKey:key];
+    
+    // Write to CFPreferences
+    CFPreferencesSetValue ((__bridge CFStringRef)key, (__bridge CFPropertyListRef)value, CFSTR(APPLICATION_IDENTIFIER), kCFPreferencesCurrentUser, kCFPreferencesCurrentHost);
+    
+    self.settings = mutableSettings;
+    
+    // Sync
+    CFPreferencesAppSynchronize(CFSTR(APPLICATION_IDENTIFIER));
+}
+
+- (id)getPreferenceKey:(NSString*)key {
+    return [self.settings objectForKey:key];
+}
     
 - (void)initialiseListener {
     // Start timer for signing, and setup notifications on SB events.
     [self reloadSettings];
     
-    // Setup last locked times a
+    // Setup last locked times
     self.lastLockedTime = time(NULL);
     self.lastLockedTimeDelta = [self heartbeatTimerInterval];
 
-    [self _restartSigningTimer];
+    // Load from disk the next fire date, and adjust signing timer for that
+    [self _startSigningTimer];
+}
+
+- (void)_startSigningTimer {
+    NSDate *nextFireDate = [self getPreferenceKey:@"nextFireDate"];
+    NSTimeInterval nextFireInterval = [self heartbeatTimerInterval];
+    
+    NSLog(@"*** [reprovisiond] :: DEBUG :: Stored fire date: %@", nextFireDate);
+    
+    if (nextFireDate != nil) {
+        nextFireInterval = [nextFireDate timeIntervalSinceDate:[NSDate date]];
+        
+        if (nextFireInterval <= 0) {
+            NSLog(@"*** [reprovisiond] :: DEBUG :: Fire date has been and gone whilst reprovisiond was not running");
+            nextFireInterval = 5; // seconds
+        }
+    }
+    
+    NSLog(@"*** [reprovisiond] :: Starting signing timer, next fire in: %f minutes", (float)nextFireInterval / 60.0);
+    
+    self.signingTimer = [NSTimer timerWithTimeInterval:nextFireInterval target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:NO];
+    [[NSRunLoop currentRunLoop] addTimer:self.signingTimer forMode:NSDefaultRunLoopMode];
+    
+    // Persist next fire date
+    [self setPreferenceKey:@"nextFireDate" withValue:[[NSDate date] dateByAddingTimeInterval:nextFireInterval]];
 }
     
 - (void)_restartSigningTimer {
@@ -120,6 +168,9 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     
     self.signingTimer = [NSTimer timerWithTimeInterval:[self heartbeatTimerInterval] target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:NO];
     [[NSRunLoop currentRunLoop] addTimer:self.signingTimer forMode:NSDefaultRunLoopMode];
+    
+    // Persist next fire date
+    [self setPreferenceKey:@"nextFireDate" withValue:[[NSDate date] dateByAddingTimeInterval:[self heartbeatTimerInterval]]];
 }
     
 - (NSTimeInterval)heartbeatTimerInterval {
@@ -204,6 +255,24 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
         NSLog(@"*** [reprovisiond] :: Error launching application: %@", SBSApplicationLaunchingErrorString(result));
 #endif
     }
+    
+    // Wait for an acknowledgement receipt
+    NSTimer *acknowledgementTimer = [NSTimer scheduledTimerWithTimeInterval:5
+                                                                     target:self
+                                                                   selector:@selector(_didFireAcknowledgementTimeout:)
+                                                                   userInfo:@{@"notification": [NSNumber numberWithInt:notification]}
+                                                                    repeats:NO];
+    
+    int status, token;
+    status = notify_register_dispatch("com.matchstic.reprovision.ios/didReceiveNotification", &token, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0l), ^(int info) {
+        
+        // Just cancel the timeout timer.
+        [acknowledgementTimer invalidate];
+    });
+}
+
+- (void)_didFireAcknowledgementTimeout:(NSTimer*)timer {
+    NSLog(@"*** [reprovisiond] :: ERROR :: Timeout on command: %@", [timer userInfo][@"notification"]);
 }
 
 - (int)_launchApplicationBackgroundedAndAquireAssertion {
@@ -300,9 +369,16 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     // BUT! We need to know how long was left on it to correctly set our timeDelta
     self.lastLockedTime = time(NULL);
     
-    if (self.signingTimer != nil) {
-        self.lastLockedTimeDelta = fabs([[NSDate date] timeIntervalSinceDate:self.signingTimer.fireDate]);
+    NSDate *nextFireDate = [self getPreferenceKey:@"nextFireDate"];
+    NSLog(@"*** [reprovisiond] :: DEBUG :: Next fire date: %@", nextFireDate);
+    
+    if (self.signingTimer != nil && nextFireDate != nil) {
+        self.lastLockedTimeDelta = fabs([[NSDate date] timeIntervalSinceDate:nextFireDate]);
         [self.signingTimer invalidate];
+        
+        if (self.lastLockedTimeDelta > [self heartbeatTimerInterval]) {
+            self.lastLockedTimeDelta = [self heartbeatTimerInterval];
+        }
         
         NSLog(@"*** [reprovisiond] :: Time delta from timer: %f", self.lastLockedTimeDelta);
     } else {
