@@ -256,6 +256,9 @@
     
     // Reset the state so we don't redo anything when exiting the application.
     notify_set_state(_daemonNotificationToken, 0);
+    
+    // Acknowledge the message
+    notify_post("com.matchstic.reprovision.ios/didReceiveNotification");
 }
 
 - (void)_notifyDaemonOfMessageHandled {
