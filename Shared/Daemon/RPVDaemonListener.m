@@ -77,15 +77,16 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 @property (nonatomic, readwrite) int applicationDidFinishTaskToken;
     
 @property (nonatomic, strong) NSDictionary *settings;
-@property (nonatomic, strong) NSTimer *assertionFallbackTimer;
-@property (nonatomic, readwrite) BOOL updateQueuedForUnlock;
-@property (nonatomic, readwrite) BOOL uiLockState;
 
+@property (nonatomic, strong) NSTimer *assertionFallbackTimer;
+
+@property (nonatomic, readwrite) BOOL updateQueuedForUnlock;
+@property (nonatomic, readwrite) BOOL showQueuedAlertWhenDisplayOn;
+@property (nonatomic, readwrite) BOOL uiLockState;
+@property (nonatomic, readwrite) BOOL displayState;
 @property (nonatomic, readwrite) BOOL springboardDidLaunchSeen;
 
 @property (nonatomic, strong) NSTimer *signingTimer;
-@property (nonatomic, readwrite) time_t lastLockedTime;
-@property (nonatomic, readwrite) NSTimeInterval lastLockedTimeDelta;
 
 @property (nonatomic, strong) BKSProcessAssertion *applicationBackgroundAssertion;
 
@@ -103,7 +104,7 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 
 - (void)setPreferenceKey:(NSString*)key withValue:(id)value {
     if (!key || !value) {
-        NSLog(@"Not setting value, as one of the arguments is null");
+        NSLog(@"*** [reprovisiond] :: Not setting value, as one of the arguments is null");
         return;
     }
     
@@ -125,12 +126,14 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 }
     
 - (void)initialiseListener {
-    // Start timer for signing, and setup notifications on SB events.
+    // Start timer for signing etc
     [self reloadSettings];
     
-    // Setup last locked times
-    self.lastLockedTime = time(NULL);
-    self.lastLockedTimeDelta = [self heartbeatTimerInterval];
+    // Setup states - assuming that we're starting with Cydia etc open
+    // If from reboot, SpringBoard states will override this
+    self.uiLockState = NO;
+    self.updateQueuedForUnlock = NO;
+    self.displayState = YES;
 
     // Load from disk the next fire date, and adjust signing timer for that
     [self _startSigningTimer];
@@ -140,13 +143,13 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     NSDate *nextFireDate = [self getPreferenceKey:@"nextFireDate"];
     NSTimeInterval nextFireInterval = [self heartbeatTimerInterval];
     
-    NSLog(@"*** [reprovisiond] :: DEBUG :: Stored fire date: %@", nextFireDate);
+    NSLog(@"*** [reprovisiond] :: DEBUG :: Got stored fire date: %@", nextFireDate);
     
     if (nextFireDate != nil) {
         nextFireInterval = [nextFireDate timeIntervalSinceDate:[NSDate date]];
         
-        if (nextFireInterval <= 0) {
-            NSLog(@"*** [reprovisiond] :: DEBUG :: Fire date has been and gone whilst reprovisiond was not running");
+        if (nextFireInterval < 0) {
+            NSLog(@"*** [reprovisiond] :: DEBUG :: Fire date has been and gone whilst reprovisiond was not running!");
             nextFireInterval = 5; // seconds
         }
     }
@@ -155,13 +158,10 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     
     self.signingTimer = [NSTimer timerWithTimeInterval:nextFireInterval target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:NO];
     [[NSRunLoop currentRunLoop] addTimer:self.signingTimer forMode:NSDefaultRunLoopMode];
-    
-    // Persist next fire date
-    [self setPreferenceKey:@"nextFireDate" withValue:[[NSDate date] dateByAddingTimeInterval:nextFireInterval]];
 }
     
 - (void)_restartSigningTimer {
-    NSLog(@"*** [reprovisiond] :: Restarting signing timer, interval: every %f hours", (float)[self heartbeatTimerInterval] / 3600.0);
+    NSLog(@"*** [reprovisiond] :: Restarting signing timer, next fire in: %f minutes", (float)[self heartbeatTimerInterval] / 60.0);
     
     if (self.signingTimer)
         [self.signingTimer invalidate];
@@ -169,7 +169,7 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     self.signingTimer = [NSTimer timerWithTimeInterval:[self heartbeatTimerInterval] target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:NO];
     [[NSRunLoop currentRunLoop] addTimer:self.signingTimer forMode:NSDefaultRunLoopMode];
     
-    // Persist next fire date
+    // Persist next fire date in the event of crash or shutdown
     [self setPreferenceKey:@"nextFireDate" withValue:[[NSDate date] dateByAddingTimeInterval:[self heartbeatTimerInterval]]];
 }
     
@@ -192,12 +192,13 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     id value = [self.settings objectForKey:@"resign"];
     return value ? [value boolValue] : YES;
 }
-    
+
 - (void)signingTimerDidFire:(id)sender {    
     // Queue the update if needed.
     if (self.uiLockState == YES) {
         NSLog(@"*** [reprovisiond] :: Signing timer fired: update queued");
         self.updateQueuedForUnlock = YES;
+        
         [self _showApplicationNotificationForQueuedUpdate];
     } else {
         // Do checks for Low Power Mode stuff.
@@ -230,6 +231,7 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 - (void)_initiateApplicationCheckForCredentials {
     // Launch our companion app backgrounded, and update the notification flag for it to
     // then initiate credential checks..
+    NSLog(@"*** [reprovisiond] :: Requesting application to check login credentials.");
     [self _launchApplicationBackgroundedWithNotification:2];
 }
 
@@ -357,63 +359,38 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     // Give the user a notification if they need to sign in to ReProvision after a respring/restart
     NSLog(@"*** [reprovisiond] :: SpringBoard did start launching.");
     
+    // Setup state for new SpringBoard launch
     self.springboardDidLaunchSeen = YES;
+    self.uiLockState = YES;
+    // self.updateQueuedForUnlock = NO; -> Not resetting since there may actually be a queued signing!
+    self.displayState = NO;
 }
 
 - (void)sb_didUILockNotification {
     // Just update state.
     NSLog(@"*** [reprovisiond] :: Device was locked.");
     self.uiLockState = YES;
-    
-    // If the unlocked timer is running, then we need to stop it.
-    // BUT! We need to know how long was left on it to correctly set our timeDelta
-    self.lastLockedTime = time(NULL);
-    
-    NSDate *nextFireDate = [self getPreferenceKey:@"nextFireDate"];
-    NSLog(@"*** [reprovisiond] :: DEBUG :: Next fire date: %@", nextFireDate);
-    
-    if (self.signingTimer != nil && nextFireDate != nil) {
-        self.lastLockedTimeDelta = fabs([[NSDate date] timeIntervalSinceDate:nextFireDate]);
-        [self.signingTimer invalidate];
-        
-        if (self.lastLockedTimeDelta > [self heartbeatTimerInterval]) {
-            self.lastLockedTimeDelta = [self heartbeatTimerInterval];
-        }
-        
-        NSLog(@"*** [reprovisiond] :: Time delta from timer: %f", self.lastLockedTimeDelta);
-    } else {
-        self.lastLockedTimeDelta = [self heartbeatTimerInterval];
-    }
 }
 
 - (void)sb_didUIUnlockNotification {
     // Start a signing routine since we had one trigger whilst locked.
     NSLog(@"*** [reprovisiond] :: Device was unlocked.");
     
-    // Restart the signing timer with the remaining interval from being locked.
-    NSTimeInterval remainingInterval = 0;
-    
-    // Already fired and waiting for unlock, next one is the full time interval
-    if (self.updateQueuedForUnlock)
-        remainingInterval = [self heartbeatTimerInterval];
-    else
-        remainingInterval = fabs(difftime(self.lastLockedTime + self.lastLockedTimeDelta, time(NULL)));
-    
-    NSLog(@"*** [reprovisiond] :: Restarting timer with interval: %f seconds", remainingInterval);
-        
-    self.signingTimer = [NSTimer timerWithTimeInterval:remainingInterval target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:NO];
-    [[NSRunLoop currentRunLoop] addTimer:self.signingTimer forMode:NSDefaultRunLoopMode];
+    self.uiLockState = NO;
     
     // Handle queued signing
     if (self.updateQueuedForUnlock) {
         self.updateQueuedForUnlock = NO;
         [self _initiateNewSigningRoutine];
+        
+        // Restart timer now!
+        [self _restartSigningTimer];
     }
-    
-    self.uiLockState = NO;
 }
 
 - (void)bb_backlightChanged:(int)state {
+    self.displayState = state > 0;
+    
     if (state > 0) {
         NSLog(@"*** [reprovisiond] :: Display turned on");
         
@@ -424,21 +401,10 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
                 
                 NSLog(@"*** [reprovisiond] :: Checking credentials after reaching a sane point since SpringBoard launched.");
                 [self _initiateApplicationCheckForCredentials];
-            }
-            
-            if (!self.updateQueuedForUnlock) {
-                // We're locked, and the display turned on. Check to see if our current time exceeds the stored time + delta.
-                if (self.lastLockedTime + self.lastLockedTimeDelta < time(NULL)) {
-                    [self signingTimerDidFire:nil];
-                } else {
-                    NSTimeInterval timeRemaining = self.lastLockedTime + self.lastLockedTimeDelta - time(NULL);
-                    
-                    int hoursRemaining = timeRemaining / 60 / 60;
-                    int minutesRemaining = (timeRemaining - (hoursRemaining*60*60)) / 60;
-                    int secondsRemaining = timeRemaining - (hoursRemaining*60*60) - (minutesRemaining*60);
-                    
-                    NSLog(@"*** [reprovisiond] :: Timer not 'triggered', remaining: %dh %dm %ds", hoursRemaining, minutesRemaining, secondsRemaining);
-                }
+                
+                // Re-display queued alert if needed
+                if (self.updateQueuedForUnlock)
+                    [self _showApplicationNotificationForQueuedUpdate];
             }
         }
     } else {
@@ -520,7 +486,7 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     
     status = notify_check(_updatePreferencesToken, &check);
     if (status == NOTIFY_STATUS_OK && check != 0) {
-        NSLog(@"[reprovisiond] :: Preferences update received.");
+        NSLog(@"*** [reprovisiond] :: Preferences update received.");
             
         // Update our internal preferences from NSUserDefaults' shared suite.
         NSTimeInterval oldInterval = [self heartbeatTimerInterval];
