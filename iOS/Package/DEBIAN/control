@@ -1,6 +1,6 @@
 Package: com.matchstic.reprovision
 Name: ReProvision
-Version: 0.3.1
+Version: 0.3.2-3
 Description: Re-sign applications on your device
 Section: System
 Depends: firmware (>= 9.0)

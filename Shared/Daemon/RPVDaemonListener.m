@@ -99,7 +99,19 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     NSLog(@"*** [reprovisiond] :: Reloading settings");
     
     CFPreferencesAppSynchronize(CFSTR(APPLICATION_IDENTIFIER));
-    self.settings = (__bridge NSDictionary *)CFPreferencesCopyMultiple(CFPreferencesCopyKeyList(CFSTR(APPLICATION_IDENTIFIER), kCFPreferencesCurrentUser, kCFPreferencesAnyHost), CFSTR(APPLICATION_IDENTIFIER), kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+    
+    CFArrayRef keyList = CFPreferencesCopyKeyList(CFSTR(APPLICATION_IDENTIFIER), kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+    
+    if (!keyList) {
+        self.settings = [NSMutableDictionary dictionary];
+    } else {
+        CFDictionaryRef dictionary = CFPreferencesCopyMultiple(keyList, CFSTR(APPLICATION_IDENTIFIER), kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+        
+        self.settings = [(__bridge NSDictionary *)dictionary copy];
+        
+        CFRelease(dictionary);
+        CFRelease(keyList);
+    }
 }
 
 - (void)setPreferenceKey:(NSString*)key withValue:(id)value {
@@ -160,17 +172,17 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     [[NSRunLoop currentRunLoop] addTimer:self.signingTimer forMode:NSDefaultRunLoopMode];
 }
     
-- (void)_restartSigningTimer {
-    NSLog(@"*** [reprovisiond] :: Restarting signing timer, next fire in: %f minutes", (float)[self heartbeatTimerInterval] / 60.0);
+- (void)_restartSigningTimerWithInterval:(NSTimeInterval)interval {
+    NSLog(@"*** [reprovisiond] :: Restarting signing timer, next fire in: %f minutes", (float)interval / 60.0);
     
     if (self.signingTimer)
         [self.signingTimer invalidate];
     
-    self.signingTimer = [NSTimer timerWithTimeInterval:[self heartbeatTimerInterval] target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:NO];
+    self.signingTimer = [NSTimer timerWithTimeInterval:interval target:self selector:@selector(signingTimerDidFire:) userInfo:nil repeats:NO];
     [[NSRunLoop currentRunLoop] addTimer:self.signingTimer forMode:NSDefaultRunLoopMode];
     
     // Persist next fire date in the event of crash or shutdown
-    [self setPreferenceKey:@"nextFireDate" withValue:[[NSDate date] dateByAddingTimeInterval:[self heartbeatTimerInterval]]];
+    [self setPreferenceKey:@"nextFireDate" withValue:[[NSDate date] dateByAddingTimeInterval:interval]];
 }
     
 - (NSTimeInterval)heartbeatTimerInterval {
@@ -218,7 +230,7 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     }
     
     // Restart the timer with the full duration.
-    [self _restartSigningTimer];
+    [self _restartSigningTimerWithInterval:[self heartbeatTimerInterval]];
 }
     
 - (void)_initiateNewSigningRoutine {
@@ -383,8 +395,8 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
         self.updateQueuedForUnlock = NO;
         [self _initiateNewSigningRoutine];
         
-        // Restart timer now!
-        [self _restartSigningTimer];
+        // Restart timer now with full duration!
+        [self _restartSigningTimerWithInterval:[self heartbeatTimerInterval]];
     }
 }
 
@@ -407,8 +419,27 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
                     [self _showApplicationNotificationForQueuedUpdate];
             }
         }
+        
+        // Restarting timer as needed.
+        {
+            NSDate *nextFireDate = [self getPreferenceKey:@"nextFireDate"];
+            NSTimeInterval nextFireInterval = [nextFireDate timeIntervalSinceDate:[NSDate date]];
+            
+            if (nextFireInterval <= 5) { // seconds
+                NSLog(@"*** [reprovisiond] :: DEBUG :: Timer would have (or is about to) expire, so requesting signing checks");
+                [self signingTimerDidFire:nil];
+            } else {
+                // Restart the timer for this remaining interval
+                NSLog(@"*** [reprovisiond] :: DEBUG :: Restarting signing timer due to wake, with interval: %f minutes", (float)nextFireInterval / 60.0);
+                [self _restartSigningTimerWithInterval:nextFireInterval];
+            }
+        }
     } else {
         NSLog(@"*** [reprovisiond] :: Display turned off");
+        
+        // Stopping timer. If it fires when off, well, likely nothing happens due to be being in deep sleep
+        NSLog(@"*** [reprovisiond] :: DEBUG :: Stopping signing timer due to sleep");
+        [self.signingTimer invalidate];
     }
 }
     
@@ -495,7 +526,7 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
             
         // Restart if prefs changed!
         if (oldInterval != newInterval)
-            [self _restartSigningTimer];
+            [self _restartSigningTimerWithInterval:newInterval];
             
         // Reset the state so we don't keep reloading settings
         notify_set_state(_updatePreferencesToken, 0);
