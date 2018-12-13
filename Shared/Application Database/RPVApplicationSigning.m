@@ -295,7 +295,7 @@ static RPVApplicationSigning *sharedInstance;
         
         if (!result) {
             // Check if this is the case where it's an app from another Team ID.
-            if (error.code == 64 || [error.description containsString:@"LaunchServicesError error 0"]) {
+            if (error.code == 64 || [error.localizedDescription containsString:@"LaunchServicesError error 0"]) {
                 // Delete the original app, and try again.
                 if ([[LSApplicationWorkspace defaultWorkspace] uninstallApplication:bundleIdentifier withOptions:nil]) {
                     // Try again!
@@ -313,7 +313,7 @@ static RPVApplicationSigning *sharedInstance;
             }
             
             // Give an error, but make it user-friendly.
-            NSString *errorMessage = error.localizedDescription;
+            NSString *errorMessage = [NSString stringWithFormat:@"%@, (code: %ld)", error.localizedDescription, (long)error.code];
             if ([errorMessage containsString:@"invalid entitlements"]) {
                 errorMessage = @"Incorrect entitlements for this application. This is likely caused by ReProvision not supporting a capability this application needs.";
             } else if ([errorMessage containsString:@"valid provisioning profile"]) {
