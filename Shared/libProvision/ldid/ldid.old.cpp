@@ -19,9 +19,9 @@
 **/
 /* }}} */
 
+// ignore some unused functions as that's no biggie!
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-function"
-#pragma clang diagnostic ignored "-Wshorten-64-to-32"
 
 #include <cstdio>
 #include <cstdlib>
@@ -479,8 +479,6 @@ struct encryption_info_command {
 #define BIND_OPCODE_DO_BIND_ADD_ADDR_IMM_SCALED      0xb0
 #define BIND_OPCODE_DO_BIND_ULEB_TIMES_SKIPPING_ULEB 0xc0
 
-static auto dummy([](double) {});
-
 static std::streamsize read(std::streambuf &stream, void *data, size_t size) {
     auto writ(stream.sgetn(static_cast<char *>(data), size));
     _assert(writ >= 0);
@@ -493,16 +491,6 @@ static inline void get(std::streambuf &stream, void *data, size_t size) {
 
 static inline void put(std::streambuf &stream, const void *data, size_t size) {
     _assert(stream.sputn(static_cast<const char *>(data), size) == size);
-}
-
-static inline void put(std::streambuf &stream, const void *data, size_t size, const ldid::Functor<void (double)> &percent) {
-    percent(0);
-    for (size_t total(0); total != size;) {
-        auto writ(std::min(size - total, size_t(4096 * 4)));
-        _assert(stream.sputn(static_cast<const char *>(data) + total, writ) == writ);
-        total += writ;
-        percent(double(total) / size);
-    }
 }
 
 static size_t most(std::streambuf &stream, void *data, size_t size) {
@@ -727,10 +715,10 @@ class MachHeader :
 
                 case LC_SEGMENT_64: {
                     auto segment(reinterpret_cast<struct segment_command_64 *>(load_command));
-                    code(segment->segname, NULL, GetOffset<void>(segment->fileoff), segment->filesize);
+                    code(segment->segname, NULL, GetOffset<void>((uint32_t)segment->fileoff), (unsigned long)segment->filesize);
                     auto section(reinterpret_cast<struct section_64 *>(segment + 1));
                     for (uint32_t i(0), e(Swap(segment->nsects)); i != e; ++i, ++section)
-                        code(segment->segname, section->sectname, GetOffset<void>(segment->fileoff + section->offset), section->size);
+                        code(segment->segname, section->sectname, GetOffset<void>((uint32_t)(segment->fileoff + section->offset)), (unsigned long)section->size);
                 } break;
             }
     }
@@ -823,14 +811,10 @@ class FatHeader :
 #define CSSLOT_RESOURCEDIR   uint32_t(0x00003)
 #define CSSLOT_APPLICATION   uint32_t(0x00004)
 #define CSSLOT_ENTITLEMENTS  uint32_t(0x00005)
-#define CSSLOT_ALTERNATE     uint32_t(0x01000)
 
 #define CSSLOT_SIGNATURESLOT uint32_t(0x10000)
 
-#define CS_HASHTYPE_SHA160_160 1
-#define CS_HASHTYPE_SHA256_256 2
-#define CS_HASHTYPE_SHA256_160 3
-#define CS_HASHTYPE_SHA386_386 4
+#define CS_HASHTYPE_SHA1 1
 
 struct BlobIndex {
     uint32_t type;
@@ -871,86 +855,13 @@ struct CodeDirectory {
 extern "C" uint32_t hash(uint8_t *k, uint32_t length, uint32_t initval);
 #endif
 
-struct Algorithm {
-    size_t size_;
-    uint8_t type_;
+static void sha1(uint8_t *hash, const void *data, size_t size) {
+    LDID_SHA1(static_cast<const uint8_t *>(data), (CC_LONG)size, hash);
+}
 
-    Algorithm(size_t size, uint8_t type) :
-        size_(size),
-        type_(type)
-    {
-    }
-
-    virtual const uint8_t *operator [](const ldid::Hash &hash) const = 0;
-
-    virtual void operator ()(uint8_t *hash, const void *data, size_t size) const = 0;
-    virtual void operator ()(ldid::Hash &hash, const void *data, size_t size) const = 0;
-    virtual void operator ()(std::vector<char> &hash, const void *data, size_t size) const = 0;
-};
-
-struct AlgorithmSHA1 :
-    Algorithm
-{
-    AlgorithmSHA1() :
-        Algorithm(LDID_SHA1_DIGEST_LENGTH, CS_HASHTYPE_SHA160_160)
-    {
-    }
-
-    virtual const uint8_t *operator [](const ldid::Hash &hash) const {
-        return hash.sha1_;
-    }
-
-    void operator ()(uint8_t *hash, const void *data, size_t size) const {
-        LDID_SHA1(static_cast<const uint8_t *>(data), size, hash);
-    }
-
-    void operator ()(ldid::Hash &hash, const void *data, size_t size) const {
-        return operator()(hash.sha1_, data, size);
-    }
-
-    void operator ()(std::vector<char> &hash, const void *data, size_t size) const {
-        hash.resize(LDID_SHA1_DIGEST_LENGTH);
-        return operator ()(reinterpret_cast<uint8_t *>(hash.data()), data, size);
-    }
-};
-
-struct AlgorithmSHA256 :
-    Algorithm
-{
-    AlgorithmSHA256() :
-        Algorithm(LDID_SHA256_DIGEST_LENGTH, CS_HASHTYPE_SHA256_256)
-    {
-    }
-
-    virtual const uint8_t *operator [](const ldid::Hash &hash) const {
-        return hash.sha256_;
-    }
-
-    void operator ()(uint8_t *hash, const void *data, size_t size) const {
-        LDID_SHA256(static_cast<const uint8_t *>(data), size, hash);
-    }
-
-    void operator ()(ldid::Hash &hash, const void *data, size_t size) const {
-        return operator()(hash.sha256_, data, size);
-    }
-
-    void operator ()(std::vector<char> &hash, const void *data, size_t size) const {
-        hash.resize(LDID_SHA256_DIGEST_LENGTH);
-        return operator ()(reinterpret_cast<uint8_t *>(hash.data()), data, size);
-    }
-};
-
-static const std::vector<Algorithm *> &GetAlgorithms() {
-    static AlgorithmSHA1 sha1;
-    static AlgorithmSHA256 sha256;
-
-    static Algorithm *array[] = {
-        &sha1,
-        &sha256,
-    };
-
-    static std::vector<Algorithm *> algorithms(array, array + sizeof(array) / sizeof(array[0]));
-    return algorithms;
+static void sha1(std::vector<char> &hash, const void *data, size_t size) {
+    hash.resize(LDID_SHA1_DIGEST_LENGTH);
+    sha1(reinterpret_cast<uint8_t *>(hash.data()), data, size);
 }
 
 struct CodesignAllocation {
@@ -963,11 +874,11 @@ struct CodesignAllocation {
 
     CodesignAllocation(FatMachHeader mach_header, size_t offset, size_t size, size_t limit, size_t alloc, size_t align) :
         mach_header_(mach_header),
-        offset_(offset),
-        size_(size),
-        limit_(limit),
-        alloc_(alloc),
-        align_(align)
+        offset_((uint32_t)offset),
+        size_((uint32_t)size),
+        limit_((uint32_t)limit),
+        alloc_((uint32_t)alloc),
+        align_((uint32_t)align)
     {
     }
 };
@@ -1047,7 +958,7 @@ class Map {
 
         struct stat stat;
         _syscall(fstat(file, &stat));
-        size_ = stat.st_size;
+        size_ = (size_t)stat.st_size;
 
         data_ = _syscall(mmap(NULL, size_, pflag, mflag, file, 0));
     }
@@ -1103,7 +1014,7 @@ std::string Analyze(const void *data, size_t size) {
     return entitlements;
 }
 
-static void Allocate(const void *idata, size_t isize, std::streambuf &output, const Functor<size_t (const MachHeader &, size_t)> &allocate, const Functor<size_t (const MachHeader &, std::streambuf &output, size_t, const std::string &, const char *, const Functor<void (double)> &)> &save, const Functor<void (double)> &percent) {
+static void Allocate(const void *idata, size_t isize, std::streambuf &output, const Functor<size_t (const MachHeader &, size_t)> &allocate, const Functor<size_t (const MachHeader &, std::streambuf &output, size_t, const std::string &, const char *)> &save) {
     FatHeader source(const_cast<void *>(idata), isize);
 
     size_t offset(0);
@@ -1164,7 +1075,7 @@ static void Allocate(const void *idata, size_t isize, std::streambuf &output, co
 
         offset = Align(offset, 1 << align);
 
-        uint32_t limit(size);
+        uint32_t limit((uint32_t)size);
         if (alloc != 0)
             limit = Align(limit, 0x10);
 
@@ -1217,15 +1128,15 @@ static void Allocate(const void *idata, size_t isize, std::streambuf &output, co
                     if (strncmp(segment_command->segname, "__LINKEDIT", 16) != 0)
                         break;
                     size_t size(mach_header.Swap(allocation.limit_ + allocation.alloc_ - mach_header.Swap(segment_command->fileoff)));
-                    segment_command->filesize = size;
-                    segment_command->vmsize = Align(size, 1 << allocation.align_);
+                    segment_command->filesize = (uint32_t)size;
+                    segment_command->vmsize = (uint32_t)Align(size, 1 << allocation.align_);
                 } break;
 
                 case LC_SEGMENT_64: {
                     auto segment_command(reinterpret_cast<struct segment_command_64 *>(&copy[0]));
                     if (strncmp(segment_command->segname, "__LINKEDIT", 16) != 0)
                         break;
-                    size_t size(mach_header.Swap(allocation.limit_ + allocation.alloc_ - mach_header.Swap(segment_command->fileoff)));
+                    size_t size((size_t)(mach_header.Swap(allocation.limit_ + allocation.alloc_ - mach_header.Swap(segment_command->fileoff))));
                     segment_command->filesize = size;
                     segment_command->vmsize = Align(size, 1 << allocation.align_);
                 } break;
@@ -1283,13 +1194,13 @@ static void Allocate(const void *idata, size_t isize, std::streambuf &output, co
         std::string overlap(altern.str());
         overlap.append(top + overlap.size(), Align(overlap.size(), 0x1000) - overlap.size());
 
-        put(output, top + (position - begin), allocation.size_ - (position - begin), percent);
+        put(output, top + (position - begin), allocation.size_ - (position - begin));
         position = begin + allocation.size_;
 
         pad(output, allocation.limit_ - allocation.size_);
         position += allocation.limit_ - allocation.size_;
 
-        size_t saved(save(mach_header, output, allocation.limit_, overlap, top, percent));
+        size_t saved(save(mach_header, output, allocation.limit_, overlap, top));
         if (allocation.alloc_ > saved)
             pad(output, allocation.alloc_ - saved);
         else
@@ -1363,7 +1274,7 @@ class Buffer {
     }
 
     Buffer(const char *data, size_t size) :
-        Buffer(BIO_new_mem_buf(const_cast<char *>(data), size))
+        Buffer(BIO_new_mem_buf(const_cast<char *>(data), (int)size))
     {
     }
 
@@ -1375,7 +1286,7 @@ class Buffer {
     Buffer(PKCS7 *pkcs) :
         Buffer()
     {
-        _assert(i2d_PKCS7_bio(bio_, pkcs) != 0); // to DER
+        _assert(i2d_PKCS7_bio(bio_, pkcs) != 0);
     }
 
     ~Buffer() {
@@ -1479,17 +1390,27 @@ class Digest {
     uint8_t sha1_[LDID_SHA1_DIGEST_LENGTH];
 };
 
+class Hash {
+  public:
+    char sha1_[LDID_SHA1_DIGEST_LENGTH];
+    char sha256_[LDID_SHA256_DIGEST_LENGTH];
+
+    operator std::vector<char>() const {
+        return {sha1_, sha1_ + sizeof(sha1_)};
+    }
+};
+
 class HashBuffer :
     public std::streambuf
 {
   private:
-    ldid::Hash &hash_;
+    Hash &hash_;
 
     LDID_SHA1_CTX sha1_;
     LDID_SHA256_CTX sha256_;
 
   public:
-    HashBuffer(ldid::Hash &hash) :
+    HashBuffer(Hash &hash) :
         hash_(hash)
     {
         LDID_SHA1_Init(&sha1_);
@@ -1502,8 +1423,8 @@ class HashBuffer :
     }
 
     virtual std::streamsize xsputn(const char_type *data, std::streamsize size) {
-        LDID_SHA1_Update(&sha1_, data, size);
-        LDID_SHA256_Update(&sha256_, data, size);
+        LDID_SHA1_Update(&sha1_, data, (CC_LONG)size);
+        LDID_SHA256_Update(&sha256_, data, (CC_LONG)size);
         return size;
     }
 
@@ -1523,7 +1444,7 @@ class HashProxy :
     std::streambuf &buffer_;
 
   public:
-    HashProxy(ldid::Hash &hash, std::streambuf &buffer) :
+    HashProxy(Hash &hash, std::streambuf &buffer) :
         HashBuffer(hash),
         buffer_(buffer)
     {
@@ -1594,8 +1515,8 @@ static void Commit(const std::string &path, const std::string &temp) {
 
 namespace ldid {
 
-Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::string &identifier, const std::string &entitlements, const std::string &requirement, const std::string &key, const Slots &slots, const Functor<void (double)> &percent) {
-    Hash hash;
+std::vector<char> Sign(const void *idata, size_t isize, std::streambuf &output, const std::string &identifier, const std::string &entitlements, const std::string &requirement, const std::string &key, const Slots &slots) {
+    std::vector<char> hash(LDID_SHA1_DIGEST_LENGTH);
 
     std::string team;
 
@@ -1622,17 +1543,7 @@ Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::st
     Allocate(idata, isize, output, fun([&](const MachHeader &mach_header, size_t size) -> size_t {
         size_t alloc(sizeof(struct SuperBlob));
 
-        uint32_t normal((size + PageSize_ - 1) / PageSize_);
-
         uint32_t special(0);
-
-        _foreach (slot, slots)
-            special = std::max(special, slot.first);
-
-        mach_header.ForSection(fun([&](const char *segment, const char *section, void *data, size_t size) {
-            if (strcmp(segment, "__TEXT") == 0 && section != NULL && strcmp(section, "__info_plist") == 0)
-                special = std::max(special, CSSLOT_INFOSLOT);
-        }));
 
         special = std::max(special, CSSLOT_REQUIREMENTS);
         alloc += sizeof(struct BlobIndex);
@@ -1648,18 +1559,14 @@ Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::st
             alloc += entitlements.size();
         }
 
-        size_t directory(0);
-
-        directory += sizeof(struct BlobIndex);
-        directory += sizeof(struct Blob);
-        directory += sizeof(struct CodeDirectory);
-        directory += identifier.size() + 1;
+        special = std::max(special, CSSLOT_CODEDIRECTORY);
+        alloc += sizeof(struct BlobIndex);
+        alloc += sizeof(struct Blob);
+        alloc += sizeof(struct CodeDirectory);
+        alloc += identifier.size() + 1;
 
         if (!team.empty())
-            directory += team.size() + 1;
-
-        for (Algorithm *algorithm : GetAlgorithms())
-            alloc = Align(alloc + directory + (special + normal) * algorithm->size_, 16);
+            alloc += team.size() + 1;
 
         if (!key.empty()) {
             alloc += sizeof(struct BlobIndex);
@@ -1667,8 +1574,18 @@ Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::st
             alloc += certificate;
         }
 
+        _foreach (slot, slots)
+            special = std::max(special, slot.first);
+
+        mach_header.ForSection(fun([&](const char *segment, const char *section, void *data, size_t size) {
+            if (strcmp(segment, "__TEXT") == 0 && section != NULL && strcmp(section, "__info_plist") == 0)
+                special = std::max(special, CSSLOT_INFOSLOT);
+        }));
+
+        uint32_t normal((uint32_t)((size + PageSize_ - 1) / PageSize_));
+        alloc = Align(alloc + (special + normal) * LDID_SHA1_DIGEST_LENGTH, 16);
         return alloc;
-    }), fun([&](const MachHeader &mach_header, std::streambuf &output, size_t limit, const std::string &overlap, const char *top, const Functor<void (double)> &percent) -> size_t {
+    }), fun([&](const MachHeader &mach_header, std::streambuf &output, size_t limit, const std::string &overlap, const char *top) -> size_t {
         Blobs blobs;
 
         if (true) {
@@ -1681,7 +1598,7 @@ Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::st
                 put(data, requirement.data(), requirement.size());
             }
 
-            insert(blobs, CSSLOT_REQUIREMENTS, CSMAGIC_REQUIREMENTS, data);
+            insert(blobs, CSSLOT_REQUIREMENTS, data);
         }
 
         if (!entitlements.empty()) {
@@ -1690,28 +1607,22 @@ Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::st
             insert(blobs, CSSLOT_ENTITLEMENTS, CSMAGIC_EMBEDDED_ENTITLEMENTS, data);
         }
 
-        Slots posts(slots);
-
-        mach_header.ForSection(fun([&](const char *segment, const char *section, void *data, size_t size) {
-            if (strcmp(segment, "__TEXT") == 0 && section != NULL && strcmp(section, "__info_plist") == 0) {
-                auto &slot(posts[CSSLOT_INFOSLOT]);
-                for (Algorithm *algorithm : GetAlgorithms())
-                    (*algorithm)(slot, data, size);
-            }
-        }));
-
-        unsigned total(0);
-        for (Algorithm *pointer : GetAlgorithms()) {
-            Algorithm &algorithm(*pointer);
-
+        if (true) {
             std::stringbuf data;
+
+            Slots posts(slots);
+
+            mach_header.ForSection(fun([&](const char *segment, const char *section, void *data, size_t size) {
+                if (strcmp(segment, "__TEXT") == 0 && section != NULL && strcmp(section, "__info_plist") == 0)
+                    sha1(posts[CSSLOT_INFOSLOT], data, size);
+            }));
 
             uint32_t special(0);
             _foreach (blob, blobs)
                 special = std::max(special, blob.first);
             _foreach (slot, posts)
                 special = std::max(special, slot.first);
-            uint32_t normal((limit + PageSize_ - 1) / PageSize_);
+            uint32_t normal((uint32_t)((limit + PageSize_ - 1) / PageSize_));
 
             CodeDirectory directory;
             directory.version = Swap(uint32_t(0x00020200));
@@ -1719,8 +1630,8 @@ Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::st
             directory.nSpecialSlots = Swap(special);
             directory.codeLimit = Swap(uint32_t(limit));
             directory.nCodeSlots = Swap(normal);
-            directory.hashSize = algorithm.size_;
-            directory.hashType = algorithm.type_;
+            directory.hashSize = LDID_SHA1_DIGEST_LENGTH;
+            directory.hashType = CS_HASHTYPE_SHA1;
             directory.spare1 = 0x00;
             directory.pageSize = PageShift_;
             directory.spare2 = Swap(uint32_t(0));
@@ -1740,9 +1651,9 @@ Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::st
                 offset += team.size() + 1;
             }
 
-            offset += special * algorithm.size_;
+            offset += LDID_SHA1_DIGEST_LENGTH * special;
             directory.hashOffset = Swap(uint32_t(offset));
-            offset += normal * algorithm.size_;
+            offset += LDID_SHA1_DIGEST_LENGTH * normal;
 
             put(data, &directory, sizeof(directory));
 
@@ -1750,35 +1661,31 @@ Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::st
             if (!team.empty())
                 put(data, team.c_str(), team.size() + 1);
 
-            std::vector<uint8_t> storage((special + normal) * algorithm.size_);
-            auto *hashes(&storage[special * algorithm.size_]);
+            std::vector<Digest> storage(special + normal);
+            auto *hashes(&storage[special]);
 
-            memset(storage.data(), 0, special * algorithm.size_);
+            memset(storage.data(), 0, sizeof(Digest) * special);
 
             _foreach (blob, blobs) {
                 auto local(reinterpret_cast<const Blob *>(&blob.second[0]));
-                algorithm(hashes - blob.first * algorithm.size_, local, Swap(local->length));
+                sha1((hashes - blob.first)->sha1_, local, Swap(local->length));
             }
 
-            _foreach (slot, posts)
-                memcpy(hashes - slot.first * algorithm.size_, algorithm[slot.second], algorithm.size_);
+            _foreach (slot, posts) {
+                _assert(sizeof(*hashes) == slot.second.size());
+                memcpy(hashes - slot.first, slot.second.data(), slot.second.size());
+            }
 
-            percent(0);
             if (normal != 1)
-                for (size_t i = 0; i != normal - 1; ++i) {
-                    algorithm(hashes + i * algorithm.size_, (PageSize_ * i < overlap.size() ? overlap.data() : top) + PageSize_ * i, PageSize_);
-                    percent(double(i) / normal);
-                }
+                for (size_t i = 0; i != normal - 1; ++i)
+                    sha1(hashes[i].sha1_, (PageSize_ * i < overlap.size() ? overlap.data() : top) + PageSize_ * i, PageSize_);
             if (normal != 0)
-                algorithm(hashes + (normal - 1) * algorithm.size_, top + PageSize_ * (normal - 1), ((limit - 1) % PageSize_) + 1);
-            percent(1);
+                sha1(hashes[normal - 1].sha1_, top + PageSize_ * (normal - 1), ((limit - 1) % PageSize_) + 1);
 
-            put(data, storage.data(), storage.size());
+            put(data, storage.data(), sizeof(Digest) * storage.size());
 
-            const auto &save(insert(blobs, total == 0 ? CSSLOT_CODEDIRECTORY : CSSLOT_ALTERNATE + total - 1, CSMAGIC_CODEDIRECTORY, data));
-            algorithm(hash, save.data(), save.size());
-
-            ++total;
+            const auto &save(insert(blobs, CSSLOT_CODEDIRECTORY, CSMAGIC_CODEDIRECTORY, data));
+            sha1(hash, save.data(), save.size());
         }
 
 #ifndef LDID_NOSMIME
@@ -1800,21 +1707,21 @@ Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::st
 #endif
 
         return put(output, CSMAGIC_EMBEDDED_SIGNATURE, blobs);
-    }), percent);
+    }));
 
     return hash;
 }
 
 #ifndef LDID_NOTOOLS
-static void Unsign(void *idata, size_t isize, std::streambuf &output, const Functor<void (double)> &percent) {
+static void Unsign(void *idata, size_t isize, std::streambuf &output) {
     Allocate(idata, isize, output, fun([](const MachHeader &mach_header, size_t size) -> size_t {
         return 0;
-    }), fun([](const MachHeader &mach_header, std::streambuf &output, size_t limit, const std::string &overlap, const char *top, const Functor<void (double)> &percent) -> size_t {
+    }), fun([](const MachHeader &mach_header, std::streambuf &output, size_t limit, const std::string &overlap, const char *top) -> size_t {
         return 0;
-    }), percent);
+    }));
 }
 
-std::string DiskFolder::Path(const std::string &path) const {
+std::string DiskFolder::Path(const std::string &path) {
     return path_ + "/" + path;
 }
 
@@ -1835,7 +1742,7 @@ std::string readlink(const std::string &path) {
         std::string data;
         data.resize(size);
 
-        int writ(_syscall(::readlink(path.c_str(), &data[0], data.size())));
+        int writ((int)_syscall(::readlink(path.c_str(), &data[0], data.size())));
         if (size_t(writ) >= size)
             continue;
 
@@ -1845,7 +1752,7 @@ std::string readlink(const std::string &path) {
 }
 #endif
 
-void DiskFolder::Find(const std::string &root, const std::string &base, const Functor<void (const std::string &)> &code, const Functor<void (const std::string &, const Functor<std::string ()> &)> &link) const {
+void DiskFolder::Find(const std::string &root, const std::string &base, const Functor<void (const std::string &, const Functor<void (const Functor<void (std::streambuf &, std::streambuf &)> &)> &)> &code, const Functor<void (const std::string &, const Functor<std::string ()> &)> &link) {
     std::string path(Path(root) + base);
 
     DIR *dir(opendir(path.c_str()));
@@ -1890,38 +1797,37 @@ void DiskFolder::Find(const std::string &root, const std::string &base, const Fu
         if (directory)
             Find(root, base + name + "/", code, link);
         else
-            code(base + name);
+            code(base + name, fun([&](const Functor<void (std::streambuf &, std::streambuf &)> &code) {
+                std::string access(root + base + name);
+                Open(access, fun([&](std::streambuf &data, const void *flag) {
+                    auto from(path + name);
+                    std::filebuf save;
+                    commit_[from] = Temporary(save, from);
+                    code(data, save);
+                }));
+            }));
     }
 }
 
-void DiskFolder::Save(const std::string &path, bool edit, const void *flag, const Functor<void (std::streambuf &)> &code) {
-    if (!edit) {
-        // XXX: use nullbuf
-        std::stringbuf save;
-        code(save);
-    } else {
-        std::filebuf save;
-        auto from(Path(path));
-        commit_[from] = Temporary(save, from);
-        code(save);
-    }
+void DiskFolder::Save(const std::string &path, const void *flag, const Functor<void (std::streambuf &)> &code) {
+    std::filebuf save;
+    auto from(Path(path));
+    commit_[from] = Temporary(save, from);
+    code(save);
 }
 
-bool DiskFolder::Look(const std::string &path) const {
+bool DiskFolder::Look(const std::string &path) {
     return _syscall(access(Path(path).c_str(), R_OK), ENOENT) == 0;
 }
 
-void DiskFolder::Open(const std::string &path, const Functor<void (std::streambuf &, size_t, const void *)> &code) const {
+void DiskFolder::Open(const std::string &path, const Functor<void (std::streambuf &, const void *)> &code) {
     std::filebuf data;
     auto result(data.open(Path(path).c_str(), std::ios::binary | std::ios::in));
     _assert_(result == &data, "DiskFolder::Open(%s)", path.c_str());
-
-    auto length(data.pubseekoff(0, std::ios::end, std::ios::in));
-    data.pubseekpos(0, std::ios::in);
-    code(data, length, NULL);
+    code(data, NULL);
 }
 
-void DiskFolder::Find(const std::string &path, const Functor<void (const std::string &)> &code, const Functor<void (const std::string &, const Functor<std::string ()> &)> &link) const {
+void DiskFolder::Find(const std::string &path, const Functor<void (const std::string &, const Functor<void (const Functor<void (std::streambuf &, std::streambuf &)> &)> &)> &code, const Functor<void (const std::string &, const Functor<std::string ()> &)> &link) {
     Find(path, "", code, link);
 }
 #endif
@@ -1932,32 +1838,38 @@ SubFolder::SubFolder(Folder &parent, const std::string &path) :
 {
 }
 
-void SubFolder::Save(const std::string &path, bool edit, const void *flag, const Functor<void (std::streambuf &)> &code) {
-    return parent_.Save(path_ + path, edit, flag, code);
+void SubFolder::Save(const std::string &path, const void *flag, const Functor<void (std::streambuf &)> &code) {
+    return parent_.Save(path_ + path, flag, code);
 }
 
-bool SubFolder::Look(const std::string &path) const {
+bool SubFolder::Look(const std::string &path) {
     return parent_.Look(path_ + path);
 }
 
-void SubFolder::Open(const std::string &path, const Functor<void (std::streambuf &, size_t, const void *)> &code) const {
+void SubFolder::Open(const std::string &path, const Functor<void (std::streambuf &, const void *)> &code) {
     return parent_.Open(path_ + path, code);
 }
 
-void SubFolder::Find(const std::string &path, const Functor<void (const std::string &)> &code, const Functor<void (const std::string &, const Functor<std::string ()> &)> &link) const {
+void SubFolder::Find(const std::string &path, const Functor<void (const std::string &, const Functor<void (const Functor<void (std::streambuf &, std::streambuf &)> &)> &)> &code, const Functor<void (const std::string &, const Functor<std::string ()> &)> &link) {
     return parent_.Find(path_ + path, code, link);
 }
 
-std::string UnionFolder::Map(const std::string &path) const {
+std::string UnionFolder::Map(const std::string &path) {
     auto remap(remaps_.find(path));
     if (remap == remaps_.end())
         return path;
     return remap->second;
 }
 
-void UnionFolder::Map(const std::string &path, const Functor<void (const std::string &)> &code, const std::string &file, const Functor<void (const Functor<void (std::streambuf &, size_t, const void *)> &)> &save) const {
+void UnionFolder::Map(const std::string &path, const Functor<void (const std::string &, const Functor<void (const Functor<void (std::streambuf &, std::streambuf &)> &)> &)> &code, const std::string &file, const Functor<void (const Functor<void (std::streambuf &, const void *)> &)> &save) {
     if (file.size() >= path.size() && file.substr(0, path.size()) == path)
-        code(file.substr(path.size()));
+        code(file.substr(path.size()), fun([&](const Functor<void (std::streambuf &, std::streambuf &)> &code) {
+            save(fun([&](std::streambuf &data, const void *flag) {
+                parent_.Save(file, flag, fun([&](std::streambuf &save) {
+                    code(data, save);
+                }));
+            }));
+        }));
 }
 
 UnionFolder::UnionFolder(Folder &parent) :
@@ -1965,83 +1877,80 @@ UnionFolder::UnionFolder(Folder &parent) :
 {
 }
 
-void UnionFolder::Save(const std::string &path, bool edit, const void *flag, const Functor<void (std::streambuf &)> &code) {
-    return parent_.Save(Map(path), edit, flag, code);
+void UnionFolder::Save(const std::string &path, const void *flag, const Functor<void (std::streambuf &)> &code) {
+    return parent_.Save(Map(path), flag, code);
 }
 
-bool UnionFolder::Look(const std::string &path) const {
+bool UnionFolder::Look(const std::string &path) {
     auto file(resets_.find(path));
     if (file != resets_.end())
         return true;
     return parent_.Look(Map(path));
 }
 
-void UnionFolder::Open(const std::string &path, const Functor<void (std::streambuf &, size_t, const void *)> &code) const {
+void UnionFolder::Open(const std::string &path, const Functor<void (std::streambuf &, const void *)> &code) {
     auto file(resets_.find(path));
     if (file == resets_.end())
         return parent_.Open(Map(path), code);
     auto &entry(file->second);
 
     auto &data(entry.first);
-    auto length(data.pubseekoff(0, std::ios::end, std::ios::in));
     data.pubseekpos(0, std::ios::in);
-    code(data, length, entry.second);
+    code(data, entry.second);
 }
 
-void UnionFolder::Find(const std::string &path, const Functor<void (const std::string &)> &code, const Functor<void (const std::string &, const Functor<std::string ()> &)> &link) const {
-    for (auto &reset : resets_)
-        Map(path, code, reset.first, fun([&](const Functor<void (std::streambuf &, size_t, const void *)> &code) {
-            auto &entry(reset.second);
-            auto length(entry.first.pubseekoff(0, std::ios::end, std::ios::in));
-            entry.first.pubseekpos(0, std::ios::in);
-            code(entry.first, length, entry.second);
-        }));
-
-    for (auto &remap : remaps_)
-        Map(path, code, remap.first, fun([&](const Functor<void (std::streambuf &, size_t, const void *)> &code) {
-            parent_.Open(remap.second, fun([&](std::streambuf &data, size_t length, const void *flag) {
-                code(data, length, flag);
-            }));
-        }));
-
-    parent_.Find(path, fun([&](const std::string &name) {
+void UnionFolder::Find(const std::string &path, const Functor<void (const std::string &, const Functor<void (const Functor<void (std::streambuf &, std::streambuf &)> &)> &)> &code, const Functor<void (const std::string &, const Functor<std::string ()> &)> &link) {
+    parent_.Find(path, fun([&](const std::string &name, const Functor<void (const Functor<void (std::streambuf &, std::streambuf &)> &)> &save) {
         if (deletes_.find(path + name) == deletes_.end())
-            code(name);
+            code(name, save);
     }), fun([&](const std::string &name, const Functor<std::string ()> &read) {
         if (deletes_.find(path + name) == deletes_.end())
             link(name, read);
     }));
+
+    for (auto &reset : resets_)
+        Map(path, code, reset.first, fun([&](const Functor<void (std::streambuf &, const void *)> &code) {
+            auto &entry(reset.second);
+            entry.first.pubseekpos(0, std::ios::in);
+            code(entry.first, entry.second);
+        }));
+
+    for (auto &remap : remaps_)
+        Map(path, code, remap.first, fun([&](const Functor<void (std::streambuf &, const void *)> &code) {
+            parent_.Open(remap.second, fun([&](std::streambuf &data, const void *flag) {
+                code(data, flag);
+            }));
+        }));
 }
 
 #ifndef LDID_NOTOOLS
-static void copy(std::streambuf &source, std::streambuf &target, size_t length, const ldid::Functor<void (double)> &percent) {
-    percent(0);
+static size_t copy(std::streambuf &source, std::streambuf &target) {
     size_t total(0);
     for (;;) {
-        char data[4096 * 4];
+        char data[4096];
         size_t writ(source.sgetn(data, sizeof(data)));
         if (writ == 0)
             break;
         _assert(target.sputn(data, writ) == writ);
         total += writ;
-        percent(double(total) / length);
     }
+    return total;
 }
 
 #ifndef LDID_NOPLIST
 static plist_t plist(const std::string &data) {
     plist_t plist(NULL);
     if (Starts(data, "bplist00"))
-        plist_from_bin(data.data(), data.size(), &plist);
+        plist_from_bin(data.data(), (uint32_t)data.size(), &plist);
     else
-        plist_from_xml(data.data(), data.size(), &plist);
+        plist_from_xml(data.data(), (uint32_t)data.size(), &plist);
     _assert(plist != NULL);
     return plist;
 }
 
-static void plist_d(std::streambuf &buffer, size_t length, const Functor<void (plist_t)> &code) {
+static void plist_d(std::streambuf &buffer, const Functor<void (plist_t)> &code) {
     std::stringbuf data;
-    copy(buffer, data, length, ldid::fun(dummy));
+    copy(buffer, data);
     auto node(plist(data.str()));
     _scope({ plist_free(node); });
     _assert(plist_get_node_type(node) == PLIST_DICT);
@@ -2088,7 +1997,7 @@ class Expression {
             return false;
         _assert_(value == 0, "regexec()");
         for (size_t i(0); i != matches_.size(); ++i)
-            matches_[i].assign(data.data() + matches[i].rm_so, matches[i].rm_eo - matches[i].rm_so);
+            matches_[i].assign(data.data() + matches[i].rm_so, (unsigned long)(matches[i].rm_eo - matches[i].rm_so));
         return true;
     }
 
@@ -2143,20 +2052,20 @@ struct RuleCode {
 };
 
 #ifndef LDID_NOPLIST
-static Hash Sign(const uint8_t *prefix, size_t size, std::streambuf &buffer, Hash &hash, std::streambuf &save, const std::string &identifier, const std::string &entitlements, const std::string &requirement, const std::string &key, const Slots &slots, size_t length, const Functor<void (double)> &percent) {
+static std::vector<char> Sign(const uint8_t *prefix, size_t size, std::streambuf &buffer, Hash &hash, std::streambuf &save, const std::string &identifier, const std::string &entitlements, const std::string &requirement, const std::string &key, const Slots &slots) {
     // XXX: this is a miserable fail
     std::stringbuf temp;
     put(temp, prefix, size);
-    copy(buffer, temp, length - size, percent);
+    size += copy(buffer, temp);
     // XXX: this is a stupid hack
-    pad(temp, 0x10 - (length & 0xf));
+    pad(temp, 0x10 - (size & 0xf));
     auto data(temp.str());
 
     HashProxy proxy(hash, save);
-    return Sign(data.data(), data.size(), proxy, identifier, entitlements, requirement, key, slots, percent);
+    return Sign(data.data(), data.size(), proxy, identifier, entitlements, requirement, key, slots);
 }
 
-Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std::map<std::string, Hash> &remote, const std::string &requirement, const Functor<std::string (const std::string &, const std::string &)> &alter, const Functor<void (const std::string &)> &progress, const Functor<void (double)> &percent) {
+Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std::map<std::string, Hash> &remote, const std::string &entitlements, const std::string &requirement) {
     std::string executable;
     std::string identifier;
 
@@ -2168,8 +2077,8 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
         info = "Resources/" + info;
     }
 
-    folder.Open(info, fun([&](std::streambuf &buffer, size_t length, const void *flag) {
-        plist_d(buffer, length, fun([&](plist_t node) {
+    folder.Open(info, fun([&](std::streambuf &buffer, const void *flag) {
+        plist_d(buffer, fun([&](plist_t node) {
             executable = plist_s(plist_dict_get_item(node, "CFBundleExecutable"));
             identifier = plist_s(plist_dict_get_item(node, "CFBundleIdentifier"));
         }));
@@ -2179,17 +2088,6 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
         executable = "MacOS/" + executable;
         mac = true;
     }
-
-    std::string entitlements;
-    folder.Open(executable, fun([&](std::streambuf &buffer, size_t length, const void *flag) {
-        // XXX: this is a miserable fail
-        std::stringbuf temp;
-        copy(buffer, temp, length, percent);
-        // XXX: this is a stupid hack
-        pad(temp, 0x10 - (length & 0xf));
-        auto data(temp.str());
-        entitlements = alter(root, Analyze(data.data(), data.size()));
-    }));
 
     static const std::string directory("_CodeSignature/");
     static const std::string signature(directory + "CodeResources");
@@ -2233,16 +2131,13 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
     Expression nested("^(Frameworks/[^/]*\\.framework|PlugIns/[^/]*\\.appex(()|/[^/]*.app))/(" + failure + ")Info\\.plist$");
     std::map<std::string, Bundle> bundles;
 
-    folder.Find("", fun([&](const std::string &name) {
+    folder.Find("", fun([&](const std::string &name, const Functor<void (const Functor<void (std::streambuf &, std::streambuf &)> &)> &code) {
         if (!nested(name))
             return;
         auto bundle(root + Split(name).dir);
         bundle.resize(bundle.size() - resources.size());
         SubFolder subfolder(folder, bundle);
-
-        bundles[nested[1]] = Sign(bundle, subfolder, key, local, "", Starts(name, "PlugIns/") ? alter :
-            static_cast<const Functor<std::string (const std::string &, const std::string &)> &>(fun([&](const std::string &, const std::string &entitlements) -> std::string { return entitlements; }))
-        , progress, percent);
+        bundles[nested[1]] = Sign(bundle, subfolder, key, local, "", "");
     }), fun([&](const std::string &name, const Functor<std::string ()> &read) {
     }));
 
@@ -2264,7 +2159,7 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
 
     std::map<std::string, std::string> links;
 
-    folder.Find("", fun([&](const std::string &name) {
+    folder.Find("", fun([&](const std::string &name, const Functor<void (const Functor<void (std::streambuf &, std::streambuf &)> &)> &code) {
         if (exclude(name))
             return;
 
@@ -2272,9 +2167,7 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
             return;
         auto &hash(local[name]);
 
-        folder.Open(name, fun([&](std::streambuf &data, size_t length, const void *flag) {
-            progress(root + name);
-
+        code(fun([&](std::streambuf &data, std::streambuf &save) {
             union {
                 struct {
                     uint32_t magic;
@@ -2286,7 +2179,7 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
 
             auto size(most(data, &header.bytes, sizeof(header.bytes)));
 
-            if (name != "_WatchKitStub/WK"
+            if (name.find("_WatchKitStub/WK") == std::string::npos
                 && size == sizeof(header.bytes)
                 && !Starts(name, "Watch"))
                 switch (Swap(header.magic)) {
@@ -2297,18 +2190,14 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
                     case FAT_CIGAM:
                     case MH_MAGIC: case MH_MAGIC_64:
                     case MH_CIGAM: case MH_CIGAM_64:
-                        folder.Save(name, true, flag, fun([&](std::streambuf &save) {
-                            Slots slots;
-                            Sign(header.bytes, size, data, hash, save, identifier, "", "", key, slots, length, percent);
-                        }));
+                        Slots slots;
+                        Sign(header.bytes, size, data, hash, save, identifier, "", "", key, slots);
                         return;
                 }
 
-            folder.Save(name, false, flag, fun([&](std::streambuf &save) {
-                HashProxy proxy(hash, save);
-                put(proxy, header.bytes, size);
-                copy(data, proxy, length - size, percent);
-            }));
+            HashProxy proxy(hash, save);
+            put(proxy, header.bytes, size);
+            copy(data, proxy);
         }));
     }), fun([&](const std::string &name, const Functor<std::string ()> &read) {
         if (exclude(name))
@@ -2334,12 +2223,12 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
                 if (rule(hash.first)) {
                     if (!old && mac && excludes.find(hash.first) != excludes.end());
                     else if (old && rule.mode_ == NoMode)
-                        plist_dict_set_item(files, hash.first.c_str(), plist_new_data(reinterpret_cast<const char *>(hash.second.sha1_), sizeof(hash.second.sha1_)));
+                        plist_dict_set_item(files, hash.first.c_str(), plist_new_data(hash.second.sha1_, sizeof(hash.second.sha1_)));
                     else if (rule.mode_ != OmitMode) {
                         auto entry(plist_new_dict());
-                        plist_dict_set_item(entry, "hash", plist_new_data(reinterpret_cast<const char *>(hash.second.sha1_), sizeof(hash.second.sha1_)));
+                        plist_dict_set_item(entry, "hash", plist_new_data(hash.second.sha1_, sizeof(hash.second.sha1_)));
                         if (!old)
-                            plist_dict_set_item(entry, "hash2", plist_new_data(reinterpret_cast<const char *>(hash.second.sha256_), sizeof(hash.second.sha256_)));
+                            plist_dict_set_item(entry, "hash2", plist_new_data(hash.second.sha256_, sizeof(hash.second.sha256_)));
                         if (rule.mode_ == OptionalMode)
                             plist_dict_set_item(entry, "optional", plist_new_bool(true));
                         plist_dict_set_item(files, hash.first.c_str(), entry);
@@ -2365,7 +2254,7 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
         if (!old && mac)
             for (const auto &bundle : bundles) {
                 auto entry(plist_new_dict());
-                plist_dict_set_item(entry, "cdhash", plist_new_data(reinterpret_cast<const char *>(bundle.second.hash.sha256_), sizeof(bundle.second.hash.sha256_)));
+                plist_dict_set_item(entry, "cdhash", plist_new_data(bundle.second.hash.data(), bundle.second.hash.size()));
                 plist_dict_set_item(entry, "requirement", plist_new_string("anchor apple generic"));
                 plist_dict_set_item(files, bundle.first.c_str(), entry);
             }
@@ -2410,7 +2299,7 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
             }
     }
 
-    folder.Save(signature, true, NULL, fun([&](std::streambuf &save) {
+    folder.Save(signature, NULL, fun([&](std::streambuf &save) {
         HashProxy proxy(local[signature], save);
         char *xml(NULL);
         uint32_t size;
@@ -2422,13 +2311,12 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
     Bundle bundle;
     bundle.path = executable;
 
-    folder.Open(executable, fun([&](std::streambuf &buffer, size_t length, const void *flag) {
-        progress(root + executable);
-        folder.Save(executable, true, flag, fun([&](std::streambuf &save) {
+    folder.Open(executable, fun([&](std::streambuf &buffer, const void *flag) {
+        folder.Save(executable, flag, fun([&](std::streambuf &save) {
             Slots slots;
             slots[1] = local.at(info);
             slots[3] = local.at(signature);
-            bundle.hash = Sign(NULL, 0, buffer, local[executable], save, identifier, entitlements, requirement, key, slots, length, percent);
+            bundle.hash = Sign(NULL, 0, buffer, local[executable], save, identifier, entitlements, requirement, key, slots);
         }));
     }));
 
@@ -2438,9 +2326,9 @@ Bundle Sign(const std::string &root, Folder &folder, const std::string &key, std
     return bundle;
 }
 
-Bundle Sign(const std::string &root, Folder &folder, const std::string &key, const std::string &requirement, const Functor<std::string (const std::string &, const std::string &)> &alter, const Functor<void (const std::string &)> &progress, const Functor<void (double)> &percent) {
+Bundle Sign(const std::string &root, Folder &folder, const std::string &key, const std::string &entitlements, const std::string &requirement) {
     std::map<std::string, Hash> local;
-    return Sign(root, folder, key, local, requirement, alter, progress, percent);
+    return Sign(root, folder, key, local, entitlements, requirement);
 }
 #endif
 
@@ -2516,16 +2404,14 @@ int main(int argc, char *argv[]) {
             case 'e': flag_e = true; break;
 
             case 'E': {
-                const char *string = argv[argi] + 2;
-                const char *colon = strchr(string, ':');
+                const char *slot = argv[argi] + 2;
+                const char *colon = strchr(slot, ':');
                 _assert(colon != NULL);
                 Map file(colon + 1, O_RDONLY, PROT_READ, MAP_PRIVATE);
                 char *arge;
-                unsigned number(strtoul(string, &arge, 0));
+                unsigned number(strtoul(slot, &arge, 0));
                 _assert(arge == colon);
-                auto &slot(slots[number]);
-                for (Algorithm *algorithm : GetAlgorithms())
-                    (*algorithm)(slot, file.data(), file.size());
+                sha1(slots[number], file.data(), file.size());
             } break;
 
             case 'q': flag_q = true; break;
@@ -2619,9 +2505,7 @@ int main(int argc, char *argv[]) {
 #ifndef LDID_NOPLIST
             _assert(!flag_r);
             ldid::DiskFolder folder(path);
-            path += "/" + Sign("", folder, key, requirement, ldid::fun([&](const std::string &, const std::string &) -> std::string { return entitlements; })
-                , ldid::fun([&](const std::string &) {}), ldid::fun(dummy)
-            ).path;
+            path += "/" + Sign("", folder, key, entitlements, requirement).path;
 #else
             _assert(false);
 #endif
@@ -2633,10 +2517,10 @@ int main(int argc, char *argv[]) {
             auto temp(Temporary(output, split));
 
             if (flag_r)
-                ldid::Unsign(input.data(), input.size(), output, ldid::fun(dummy));
+                ldid::Unsign(input.data(), input.size(), output);
             else {
                 std::string identifier(flag_I ?: split.base.c_str());
-                ldid::Sign(input.data(), input.size(), output, identifier, entitlements, requirement, key, slots, ldid::fun(dummy));
+                ldid::Sign(input.data(), input.size(), output, identifier, entitlements, requirement, key, slots);
             }
 
             Commit(path, temp);
@@ -2765,9 +2649,9 @@ int main(int argc, char *argv[]) {
 
                         if (pages != 1)
                             for (size_t i = 0; i != pages - 1; ++i)
-                                LDID_SHA1(top + PageSize_ * i, PageSize_, hashes[i]);
+                                sha1(hashes[i], top + PageSize_ * i, PageSize_);
                         if (pages != 0)
-                            LDID_SHA1(top + PageSize_ * (pages - 1), ((data - 1) % PageSize_) + 1, hashes[pages - 1]);
+                            sha1(hashes[pages - 1], top + PageSize_ * (pages - 1), ((data - 1) % PageSize_) + 1);
                     }
             }
         }

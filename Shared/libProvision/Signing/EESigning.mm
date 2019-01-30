@@ -15,6 +15,8 @@
 #include <openssl/pkcs12.h>
 #include <openssl/err.h>
 
+static auto dummy([](double) {});
+
 @implementation EESigning
 
 + (instancetype)signerWithCertificate:(NSData*)certificate privateKey:(NSString*)privateKey {
@@ -100,10 +102,12 @@
     std::string entitlementsString = (char*)[exportedPlist bytes];
     NSLog(@"Entitlements are:\n%s", entitlementsString.c_str());
     
+    std::string requirementsString = [self _createRequirementsBlob:CFSTR("anchor apple generic")];
+    
     // We can now sign!
 
     ldid::DiskFolder folder([[absolutePath copy] cStringUsingEncoding:NSUTF8StringEncoding]);
-    ldid::Bundle outputBundle = Sign("", folder, _PKCS12, entitlementsString, "");
+    ldid::Bundle outputBundle = Sign("", folder, _PKCS12, requirementsString, ldid::fun([&](const std::string &, const std::string &) -> std::string { return entitlementsString; }), ldid::fun([&](const std::string &) {}), ldid::fun(dummy));
     
     // TODO: Handle errors!
     
@@ -111,7 +115,7 @@
 }
 
 - (X509 *)_loadCAChainFromDisk {
-    NSString *filepath = [[NSBundle mainBundle] pathForResource:@"apple-ios" ofType:@"pem"];
+    NSString *filepath = [[NSBundle mainBundle] pathForResource:@"apple-ios-new" ofType:@"pem"];
     
     NSLog(@"Loading CA chain from '%@'", filepath);
     
@@ -253,6 +257,39 @@
         std::string s(reinterpret_cast<char const*>([result bytes]), [result length]);
         return s;
     }
+}
+
+- (std::string)_createRequirementsBlob:(CFStringRef)string {
+    SecRequirementRef requirementRef = NULL;
+    OSStatus status = SecRequirementCreateWithString(string, kSecCSDefaultFlags, &requirementRef);
+    
+    if (status != noErr) {
+        NSLog(@"Error: Failed to create requirements! %d", status);
+        
+        return "";
+    }
+    
+    std::string result = "";
+    CFDataRef data;
+    status = SecRequirementCopyData(requirementRef, kSecCSDefaultFlags, &data);
+    
+    if (status != noErr) {
+        NSLog(@"Error: Failed to copy requirements! %d", status);
+        
+        return "";
+    }
+    
+    auto buffer = reinterpret_cast<const char*>(CFDataGetBytePtr(data));
+    auto buffer_length = static_cast<std::size_t>(CFDataGetLength(data));
+    result = std::string(buffer, buffer_length - 1);
+    
+    //free req reference
+    if (requirementRef != NULL) {
+        CFRelease(requirementRef);
+        requirementRef = NULL;
+    }
+    
+    return result;
 }
 
 @end

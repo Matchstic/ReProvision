@@ -552,6 +552,9 @@
     // Certificate info.
     const char      *szCountry = "UK";
     const char      *szCommon = "ReProvision";
+    const char      *szProvince = "London";
+    const char      *szCity = "London";
+    const char      *szOrganization = "ReProvision";
     
     // 1. generate rsa key
     bne = BN_new();
@@ -577,6 +580,21 @@
     x509_name = X509_REQ_get_subject_name(x509_req);
     
     ret = X509_NAME_add_entry_by_txt(x509_name,"C", MBSTRING_ASC, (const unsigned char*)szCountry, -1, -1, 0);
+    if (ret != 1){
+        goto free_all;
+    }
+    
+    ret = X509_NAME_add_entry_by_txt(x509_name,"ST", MBSTRING_ASC, (const unsigned char*)szProvince, -1, -1, 0);
+    if (ret != 1){
+        goto free_all;
+    }
+    
+    ret = X509_NAME_add_entry_by_txt(x509_name,"L", MBSTRING_ASC, (const unsigned char*)szCity, -1, -1, 0);
+    if (ret != 1){
+        goto free_all;
+    }
+    
+    ret = X509_NAME_add_entry_by_txt(x509_name,"O", MBSTRING_ASC, (const unsigned char*)szOrganization, -1, -1, 0);
     if (ret != 1){
         goto free_all;
     }
