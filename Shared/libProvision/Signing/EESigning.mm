@@ -103,6 +103,7 @@ static auto dummy([](double) {});
     NSLog(@"Entitlements are:\n%s", entitlementsString.c_str());
     
     std::string requirementsString = [self _createRequirementsBlob:CFSTR("anchor apple generic")];
+    //std::string requirementsString = "";
     
     // We can now sign!
 
@@ -134,6 +135,20 @@ static auto dummy([](double) {});
 }
 
 - (std::string)_createPKCS12CertificateWithKey:(NSString*)key certificate:(NSData*)certificate andCAChain:(X509 *)chain {
+    
+    // Load root CA
+    NSString *rootCAFilepath = [[NSBundle mainBundle] pathForResource:@"root" ofType:@"pem"];
+    
+    NSString *rootCAContents = [NSString stringWithContentsOfFile:rootCAFilepath encoding:NSUTF8StringEncoding error:nil];
+    
+    BIO *rootCABio = BIO_new(BIO_s_mem());
+    BIO_puts(rootCABio, [rootCAContents cStringUsingEncoding:NSUTF8StringEncoding]);
+    
+    X509 *rootCA = PEM_read_bio_X509(rootCABio, NULL, NULL, NULL);
+    if (!rootCA) {
+        NSLog(@"Failed to load root CA.");
+        @throw [NSException exceptionWithName:@"libProvisionSigningException" reason:@"Could not load CA root from disk!" userInfo:nil];
+    }
     
     // Code utilised from: http://fm4dd.com/openssl/pkcs12test.htm
     
@@ -193,6 +208,7 @@ static auto dummy([](double) {});
         error = -1;
     }
     
+    sk_X509_push(cacertstack, rootCA);
     sk_X509_push(cacertstack, cacert);
     
     /*--------------------------------------------------------------*
