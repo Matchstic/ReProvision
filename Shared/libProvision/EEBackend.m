@@ -192,7 +192,7 @@
         
         // Next step: signing. To do this, we use EESigner with these four results.
         EESigning *signer = [EESigning signerWithCertificate:certificate[@"certContent"] privateKey:privateKey];
-        [signer signBundleAtPath:path entitlements:entitlements withCallback:^(BOOL success, NSString *result) {
+        [signer signBundleAtPath:path entitlements:entitlements identifier:applicationId withCallback:^(BOOL success, NSString *result) {
            
             // Return to the caller on a new thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

@@ -87,7 +87,7 @@ static auto dummy([](double) {});
     return plist;
 }
 
-- (void)signBundleAtPath:(NSString*)absolutePath entitlements:(NSDictionary*)entitlements withCallback:(void (^)(BOOL, NSString*))completionHandler {
+- (void)signBundleAtPath:(NSString*)absolutePath entitlements:(NSDictionary*)entitlements identifier:(NSString*)bundleIdentifier withCallback:(void (^)(BOOL, NSString*))completionHandler {
     
     // We request that ldid signs the bundle given, with our PKCS12 file so that it is validly codesigned.
     if (_PKCS12.size() == 0) {
@@ -102,7 +102,7 @@ static auto dummy([](double) {});
     std::string entitlementsString = (char*)[exportedPlist bytes];
     NSLog(@"Entitlements are:\n%s", entitlementsString.c_str());
     
-    std::string requirementsString = [self _createRequirementsBlob:CFSTR("anchor apple generic")];
+    std::string requirementsString = [self _createRequirementsBlobWithKey:_privateKey certificate:(NSData *)_certificate andBundleIdentifier:bundleIdentifier];
     //std::string requirementsString = "";
     
     // We can now sign!
@@ -275,9 +275,39 @@ static auto dummy([](double) {});
     }
 }
 
-- (std::string)_createRequirementsBlob:(CFStringRef)string {
+- (std::string)_createRequirementsBlobWithKey:(NSString*)key certificate:(NSData*)certificate andBundleIdentifier:(NSString*)identifier {
+    
+    // Load the incoming cert to grab off the common name.
+    
+    OpenSSL_add_all_algorithms();
+    ERR_load_crypto_strings();
+    
+    EVP_PKEY   *cert_privkey;
+    BIO        *bio_privkey;
+    X509       *cert;
+    
+    bio_privkey = BIO_new(BIO_s_mem());
+    BIO_puts(bio_privkey, [key cStringUsingEncoding:NSUTF8StringEncoding]);
+    
+    if (!(cert_privkey = PEM_read_bio_PrivateKey(bio_privkey, NULL, NULL, NULL))) {
+        NSLog(@"Error loading certificate private key content.");
+        return "";
+    }
+    
+    const unsigned char *input = (unsigned char*)[certificate bytes];
+    cert = d2i_X509(NULL, &input, (int)[certificate length]);
+    if (!cert) {
+        NSLog(@"Error loading cert into memory.");
+        return "";
+    }
+    
+    // Build the requirements string
+    NSString *requirementsString = [NSString stringWithFormat:@"identifier \"%@\" and anchor apple generic and certificate leaf[subject.CN] = \"%s\" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */",
+                                    identifier,
+                                    [self _commonNameForCert:cert].c_str()];
+    
     SecRequirementRef requirementRef = NULL;
-    OSStatus status = SecRequirementCreateWithString(string, kSecCSDefaultFlags, &requirementRef);
+    OSStatus status = SecRequirementCreateWithString((__bridge CFStringRef)requirementsString, kSecCSDefaultFlags, &requirementRef);
     
     if (status != noErr) {
         NSLog(@"Error: Failed to create requirements! %d", status);
@@ -285,7 +315,7 @@ static auto dummy([](double) {});
         return "";
     }
     
-    std::string result = "";
+    std::string result;
     CFDataRef data;
     status = SecRequirementCopyData(requirementRef, kSecCSDefaultFlags, &data);
     
@@ -297,7 +327,9 @@ static auto dummy([](double) {});
     
     auto buffer = reinterpret_cast<const char*>(CFDataGetBytePtr(data));
     auto buffer_length = static_cast<std::size_t>(CFDataGetLength(data));
-    result = std::string(buffer, buffer_length - 1);
+    
+    result.resize(buffer_length);
+    memcpy((char*)result.data(), buffer, buffer_length);
     
     //free req reference
     if (requirementRef != NULL) {
@@ -306,6 +338,36 @@ static auto dummy([](double) {});
     }
     
     return result;
+}
+
+- (std::string)_commonNameForCert:(X509*)cert {
+    
+    int common_name_loc = -1;
+    X509_NAME_ENTRY *common_name_entry = NULL;
+    ASN1_STRING *common_name_asn1 = NULL;
+    char *common_name_str = NULL;
+    
+    // Find the position of the CN field in the Subject field of the certificate
+    common_name_loc = X509_NAME_get_index_by_NID(X509_get_subject_name(cert), NID_commonName, -1);
+    if (common_name_loc < 0) {
+        return "";
+    }
+    
+    // Extract the CN field
+    common_name_entry = X509_NAME_get_entry(X509_get_subject_name(cert), common_name_loc);
+    if (common_name_entry == NULL) {
+        return "";
+    }
+    
+    // Convert the CN field to a C string
+    common_name_asn1 = X509_NAME_ENTRY_get_data(common_name_entry);
+    if (common_name_asn1 == NULL) {
+        return "";
+    }
+    
+    common_name_str = (char *) ASN1_STRING_data(common_name_asn1);
+    
+    return std::string(common_name_str);
 }
 
 @end

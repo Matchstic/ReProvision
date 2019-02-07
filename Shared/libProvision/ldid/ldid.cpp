@@ -832,6 +832,10 @@ class FatHeader :
 #define CS_HASHTYPE_SHA256_160 3
 #define CS_HASHTYPE_SHA386_386 4
 
+#define CS_REQUIREMENT_TYPE_HOST       1
+#define CS_REQUIREMENT_TYPE_GUEST      2
+#define CS_REQUIREMENT_TYPE_DESIGNATED 3
+
 struct BlobIndex {
     uint32_t type;
     uint32_t offset;
@@ -1678,10 +1682,15 @@ Hash Sign(const void *idata, size_t isize, std::streambuf &output, const std::st
                 Blobs requirements;
                 put(data, CSMAGIC_REQUIREMENTS, requirements);
             } else {
-                put(data, requirement.data(), requirement.size());
+                std::stringbuf _data;
+                put(_data, requirement.data(), requirement.size());
+                
+                Blobs requirements;
+                insert(requirements, CS_REQUIREMENT_TYPE_DESIGNATED, _data);
+                put(data, CSMAGIC_REQUIREMENTS, requirements);
             }
 
-            insert(blobs, CSSLOT_REQUIREMENTS, CSMAGIC_REQUIREMENTS, data);
+            insert(blobs, CSSLOT_REQUIREMENTS, data);
         }
 
         if (!entitlements.empty()) {

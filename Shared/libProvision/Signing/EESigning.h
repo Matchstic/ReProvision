@@ -24,6 +24,6 @@
 
 + (NSDictionary*)updateEntitlementsForBinaryAtLocation:(NSString*)binaryLocation bundleIdentifier:(NSString*)bundleIdentifier teamID:(NSString*)teamid;
 
-- (void)signBundleAtPath:(NSString*)absolutePath entitlements:(NSDictionary*)entitlements withCallback:(void (^)(BOOL, NSString*))completionHandler;
+- (void)signBundleAtPath:(NSString*)absolutePath entitlements:(NSDictionary*)entitlements identifier:(NSString*)bundleIdentifier withCallback:(void (^)(BOOL, NSString*))completionHandler;
 
 @end
