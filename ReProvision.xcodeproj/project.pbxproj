@@ -121,6 +121,7 @@
 		C96FBFF120EBD287007E2EC3 /* RPVInstalledTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */; };
 		C97EF5BA20F6AA3B005CB1DB /* RMessageDesign.json in Resources */ = {isa = PBXBuildFile; fileRef = C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */; };
 		C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */ = {isa = PBXBuildFile; fileRef = C996746520EE314B00EEFBD2 /* PackageVersion.plist */; };
+		C9A9446D2215FADD00F5C556 /* root.pem in Resources */ = {isa = PBXBuildFile; fileRef = C9A9446C2215FADC00F5C556 /* root.pem */; };
 		C9C5921D21206E1000DF2E19 /* RPVInstalledViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */; };
 		C9C5921E21206E1300DF2E19 /* RPVResources.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C1E20052B13000AD4C3 /* RPVResources.m */; };
 		C9C5922221206F0300DF2E19 /* AssertionServices.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C5921F21206F0200DF2E19 /* AssertionServices.tbd */; };
@@ -134,11 +135,7 @@
 		C9C6EA732004261300211FDD /* RPVSettingsNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA6B2004261300211FDD /* RPVSettingsNavigationViewController.m */; };
 		C9C6EAF62004280A00211FDD /* EEAppleServices.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA782004280A00211FDD /* EEAppleServices.m */; };
 		C9C6EAF72004280A00211FDD /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA7A2004280A00211FDD /* NSData+GZIP.m */; };
-		C9C6EAF82004280A00211FDD /* apple-dev.pem in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA7C2004280A00211FDD /* apple-dev.pem */; };
 		C9C6EAF92004280A00211FDD /* apple-ios.pem in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA7D2004280A00211FDD /* apple-ios.pem */; };
-		C9C6EAFA2004280A00211FDD /* verisign-1024-128.pem in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA7E2004280A00211FDD /* verisign-1024-128.pem */; };
-		C9C6EAFB2004280A00211FDD /* verisign-2048-128.pem in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA7F2004280A00211FDD /* verisign-2048-128.pem */; };
-		C9C6EAFC2004280A00211FDD /* verisign-2048-256.pem in Resources */ = {isa = PBXBuildFile; fileRef = C9C6EA802004280A00211FDD /* verisign-2048-256.pem */; };
 		C9C6EAFD2004280A00211FDD /* EEBackend.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA822004280A00211FDD /* EEBackend.m */; };
 		C9C6EAFE2004280A00211FDD /* ldid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA842004280A00211FDD /* ldid.cpp */; };
 		C9C6EAFF2004280A00211FDD /* lookup2.c in Sources */ = {isa = PBXBuildFile; fileRef = C9C6EA862004280A00211FDD /* lookup2.c */; };
@@ -391,6 +388,8 @@
 		C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledTableViewCell.m; sourceTree = "<group>"; };
 		C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = RMessageDesign.json; sourceTree = "<group>"; };
 		C996746520EE314B00EEFBD2 /* PackageVersion.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
+		C9A9446A2215F72700F5C556 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		C9A9446C2215FADC00F5C556 /* root.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = root.pem; sourceTree = "<group>"; };
 		C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = SpringBoardServices.tbd; path = Shared/iosdaemon/lib/SpringBoardServices.tbd; sourceTree = "<group>"; };
 		C9AB43BE20F012E00016F78F /* BackBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = BackBoardServices.tbd; path = Shared/iosdaemon/lib/BackBoardServices.tbd; sourceTree = "<group>"; };
 		C9AB43C120F016CC0016F78F /* AssertionServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = AssertionServices.tbd; path = Shared/iosdaemon/lib/AssertionServices.tbd; sourceTree = "<group>"; };
@@ -411,11 +410,7 @@
 		C9C6EA782004280A00211FDD /* EEAppleServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EEAppleServices.m; sourceTree = "<group>"; };
 		C9C6EA792004280A00211FDD /* NSData+GZIP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GZIP.h"; sourceTree = "<group>"; };
 		C9C6EA7A2004280A00211FDD /* NSData+GZIP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GZIP.m"; sourceTree = "<group>"; };
-		C9C6EA7C2004280A00211FDD /* apple-dev.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "apple-dev.pem"; sourceTree = "<group>"; };
 		C9C6EA7D2004280A00211FDD /* apple-ios.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "apple-ios.pem"; sourceTree = "<group>"; };
-		C9C6EA7E2004280A00211FDD /* verisign-1024-128.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "verisign-1024-128.pem"; sourceTree = "<group>"; };
-		C9C6EA7F2004280A00211FDD /* verisign-2048-128.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "verisign-2048-128.pem"; sourceTree = "<group>"; };
-		C9C6EA802004280A00211FDD /* verisign-2048-256.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "verisign-2048-256.pem"; sourceTree = "<group>"; };
 		C9C6EA812004280A00211FDD /* EEBackend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EEBackend.h; sourceTree = "<group>"; };
 		C9C6EA822004280A00211FDD /* EEBackend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EEBackend.m; sourceTree = "<group>"; };
 		C9C6EA842004280A00211FDD /* ldid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ldid.cpp; sourceTree = "<group>"; };
@@ -631,6 +626,7 @@
 		25B27802FF2D573B29DEC669 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C9A9446A2215F72700F5C556 /* Security.framework */,
 				C964EA2D212085A400AC98E6 /* libcrypto_tvOS.a */,
 				C964EA2B212085A200AC98E6 /* libssl_tvOS.a */,
 				C964EA292120817300AC98E6 /* SpringBoardServices.tbd */,
@@ -1023,11 +1019,8 @@
 		C9C6EA7B2004280A00211FDD /* Certificates */ = {
 			isa = PBXGroup;
 			children = (
-				C9C6EA7C2004280A00211FDD /* apple-dev.pem */,
 				C9C6EA7D2004280A00211FDD /* apple-ios.pem */,
-				C9C6EA7E2004280A00211FDD /* verisign-1024-128.pem */,
-				C9C6EA7F2004280A00211FDD /* verisign-2048-128.pem */,
-				C9C6EA802004280A00211FDD /* verisign-2048-256.pem */,
+				C9A9446C2215FADC00F5C556 /* root.pem */,
 			);
 			path = Certificates;
 			sourceTree = "<group>";
@@ -1526,13 +1519,10 @@
 				C9C6EA6F2004261300211FDD /* Main.storyboard in Resources */,
 				C9C6EA6E2004261300211FDD /* LaunchScreen.storyboard in Resources */,
 				C9C6EAF92004280A00211FDD /* apple-ios.pem in Resources */,
-				C9C6EAF82004280A00211FDD /* apple-dev.pem in Resources */,
-				C9C6EAFC2004280A00211FDD /* verisign-2048-256.pem in Resources */,
+				C9A9446D2215FADD00F5C556 /* root.pem in Resources */,
 				C9E952DF20FBCA2200E850B6 /* openSourceLicenses.html in Resources */,
 				C97EF5BA20F6AA3B005CB1DB /* RMessageDesign.json in Resources */,
 				C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */,
-				C9C6EAFA2004280A00211FDD /* verisign-1024-128.pem in Resources */,
-				C9C6EAFB2004280A00211FDD /* verisign-2048-128.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

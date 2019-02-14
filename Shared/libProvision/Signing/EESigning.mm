@@ -116,7 +116,7 @@ static auto dummy([](double) {});
 }
 
 - (X509 *)_loadCAChainFromDisk {
-    NSString *filepath = [[NSBundle mainBundle] pathForResource:@"apple-ios-new" ofType:@"pem"];
+    NSString *filepath = [[NSBundle mainBundle] pathForResource:@"apple-ios" ofType:@"pem"];
     
     NSLog(@"Loading CA chain from '%@'", filepath);
     
@@ -276,10 +276,13 @@ static auto dummy([](double) {});
 }
 
 - (std::string)_createRequirementsBlobWithKey:(NSString*)key certificate:(NSData*)certificate andBundleIdentifier:(NSString*)identifier {
+    // XXX: Returning an empty string, because iOS does not complain about empty requirements. Plus, all the SecRequirement* symbols
+    // do not exist on iOS, so requires more effort than I'd like to get this working correctly...
+    return "";
     
     // Load the incoming cert to grab off the common name.
     
-    OpenSSL_add_all_algorithms();
+    /*OpenSSL_add_all_algorithms();
     ERR_load_crypto_strings();
     
     EVP_PKEY   *cert_privkey;
@@ -310,7 +313,7 @@ static auto dummy([](double) {});
     OSStatus status = SecRequirementCreateWithString((__bridge CFStringRef)requirementsString, kSecCSDefaultFlags, &requirementRef);
     
     if (status != noErr) {
-        NSLog(@"Error: Failed to create requirements! %d", status);
+        NSLog(@"Error: Failed to create requirements! %d", (int)status);
         
         return "";
     }
@@ -320,7 +323,7 @@ static auto dummy([](double) {});
     status = SecRequirementCopyData(requirementRef, kSecCSDefaultFlags, &data);
     
     if (status != noErr) {
-        NSLog(@"Error: Failed to copy requirements! %d", status);
+        NSLog(@"Error: Failed to copy requirements! %d", (int)status);
         
         return "";
     }
@@ -337,7 +340,7 @@ static auto dummy([](double) {});
         requirementRef = NULL;
     }
     
-    return result;
+    return result;*/
 }
 
 - (std::string)_commonNameForCert:(X509*)cert {
