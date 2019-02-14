@@ -302,7 +302,7 @@ static auto dummy([](double) {});
     }
     
     // Build the requirements string
-    NSString *requirementsString = [NSString stringWithFormat:@"identifier \"%@\" and anchor apple generic and certificate leaf[subject.CN] = \"%s\" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */",
+    NSString *requirementsString = [NSString stringWithFormat:@"identifier \"%@\" and anchor apple generic and certificate leaf[subject.CN] = \"%s\" and certificate 1[field.1.2.840.113635.100.6.2.1]",
                                     identifier,
                                     [self _commonNameForCert:cert].c_str()];
     
