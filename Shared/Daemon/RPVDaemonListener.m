@@ -398,6 +398,15 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
         // Restart timer now with full duration!
         [self _restartSigningTimerWithInterval:[self heartbeatTimerInterval]];
     }
+    
+    // Handle launching the app for credentials checks after SpringBoard launches
+    // e.g., this should be the first unlock
+    if (self.springboardDidLaunchSeen) {
+        self.springboardDidLaunchSeen = NO;
+        
+        NSLog(@"*** [reprovisiond] :: Checking credentials after reaching a sane point since SpringBoard launched.");
+        [self _initiateApplicationCheckForCredentials];
+    }
 }
 
 - (void)bb_backlightChanged:(int)state {
@@ -405,20 +414,6 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     
     if (state > 0) {
         NSLog(@"*** [reprovisiond] :: Display turned on");
-        
-        if (self.uiLockState == YES) {
-            // Handle launching the app for credentials checks after SpringBoard launches
-            if (self.springboardDidLaunchSeen) {
-                self.springboardDidLaunchSeen = NO;
-                
-                NSLog(@"*** [reprovisiond] :: Checking credentials after reaching a sane point since SpringBoard launched.");
-                [self _initiateApplicationCheckForCredentials];
-                
-                // Re-display queued alert if needed
-                if (self.updateQueuedForUnlock)
-                    [self _showApplicationNotificationForQueuedUpdate];
-            }
-        }
         
         // Restarting timer as needed.
         {
