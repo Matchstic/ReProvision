@@ -793,7 +793,23 @@ free_all:
             for (NSString *key in [freeAndPaidEntitlementsToFeatures allKeys]) {
                 if ([[entitlements allKeys] containsObject:key]) {
                     NSString *feature = [freeAndPaidEntitlementsToFeatures objectForKey:key];
-                    [enabledFeatures setObject:@1 forKey:feature];
+                    
+                    // Handle specific weird capabilities
+                    if ([feature isEqualToString:@"dataProtection"]) {
+                        NSString *entitlement = [entitlements objectForKey:key];
+                        NSString *featureValue = @"";
+                        
+                        if ([entitlement isEqualToString:@"NSFileProtectionComplete"])
+                            featureValue = @"complete";
+                        else if ([entitlement isEqualToString:@"NSFileProtectionCompleteUnlessOpen"])
+                            featureValue = @"unlessopen";
+                        else if ([entitlement isEqualToString:@"NSFileProtectionCompleteUntilFirstUserAuthentication"])
+                            featureValue = @"untilfirstauth";
+                        
+                        [enabledFeatures setObject:featureValue forKey:feature];
+                    } else {
+                        [enabledFeatures setObject:@1 forKey:feature];
+                    }
                 }
             }
             

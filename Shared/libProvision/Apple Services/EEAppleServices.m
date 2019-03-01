@@ -422,8 +422,14 @@ static NSString *_teamid = @"";
     
     // Features
     for (NSString *key in [enabledFeatures allKeys]) {
-        NSNumber *value = [enabledFeatures objectForKey:key];
-        NSString *state = [value intValue] == 1 ? @"on" : @"off";
+        NSString *state;
+        if ([[enabledFeatures objectForKey:key] isKindOfClass:[NSString class]]) {
+            state = [enabledFeatures objectForKey:key];
+        } else {
+            NSNumber *value = [enabledFeatures objectForKey:key];
+            state = [value intValue] == 1 ? @"on" : @"off";
+        }
+
         
         [extra setObject:state forKey:key];
     }
