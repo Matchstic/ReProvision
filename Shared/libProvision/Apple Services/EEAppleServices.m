@@ -400,12 +400,9 @@ static NSString *_teamid = @"";
     [extra setObject:applicationName forKey:@"name"];
     [extra setObject:@"explicit" forKey:@"type"];
     
-    // Features
+    // Features - assume caller has correctly set "on", "off", "whatever"
     for (NSString *key in [enabledFeatures allKeys]) {
-        NSNumber *value = [enabledFeatures objectForKey:key];
-        NSString *state = [value intValue] == 1 ? @"on" : @"off";
-        
-        [extra setObject:state forKey:key];
+        [extra setObject:[enabledFeatures objectForKey:key] forKey:key];
     }
 
     [extra setObject:entitlements forKey:@"entitlements"];
@@ -420,18 +417,9 @@ static NSString *_teamid = @"";
     [extra setObject:appIdId forKey:@"appIdId"];
     [extra setObject:@"explicit" forKey:@"type"];
     
-    // Features
+    // Features - assume caller has correctly set "on", "off", "whatever"
     for (NSString *key in [enabledFeatures allKeys]) {
-        NSString *state;
-        if ([[enabledFeatures objectForKey:key] isKindOfClass:[NSString class]]) {
-            state = [enabledFeatures objectForKey:key];
-        } else {
-            NSNumber *value = [enabledFeatures objectForKey:key];
-            state = [value intValue] == 1 ? @"on" : @"off";
-        }
-
-        
-        [extra setObject:state forKey:key];
+        [extra setObject:[enabledFeatures objectForKey:key] forKey:key];
     }
     
     [extra setObject:entitlements forKey:@"entitlements"];

@@ -700,7 +700,10 @@ free_all:
         
         // Setup values for this application.
         NSString *name = [@"EE " stringByAppendingString:applicationIdentifier];
-        name = [name stringByReplacingOccurrencesOfString:@"." withString:@" "];
+
+        // Strip non-alphanumerical characters
+        NSCharacterSet *charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
+        name = [[name componentsSeparatedByCharactersInSet:charactersToRemove] componentsJoinedByString:@" "];
         
         NSString *identifier;
         if (!appIdExists) {
@@ -775,7 +778,7 @@ free_all:
                 for (NSString *key in [paidEntitlementsToFeatures allKeys]) {
                     if ([[entitlements allKeys] containsObject:key]) {
                         NSString *feature = [paidEntitlementsToFeatures objectForKey:key];
-                        [enabledFeatures setObject:@1 forKey:feature];
+                        [enabledFeatures setObject:@"on" forKey:feature];
                     }
                 }
             }
@@ -808,7 +811,7 @@ free_all:
                         
                         [enabledFeatures setObject:featureValue forKey:feature];
                     } else {
-                        [enabledFeatures setObject:@1 forKey:feature];
+                        [enabledFeatures setObject:@"on" forKey:feature];
                     }
                 }
             }
@@ -855,7 +858,7 @@ free_all:
             BOOL wantsApplicationGroups = NO;
             NSMutableArray *applicationGroups;
             if ([[entitlements allKeys] containsObject:@"com.apple.security.application-groups"]) {
-                [enabledFeatures setObject:@1 forKey:@"APG3427HIY"];
+                [enabledFeatures setObject:@"on" forKey:@"APG3427HIY"];
                 
                 // We need to do some magic on the dev portal with these.
                 wantsApplicationGroups = YES;
