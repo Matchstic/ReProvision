@@ -292,6 +292,10 @@
     if (![RPVResources getUsername] || [[RPVResources getUsername] isEqualToString:@""] || ![RPVResources getPassword] || [[RPVResources getPassword] isEqualToString:@""]) {
         
         [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Login Required" body:@"Tap to login to ReProvision. This is needed to re-sign applications." isDebugMessage:NO isUrgentMessage:YES andNotificationID:@"login"];
+        
+        // Ask to remove our process assertion 5 seconds later, so that we can assume any notifications
+        // have been scheduled.
+        [self performSelector:@selector(_notifyDaemonOfMessageHandled) withObject:nil afterDelay:5];
     } else {
         // Nothing to do, just notify that we're done.
         [self _notifyDaemonOfMessageHandled];
