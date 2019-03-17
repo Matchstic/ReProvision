@@ -45,7 +45,11 @@
                 
                 NSArray *teams = [plist objectForKey:@"teams"];
                 
-                completionHandler(nil, resultCode, teams);
+                if (teams.count == 0) {
+                    completionHandler(@"Please use this Apple ID with Cydia Impactor, and then try again", resultCode, teams);
+                } else {
+                    completionHandler(nil, resultCode, teams);
+                }
             }];
         } else if (plist) {
             completionHandler(userString, resultCode, nil);
