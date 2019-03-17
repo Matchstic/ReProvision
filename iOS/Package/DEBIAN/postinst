@@ -17,6 +17,11 @@ function finish() {
 echo "Reloading application cache"
 uicache
 
+# Clear Inbox folder
+if [ -d "/var/mobile/Library/Application Support/Containers/com.matchstic.reprovision.ios/Documents/Inbox" ]; then
+    rm -rf "/var/mobile/Library/Application Support/Containers/com.matchstic.reprovision.ios/Documents/Inbox"
+fi
+
 # Handle the daemon
 echo "(Re)-loading daemon..."
 chown root /Library/LaunchDaemons/com.matchstic.reprovisiond.plist

@@ -226,6 +226,14 @@ static RPVApplicationSigning *sharedInstance;
                     break;
                 }
             }
+            
+            // Clear the downloaded IPA now that it is extracted properly.
+            NSError *cacheClearError;
+            [[NSFileManager defaultManager] removeItemAtPath:[application locationOfApplicationOnFilesystem].path error:&cacheClearError];
+            
+            if (cacheClearError) {
+                NSLog(@"Failed to remove '%@'", [application locationOfApplicationOnFilesystem].path);
+            }
         } else {
             if (error) {
                 *error = [self _errorFromString:err.localizedDescription errorCode:RPVErrorFailedToCopyBundle];
