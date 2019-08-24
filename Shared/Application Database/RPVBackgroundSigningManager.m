@@ -41,6 +41,7 @@
 
 - (void)attemptBackgroundSigningIfNecessary:(void (^)(void))completionHandler {
     if (![RPVResources shouldAutomaticallyResign]) {
+        completionHandler();
         return;
     }
     

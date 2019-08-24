@@ -7,9 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RPVDaemonProtocol.h"
 
-@interface RPVDaemonListener : NSObject
+@interface RPVDaemonListener : NSObject <NSXPCListenerDelegate, RPVDaemonProtocol> {
+    int _lockstateToken;
+    int _springboardBootToken;
+    int _backboardBacklightChangedToken;
+}
 
-- (void)timerFireMethod:(NSTimer *)timer;
+- (void)initialiseListener;
 
 @end

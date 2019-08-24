@@ -8,6 +8,7 @@
 
 #import "RPVAdvancedController.h"
 #import "RPVResources.h"
+#import "AppDelegate.h"
 
 #include <notify.h>
 
@@ -174,8 +175,7 @@
 /////////////////////////////////////////////////////////////////////////////////////
 
 - (void)startBackgroundSign:(id)sender {
-    notify_set_state(self.daemonNotificationToken, 1);
-    notify_post("com.matchstic.reprovision.ios/debugStartBackgroundSign");
+    [(AppDelegate*)[UIApplication sharedApplication].delegate requestDebuggingBackgroundSigning];
 }
 
 @end
