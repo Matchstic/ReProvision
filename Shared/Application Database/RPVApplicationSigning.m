@@ -326,6 +326,13 @@ static RPVApplicationSigning *sharedInstance;
                 errorMessage = @"Incorrect entitlements for this application. This is likely caused by ReProvision not supporting a capability this application needs.";
             } else if ([errorMessage containsString:@"valid provisioning profile"]) {
                 errorMessage = @"This application hasn't been signed correctly for this device. This may occur if this device is not registered to the account used to sign with.";
+            } else if (error.code == 13) {
+                errorMessage = @"This app could not be installed because there already are 3 signed apps installed. Automatic resigning needs at maximum 2 apps installed via your account.";
+            } else {
+                // Parse out the useful information from the error description
+                NSRange range = [error.localizedDescription rangeOfString:@"(" options:NSBackwardsSearch];
+                errorMessage = [error.localizedDescription substringFromIndex:range.location];
+                errorMessage = [errorMessage substringToIndex:errorMessage.length - 2];
             }
             
             NSError *err = [self _errorFromString:errorMessage errorCode:RPVErrorFailedToInstallSignedIPA];
