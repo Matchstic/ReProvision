@@ -207,10 +207,16 @@
     self.daemonConnection.exportedInterface = [NSXPCInterface interfaceWithProtocol:@protocol(RPVApplicationProtocol)];
     self.daemonConnection.exportedObject = self;
     
-    // CHECKME: Does the interruptionHandler fire if we become active and the connection
-    // has broken?
+    // Handle connection errors
     __weak AppDelegate *weakSelf = self;
     self.daemonConnection.interruptionHandler = ^{
+        [weakSelf.daemonConnection invalidate];
+        weakSelf.daemonConnection = nil;
+        
+        // Re-create connection
+        [weakSelf _setupDameonConnection];
+    };
+    self.daemonConnection.invalidationHandler = ^{
         [weakSelf.daemonConnection invalidate];
         weakSelf.daemonConnection = nil;
         
