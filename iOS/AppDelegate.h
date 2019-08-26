@@ -8,11 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "RPVApplicationSigning.h"
+#import "RPVApplicationProtocol.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, RPVApplicationSigningProtocol>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, RPVApplicationSigningProtocol, RPVApplicationProtocol>
 
 @property (strong, nonatomic) UIWindow *window;
 
+- (void)requestDebuggingBackgroundSigning;
+- (void)requestPreferencesUpdate;
 
 @end
 

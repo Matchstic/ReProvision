@@ -8,24 +8,27 @@
 
 #import "RPVDaemonListener.h"
 
+@interface NSXPCListener (Private)
+- (id)initWithMachServiceName:(NSString*)arg1;
+@end
+
 int main(int argc, const char *argv[])
 {
     NSLog(@"*** [reprovisiond] :: Loading up daemon.");
     
     // initialize our daemon
-    RPVDaemonListener *listener = [[RPVDaemonListener alloc] init];
+    RPVDaemonListener *daemon = [[RPVDaemonListener alloc] init];
+    [daemon initialiseListener];
     
-    // start a timer so that the process does not exit.
-    NSTimer *timer = [[NSTimer alloc] initWithFireDate:[NSDate date]
-                                              interval:1 // Slight delay for battery life improvements
-                                                target:listener
-                                              selector:@selector(timerFireMethod:)
-                                              userInfo:nil
-                                               repeats:YES];
+    // Bypass compiler prohibited errors
+    Class NSXPCListenerClass = NSClassFromString(@"NSXPCListener");
     
-    NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-    [runLoop addTimer:timer forMode:NSDefaultRunLoopMode];
-    [runLoop run];
+    NSXPCListener *listener = [[NSXPCListenerClass alloc] initWithMachServiceName:@"com.matchstic.reprovisiond"];
+    listener.delegate = daemon;
+    [listener resume];
+    
+    // Run the run loop forever.
+    [[NSRunLoop currentRunLoop] run];
     
     return EXIT_SUCCESS;
 }

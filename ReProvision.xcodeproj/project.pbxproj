@@ -388,6 +388,8 @@
 		C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledTableViewCell.m; sourceTree = "<group>"; };
 		C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = RMessageDesign.json; sourceTree = "<group>"; };
 		C996746520EE314B00EEFBD2 /* PackageVersion.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
+		C9A371152311D25B00DD5040 /* RPVDaemonProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVDaemonProtocol.h; sourceTree = "<group>"; };
+		C9A371162311D26900DD5040 /* RPVApplicationProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVApplicationProtocol.h; sourceTree = "<group>"; };
 		C9A9446A2215F72700F5C556 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		C9A9446C2215FADC00F5C556 /* root.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = root.pem; sourceTree = "<group>"; };
 		C9AB43BD20F012E00016F78F /* SpringBoardServices.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = SpringBoardServices.tbd; path = Shared/iosdaemon/lib/SpringBoardServices.tbd; sourceTree = "<group>"; };
@@ -1232,6 +1234,8 @@
 		C9E7C2BE20EE296500FDF3B0 /* Daemon */ = {
 			isa = PBXGroup;
 			children = (
+				C9A371162311D26900DD5040 /* RPVApplicationProtocol.h */,
+				C9A371152311D25B00DD5040 /* RPVDaemonProtocol.h */,
 				C9D5BACC20EE3D54000D5970 /* RPVDaemonListener.h */,
 				C9D5BACD20EE3D54000D5970 /* RPVDaemonListener.m */,
 				C9E7C2C620EE296500FDF3B0 /* main.mm */,
@@ -1651,7 +1655,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"Copying application into Package\"\n\n# Clean out existing .app\nrm -rf \"${PROJECT_DIR}/iOS/Package/Applications/${CONTENTS_FOLDER_PATH}\"\n\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/${CONTENTS_FOLDER_PATH}\"\ncp -R $builtpath \"${PROJECT_DIR}/iOS/Package/Applications/\"\n\n# Sign with entitlements\n${PROJECT_DIR}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/iOS/Package/Applications/${EXECUTABLE_PATH}\"\n\n# Build package!\n${PROJECT_DIR}/bin/iosod build -p \"${PROJECT_DIR}/iOS/PackageVersion.plist\" \"${PROJECT_DIR}/iOS/Package\" \"${PROJECT_DIR}/iOS/CydiaPackages\"";
+			shellScript = "echo \"Copying application into Package\"\n\n# Clean out existing .app\nrm -rf \"${PROJECT_DIR}/iOS/Package/Applications/${CONTENTS_FOLDER_PATH}\"\n\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/${CONTENTS_FOLDER_PATH}\"\ncp -R $builtpath \"${PROJECT_DIR}/iOS/Package/Applications/\"\n\n# Sign with entitlements\n${PROJECT_DIR}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/iOS/Package/Applications/${EXECUTABLE_PATH}\"\n\n# Build package!\n${PROJECT_DIR}/bin/iosod build -p \"${PROJECT_DIR}/iOS/PackageVersion.plist\" \"${PROJECT_DIR}/iOS/Package\" \"${PROJECT_DIR}/iOS/CydiaPackages\"\n";
 		};
 		C996746A20EE32D500EEFBD2 /* Move daemon binary into Package */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1665,7 +1669,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"Copying daemon into Package\"\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/reprovisiond\"\n\ncp -R $builtpath \"${PROJECT_DIR}/iOS/Package/usr/bin\"\n\n# We now need to sign the daemon with appropriate entitlements via ldid2\necho \"Signing with entitlements.plist...\"\n${PROJECT_DIR}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/Daemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"";
+			shellScript = "echo \"Copying daemon into Package\"\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/reprovisiond\"\n\ncp -R $builtpath \"${PROJECT_DIR}/iOS/Package/usr/bin\"\n\n# We now need to sign the daemon with appropriate entitlements via ldid2\necho \"Signing with entitlements.plist...\"\n${PROJECT_DIR}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/Daemon/entitlements.plist\" \"${PROJECT_DIR}/iOS/Package/usr/bin/reprovisiond\"\n";
 		};
 		C9C5922621207C7900DF2E19 /* Copy daemon */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -7,6 +7,7 @@
 //
 
 #import "RPVDaemonListener.h"
+#import "RPVApplicationProtocol.h"
 #import <notify.h>
 
 #if TARGET_OS_TV
@@ -28,6 +29,11 @@ extern "C" {
     // Needs the com.apple.backboardd.launchapplications entitlement
     int SBSLaunchApplicationWithIdentifierAndLaunchOptions(CFStringRef identifier, CFDictionaryRef launchOptions, BOOL suspended);
     CFStringRef SBSApplicationLaunchingErrorString(int error);
+    
+    NSString * SBSCopyFrontmostApplicationDisplayIdentifier(void);
+    
+    int SBSSpringBoardServerPort(void);
+    int SBSuspend(int sbServerPort, int pid);
     
     // BackBoardServices
     
@@ -62,19 +68,17 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 - (void)invalidate;
 @end
 
+typedef enum : NSUInteger {
+    kNewSigningRoutine,
+    kCheckForCredentials,
+    kShowQueuedUpdate,
+} RPVApplicationNotification;
+
 ///////////////////////////////////////////////////////////////////////////
 // Main daemon class
 ///////////////////////////////////////////////////////////////////////////
 
 @interface RPVDaemonListener ()
-
-@property (nonatomic, readwrite) int updatePreferencesToken;
-@property (nonatomic, readwrite) int debugBackgroundSign;
-@property (nonatomic, readwrite) int lockstateToken;
-@property (nonatomic, readwrite) int springboardBootToken;
-@property (nonatomic, readwrite) int backboardBacklightChangedToken;
-@property (nonatomic, readwrite) int applicationNotificationToken;
-@property (nonatomic, readwrite) int applicationDidFinishTaskToken;
     
 @property (nonatomic, strong) NSDictionary *settings;
 
@@ -89,6 +93,8 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 @property (nonatomic, strong) NSTimer *signingTimer;
 
 @property (nonatomic, strong) BKSProcessAssertion *applicationBackgroundAssertion;
+@property (nonatomic, strong) NSXPCConnection* xpcConnection;
+@property (nonatomic, strong) NSMutableArray *pendingXpcConnectionQueue;
 
 @end
 
@@ -138,6 +144,9 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 }
     
 - (void)initialiseListener {
+    // Setup notifications
+    [self setupNotifyPosts];
+    
     // Start timer for signing etc
     [self reloadSettings];
     
@@ -237,56 +246,66 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     // Launch our companion app backgrounded, and update the notification flag for it to
     // then initiate signing.
     NSLog(@"*** [reprovisiond] :: Starting new background signing routine.");
-    [self _launchApplicationBackgroundedWithNotification:1];
+    [self _launchApplicationBackgroundedWithNotification:kNewSigningRoutine];
 }
     
 - (void)_initiateApplicationCheckForCredentials {
     // Launch our companion app backgrounded, and update the notification flag for it to
     // then initiate credential checks..
     NSLog(@"*** [reprovisiond] :: Requesting application to check login credentials.");
-    [self _launchApplicationBackgroundedWithNotification:2];
+    [self _launchApplicationBackgroundedWithNotification:kCheckForCredentials];
 }
 
 - (void)_showApplicationNotificationForQueuedUpdate {
     NSLog(@"*** [reprovisiond] :: Requesting application to notify users of a queued update.");
-    [self _launchApplicationBackgroundedWithNotification:3];
+    [self _launchApplicationBackgroundedWithNotification:kShowQueuedUpdate];
 }
 
-- (void)_launchApplicationBackgroundedWithNotification:(int)notification {
-    // Send on notification token with state.
-    // By setting state first, once SpringBoardServices wakes the app, the corresponding notify_dispatch handler
-    // will be run correctly.
-    notify_set_state(self.applicationNotificationToken, notification);
-    notify_post("com.matchstic.reprovision.ios/applicationNotification");
-    
+- (void)_launchApplicationBackgroundedWithNotification:(RPVApplicationNotification)notification {
     // Launch the application
     int result = [self _launchApplicationBackgroundedAndAquireAssertion];
     if (result) {
         // Error occured in launch.
-        notify_set_state(self.applicationNotificationToken, 0); // Reset state!
 #if TARGET_OS_SIMULATOR
 #else
         NSLog(@"*** [reprovisiond] :: Error launching application: %@", SBSApplicationLaunchingErrorString(result));
 #endif
     }
     
-    // Wait for an acknowledgement receipt
-    NSTimer *acknowledgementTimer = [NSTimer scheduledTimerWithTimeInterval:5
-                                                                     target:self
-                                                                   selector:@selector(_didFireAcknowledgementTimeout:)
-                                                                   userInfo:@{@"notification": [NSNumber numberWithInt:notification]}
-                                                                    repeats:NO];
+    // Queue notifications when not connected
+    if (!self.xpcConnection) {
+        [self remoteObjectProxyErrorHandler:notification];
+        return;
+    }
     
-    int status, token;
-    status = notify_register_dispatch("com.matchstic.reprovision.ios/didReceiveNotification", &token, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0l), ^(int info) {
-        
-        // Just cancel the timeout timer.
-        [acknowledgementTimer invalidate];
-    });
+    // And call the remote XPC
+    switch (notification) {
+        case kNewSigningRoutine: {
+            [[self.xpcConnection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
+                [self remoteObjectProxyErrorHandler:notification];
+            }] daemonDidRequestNewBackgroundSigning];
+            break;
+        } case kCheckForCredentials: {
+            [[self.xpcConnection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
+                [self remoteObjectProxyErrorHandler:notification];
+            }] daemonDidRequestCredentialsCheck];
+            break;
+        } case kShowQueuedUpdate: {
+            [[self.xpcConnection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
+                [self remoteObjectProxyErrorHandler:notification];
+            }] daemonDidRequestQueuedNotification];
+            break;
+        }
+    }
 }
 
-- (void)_didFireAcknowledgementTimeout:(NSTimer*)timer {
-    NSLog(@"*** [reprovisiond] :: ERROR :: Timeout on command: %@", [timer userInfo][@"notification"]);
+- (void)remoteObjectProxyErrorHandler:(RPVApplicationNotification)notification {
+    NSLog(@"*** reprovisiond :: Queuing notification %lu until connection is established", (unsigned long)notification);
+    // Drop the message onto a queue, and go from there
+    if (!self.pendingXpcConnectionQueue)
+        self.pendingXpcConnectionQueue = [NSMutableArray array];
+    
+    [self.pendingXpcConnectionQueue addObject:[NSNumber numberWithInt:notification]];
 }
 
 - (int)_launchApplicationBackgroundedAndAquireAssertion {
@@ -328,13 +347,16 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     
     if (servicePid != 0) {
         NSLog(@"*** [reprovisiond] :: Aquiring background assertion");
-        self.applicationBackgroundAssertion = [[BKSProcessAssertion alloc] initWithPID:servicePid flags:(BKSProcessAssertionFlagPreventSuspend | BKSProcessAssertionFlagAllowIdleSleep) reason:BKSProcessAssertionReasonExternalAccessory name:@APPLICATION_IDENTIFIER withHandler:^(BOOL success) {
+        
+        __weak RPVDaemonListener *weakSelf = self;
+        
+        self.applicationBackgroundAssertion = [[BKSProcessAssertion alloc] initWithPID:servicePid flags:(BKSProcessAssertionFlagPreventSuspend | BKSProcessAssertionFlagAllowIdleSleep) reason:BKSProcessAssertionReasonFinishTask name:@APPLICATION_IDENTIFIER withHandler:^(BOOL success) {
             if (success) {
                 // Need to do anything here?
                 NSLog(@"*** [reprovisiond] :: Did aquire background assertion");
                 
                 // Start the fallback timer for removing the assertion.
-                self.assertionFallbackTimer = [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(_assertionFallbackDidFire:) userInfo:nil repeats:NO];
+                weakSelf.assertionFallbackTimer = [NSTimer scheduledTimerWithTimeInterval:60 target:weakSelf selector:@selector(_assertionFallbackDidFire:) userInfo:nil repeats:NO];
             } else {
                 NSLog(@"*** [reprovisiond] :: Failed to aquire background assertion");
             }
@@ -349,6 +371,7 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
 - (void)_assertionFallbackDidFire:(id)sender {
     NSLog(@"*** [reprovisiond] :: Background assertion fallback did fire.");
     [self _releaseApplicationBackgroundAssertion];
+    [self suspendApplicationIfNecessary];
 }
 
 - (void)_releaseApplicationBackgroundAssertion {
@@ -365,6 +388,27 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
     [self.applicationBackgroundAssertion invalidate];
     self.applicationBackgroundAssertion = nil;
 #endif
+}
+
+- (void)suspendApplicationIfNecessary {
+    // First, check if the main app is actually running right now
+    
+    NSString *frontMost = SBSCopyFrontmostApplicationDisplayIdentifier();
+    if ([frontMost isEqualToString:@APPLICATION_IDENTIFIER]) {
+        NSLog(@"*** [reprovisiond] :: DEBUG :: Is frontmost - abort");
+        return;
+    }
+    
+    // Call suspend on it
+    pid_t servicePid = 0;
+    SBSProcessIDForDisplayIdentifier(CFSTR(APPLICATION_IDENTIFIER), &servicePid);
+    
+    int error = SBSuspend(SBSSpringBoardServerPort(), servicePid);
+    if (error) {
+        NSLog(@"*** [reprovisiond] :: Error when suspending the application: %d", error);
+    } else {
+        NSLog(@"*** [reprovisiond] :: DEBUG :: Suspended");
+    }
 }
 
 - (void)sb_didFinishLaunchingNotification {
@@ -437,111 +481,138 @@ extern NSString* BKSOpenApplicationOptionKeyActivateForEvent;
         [self.signingTimer invalidate];
     }
 }
+
+//////////////////////////////////////////////////////////////////////////
+// XPC Handling
+//////////////////////////////////////////////////////////////////////////
+
+- (BOOL)listener:(NSXPCListener *)listener shouldAcceptNewConnection:(NSXPCConnection *)newConnection {
+    // Configure bi-directional communication
+    NSLog(@"*** [reprovisiond] :: shouldAcceptNewConnection recieved.");
+    
+    [newConnection setExportedInterface:[NSXPCInterface interfaceWithProtocol:@protocol(RPVDaemonProtocol)]];
+    [newConnection setExportedObject:self];
+    
+    self.xpcConnection = newConnection;
+    
+    // State management for the main application
+    // When it is e.g. killed, then the invalidation handler is called
+    __weak RPVDaemonListener *weakSelf = self;
+    self.xpcConnection.interruptionHandler = ^{
+        NSLog(@"*** reprovisiond :: Interruption handler called");
+        [weakSelf.xpcConnection invalidate];
+        weakSelf.xpcConnection = nil;
+    };
+    self.xpcConnection.invalidationHandler = ^{
+        NSLog(@"*** reprovisiond :: Invalidation handler called");
+        [weakSelf.xpcConnection invalidate];
+        weakSelf.xpcConnection = nil;
+    };
+    
+    newConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol: @protocol(RPVApplicationProtocol)];
+    [newConnection resume];
+
+    return YES;
+}
+
+- (void)applicationDidLaunch {
+    if (!self.pendingXpcConnectionQueue || self.pendingXpcConnectionQueue.count == 0) {
+        NSLog(@"*** reprovisiond :: No pending notifications");
+        [self _releaseApplicationBackgroundAssertion];
+        
+        return;
+    }
+    
+    NSLog(@"*** reprovisiond :: Forwarding pending notifications");
+    
+    for (NSNumber *number in self.pendingXpcConnectionQueue) {
+        RPVApplicationNotification notification = [number intValue];
+        
+        switch (notification) {
+            case kNewSigningRoutine:
+                [[self.xpcConnection remoteObjectProxy] daemonDidRequestNewBackgroundSigning];
+                break;
+            case kCheckForCredentials:
+                [[self.xpcConnection remoteObjectProxy] daemonDidRequestCredentialsCheck];
+                break;
+            case kShowQueuedUpdate:
+                [[self.xpcConnection remoteObjectProxy] daemonDidRequestQueuedNotification];
+                break;
+        }
+    }
+    
+    [self.pendingXpcConnectionQueue removeAllObjects];
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Daemon protocol
+//////////////////////////////////////////////////////////////////////////
+
+- (void)applicationDidFinishTask {
+    NSLog(@"*** [reprovisiond] :: applicationDidFinishTask recieved.");
+    
+    [self _releaseApplicationBackgroundAssertion];
+    
+    // Shutdown main application if necessary
+    // [self suspendApplicationIfNecessary];
+}
+
+- (void)applicationRequestsDebuggingBackgroundSigning {
+    NSLog(@"*** [reprovisiond] :: applicationRequestsDebuggingBackgroundSigning recieved.");
+    
+    // Start a new background routine now.
+    [self _initiateNewSigningRoutine];
+}
+
+- (void)applicationRequestsPreferencesUpdate {
+    NSLog(@"*** [reprovisiond] :: applicationRequestsPreferencesUpdate recieved.");
+    
+    // Update our internal preferences from NSUserDefaults' shared suite.
+    NSTimeInterval oldInterval = [self heartbeatTimerInterval];
+    [self reloadSettings];
+    NSTimeInterval newInterval = [self heartbeatTimerInterval];
+    
+    // Restart if prefs changed!
+    if (oldInterval != newInterval)
+        [self _restartSigningTimerWithInterval:newInterval];
+}
     
 //////////////////////////////////////////////////////////////////////////
-// Runloop
+// notify.h stuff
 //////////////////////////////////////////////////////////////////////////
     
-- (void)timerFireMethod:(NSTimer *)timer {
-    int status, check;
-    static char first = 0;
+- (void)setupNotifyPosts {
+    int status;
     
-    if (!first) {
-        status = notify_register_check("com.matchstic.reprovision.ios/updatePreferences", &_updatePreferencesToken);
-        if (status != NOTIFY_STATUS_OK) {
-            fprintf(stderr, "registration failed (%u)\n", status);
-            return;
+    // Setup notifications for un/locking of the device.
+    __weak RPVDaemonListener *weakSelf = self;
+    status = notify_register_dispatch("com.apple.springboard.lockstate", &_lockstateToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0l), ^(int info) {
+        
+        uint64_t state = UINT64_MAX;
+        notify_get_state(_lockstateToken, &state);
+        
+        if (state == 0) {
+            [weakSelf sb_didUIUnlockNotification];
+        } else {
+            [weakSelf sb_didUILockNotification];
         }
-        
-        status = notify_register_check("com.matchstic.reprovision.ios/debugStartBackgroundSign", &_debugBackgroundSign);
-        if (status != NOTIFY_STATUS_OK) {
-            fprintf(stderr, "registration failed (%u)\n", status);
-            return;
-        }
-        
-        // Setup notifications for un/locking of the device.
-        __weak RPVDaemonListener *weakSelf = self;
-        status = notify_register_dispatch("com.apple.springboard.lockstate", &_lockstateToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0l), ^(int info) {
-            
-            uint64_t state = UINT64_MAX;
-            notify_get_state(_lockstateToken, &state);
-            
-            if (state == 0) {
-                [weakSelf sb_didUIUnlockNotification];
-            } else {
-                [weakSelf sb_didUILockNotification];
-            }
-        });
-        
-        // SpringBoard boot-up
-        status = notify_register_dispatch("SBSpringBoardDidLaunchNotification", &_springboardBootToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0l), ^(int token) {
-            
-            // No state associated with this message.
-            [weakSelf sb_didFinishLaunchingNotification];
-        });
-        
-        // backboardd backlight changes
-        status = notify_register_dispatch("com.apple.backboardd.backlight.changed", &_backboardBacklightChangedToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0l), ^(int token) {
-            
-            uint64_t state = UINT64_MAX;
-            notify_get_state(_backboardBacklightChangedToken, &state);
-            
-            [weakSelf bb_backlightChanged:(int)state];
-        });
-        
-        // Application did finish task.
-        status = notify_register_dispatch("com.matchstic.reprovision.ios/didFinishBackgroundTask", &_applicationDidFinishTaskToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0l), ^(int token) {
-            
-            // No state associated with this message.
-            [weakSelf _releaseApplicationBackgroundAssertion];
-        });
-        
-        status = notify_register_check("com.matchstic.reprovision.ios/applicationNotification", &_applicationNotificationToken);
-        if (status != NOTIFY_STATUS_OK) {
-            fprintf(stderr, "registration failed (%u)\n", status);
-            return;
-        }
-        
-        first = 1;
-        
-        // Do first-time setup.
-        [self initialiseListener];
-        
-        return; // We don't want to update the things on the first run, only when requested.
-    }
+    });
     
-    status = notify_check(_updatePreferencesToken, &check);
-    if (status == NOTIFY_STATUS_OK && check != 0) {
-        NSLog(@"*** [reprovisiond] :: Preferences update received.");
-            
-        // Update our internal preferences from NSUserDefaults' shared suite.
-        NSTimeInterval oldInterval = [self heartbeatTimerInterval];
-        [self reloadSettings];
-        NSTimeInterval newInterval = [self heartbeatTimerInterval];
-            
-        // Restart if prefs changed!
-        if (oldInterval != newInterval)
-            [self _restartSigningTimerWithInterval:newInterval];
-            
-        // Reset the state so we don't keep reloading settings
-        notify_set_state(_updatePreferencesToken, 0);
-    }
-    
-    status = notify_check(_debugBackgroundSign, &check);
-    if (status == NOTIFY_STATUS_OK && check != 0) {
-        uint64_t incoming = 0;
-        notify_get_state(_debugBackgroundSign, &incoming);
+    // SpringBoard boot-up
+    status = notify_register_dispatch("SBSpringBoardDidLaunchNotification", &_springboardBootToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0l), ^(int token) {
         
-        if (incoming != 0) {
-            NSLog(@"*** [reprovisiond] :: Debugging background signing request recieved.");
-            
-            // Start a new background routine now.
-            [self _initiateNewSigningRoutine];
-            
-            // Reset the state so we don't keep starting a new routine.
-            notify_set_state(_debugBackgroundSign, 0);
-        }
-    }
+        // No state associated with this message.
+        [weakSelf sb_didFinishLaunchingNotification];
+    });
+    
+    // backboardd backlight changes
+    status = notify_register_dispatch("com.apple.backboardd.backlight.changed", &_backboardBacklightChangedToken, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0l), ^(int token) {
+        
+        uint64_t state = UINT64_MAX;
+        notify_get_state(_backboardBacklightChangedToken, &state);
+        
+        [weakSelf bb_backlightChanged:(int)state];
+    });
 }
 
 @end

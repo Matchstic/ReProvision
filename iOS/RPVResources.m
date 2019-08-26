@@ -6,6 +6,7 @@
 //
 
 #import "RPVResources.h"
+#import "AppDelegate.h"
 #import "SAMKeychain.h"
 
 #import <UIKit/UIKit.h>
@@ -93,7 +94,7 @@ static dispatch_once_t nanoRegistryOnceToken;
     CFPreferencesAppSynchronize(CFSTR("com.matchstic.reprovision.ios"));
     
     // Notify daemon of new preferences.
-    notify_post("com.matchstic.reprovision.ios/updatePreferences");
+    [(AppDelegate*)[UIApplication sharedApplication].delegate requestPreferencesUpdate];
     
     // Broadcast notification as Darwin
     [self _broadcastNotification:notification withUserInfo:nil];
