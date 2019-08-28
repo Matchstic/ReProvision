@@ -110,7 +110,7 @@
     self.titleLabel.text = @"Failure";
     self.titleLabel.textColor = [UIColor redColor];
     
-    self.subtitleLabel.text = statusString;
+    self.subtitleLabel.text = statusString != nil ? statusString : @"Unknown error";
     
     // Reset input fields
     self.emailTextField.text = @"";

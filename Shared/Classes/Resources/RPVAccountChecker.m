@@ -31,6 +31,11 @@
     
     [EEAppleServices signInWithUsername:username password:password andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         
+        if (error) {
+            completionHandler(error.localizedDescription, @"err", nil);
+            return;
+        }
+        
         NSString *resultCode = [plist objectForKey:@"reason"];
         NSString *userString = [plist objectForKey:@"userString"];
         
@@ -38,23 +43,22 @@
             // Get Team ID array
             [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
                 if (error) {
-                    // oh shit.
                     completionHandler(error.localizedDescription, @"err", nil);
                     return;
                 }
                 
                 NSArray *teams = [plist objectForKey:@"teams"];
-                
                 if (teams.count == 0) {
-                    completionHandler(@"Please use this Apple ID with Cydia Impactor, and then try again", resultCode, teams);
+                    completionHandler(@"Please accept the Apple Developer terms at https://developer.apple.com", resultCode, teams);
                 } else {
-                    completionHandler(nil, resultCode, teams);
+                    NSString *userString = [plist objectForKey:@"userString"];
+                    completionHandler(userString, resultCode, teams);
                 }
             }];
         } else if (plist) {
             completionHandler(userString, resultCode, nil);
         } else {
-            completionHandler(userString, @"err", nil);
+            completionHandler(nil, @"err", nil);
         }
     }];
 }
