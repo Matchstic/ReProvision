@@ -30,11 +30,6 @@ extern "C" {
     int SBSLaunchApplicationWithIdentifierAndLaunchOptions(CFStringRef identifier, CFDictionaryRef launchOptions, BOOL suspended);
     CFStringRef SBSApplicationLaunchingErrorString(int error);
     
-    NSString * SBSCopyFrontmostApplicationDisplayIdentifier(void);
-    
-    int SBSSpringBoardServerPort(void);
-    int SBSuspend(int sbServerPort, int pid);
-    
     // BackBoardServices
     
     #define BKSProcessAssertionFlagNone 0
@@ -371,7 +366,6 @@ typedef enum : NSUInteger {
 - (void)_assertionFallbackDidFire:(id)sender {
     NSLog(@"*** [reprovisiond] :: Background assertion fallback did fire.");
     [self _releaseApplicationBackgroundAssertion];
-    [self suspendApplicationIfNecessary];
 }
 
 - (void)_releaseApplicationBackgroundAssertion {
@@ -388,27 +382,6 @@ typedef enum : NSUInteger {
     [self.applicationBackgroundAssertion invalidate];
     self.applicationBackgroundAssertion = nil;
 #endif
-}
-
-- (void)suspendApplicationIfNecessary {
-    // First, check if the main app is actually running right now
-    
-    NSString *frontMost = SBSCopyFrontmostApplicationDisplayIdentifier();
-    if ([frontMost isEqualToString:@APPLICATION_IDENTIFIER]) {
-        NSLog(@"*** [reprovisiond] :: DEBUG :: Is frontmost - abort");
-        return;
-    }
-    
-    // Call suspend on it
-    pid_t servicePid = 0;
-    SBSProcessIDForDisplayIdentifier(CFSTR(APPLICATION_IDENTIFIER), &servicePid);
-    
-    int error = SBSuspend(SBSSpringBoardServerPort(), servicePid);
-    if (error) {
-        NSLog(@"*** [reprovisiond] :: Error when suspending the application: %d", error);
-    } else {
-        NSLog(@"*** [reprovisiond] :: DEBUG :: Suspended");
-    }
 }
 
 - (void)sb_didFinishLaunchingNotification {
@@ -552,9 +525,6 @@ typedef enum : NSUInteger {
     NSLog(@"*** [reprovisiond] :: applicationDidFinishTask recieved.");
     
     [self _releaseApplicationBackgroundAssertion];
-    
-    // Shutdown main application if necessary
-    // [self suspendApplicationIfNecessary];
 }
 
 - (void)applicationRequestsDebuggingBackgroundSigning {
