@@ -196,7 +196,7 @@ static NSString *_teamid = @"";
             
             NSString *resultCode = [plist objectForKey:@"resultCode"];
             
-            if ([resultCode isEqualToString:@"-22938"]) {
+            if ([resultCode isEqualToString:@"-22938"] || [userString containsString:@"app-specific"]) {
                 reason = @"appSpecificRequired";
             } else if ([resultCode isEqualToString:@"-20101"] || [resultCode isEqualToString:@"-1"]) {
                 reason = @"incorrectCredentials";
