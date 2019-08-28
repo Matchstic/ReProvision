@@ -201,6 +201,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 - (void)_setupDameonConnection {
+#if TARGET_OS_SIMULATOR
+    return;
+#endif
+    
     self.daemonConnection = [[NSXPCConnection alloc] initWithMachServiceName:@"com.matchstic.reprovisiond"];
     self.daemonConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(RPVDaemonProtocol)];
     
