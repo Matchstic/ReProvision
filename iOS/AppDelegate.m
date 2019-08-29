@@ -20,7 +20,18 @@
 #import <RMessageView.h>
 #import "SAMKeychain.h"
 
+#import <objc/runtime.h>
 #include <notify.h>
+
+@interface PSAppDataUsagePolicyCache : NSObject
++ (id)sharedInstance;
+- (bool)setUsagePoliciesForBundle:(id)arg1 cellular:(bool)arg2 wifi:(bool)arg3;
+@end
+
+@interface AppWirelessDataUsageManager : NSObject
++(void)setAppCellularDataEnabled:(id)arg1 forBundleIdentifier:(id)arg2 completionHandler:(/*^block*/ id)arg3 ;
++(void)setAppWirelessDataOption:(id)arg1 forBundleIdentifier:(id)arg2 completionHandler:(/*^block*/ id)arg3 ;
+@end
 
 @interface NSXPCConnection (Private)
 - (id)initWithMachServiceName:(NSString*)arg1;
@@ -43,6 +54,9 @@
     
     // Register for background signing notifications.
     [self _setupDameonConnection];
+    
+    // Ensure Chinese devices have internet access
+    [self setupChinaApplicationNetworkAccess];
     
     // Setup Keychain accessibility for when locked.
     // (prevents not being able to correctly read the passcode when the device is locked)
@@ -121,6 +135,28 @@
         
         completionHandler(YES);
     }
+}
+
+- (void)setupChinaApplicationNetworkAccess {
+    // See: https://github.com/pwn20wndstuff/Undecimus/issues/136
+    
+    NSOperatingSystemVersion version;
+    version.majorVersion = 12;
+    version.minorVersion = 0;
+    version.patchVersion = 0;
+    
+    if (objc_getClass("PSAppDataUsagePolicyCache")) {
+        // iOS 12+
+        PSAppDataUsagePolicyCache *cache = [objc_getClass("PSAppDataUsagePolicyCache") sharedInstance];
+        [cache setUsagePoliciesForBundle:[NSBundle mainBundle].bundleIdentifier cellular:YES wifi:YES];
+    } else if (objc_getClass("AppWirelessDataUsageManager")) {
+        // iOS 10 - 11
+        [objc_getClass("AppWirelessDataUsageManager") setAppWirelessDataOption:[NSNumber numberWithInt:3]
+                                          forBundleIdentifier:[NSBundle mainBundle].bundleIdentifier completionHandler:nil];
+        [objc_getClass("AppWirelessDataUsageManager") setAppCellularDataEnabled:[NSNumber numberWithInt:1]
+                                           forBundleIdentifier:[NSBundle mainBundle].bundleIdentifier completionHandler:nil];
+    }
+    // Not required for iOS 9
 }
 
 //////////////////////////////////////////////////////////////////////////////////
