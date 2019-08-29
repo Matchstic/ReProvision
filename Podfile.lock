@@ -1,0 +1,40 @@
+PODS:
+  - CocoaLumberjack (3.3.0):
+    - CocoaLumberjack/Default (= 3.3.0)
+    - CocoaLumberjack/Extensions (= 3.3.0)
+  - CocoaLumberjack/Default (3.3.0)
+  - CocoaLumberjack/Extensions (3.3.0):
+    - CocoaLumberjack/Default
+  - HexColors (4.0.0)
+  - MarqueeLabel (3.1.4):
+    - MarqueeLabel/ObjC (= 3.1.4)
+  - MarqueeLabel/ObjC (3.1.4)
+  - MBCircularProgressBar (0.3.5)
+  - OpenSSL-Universal (1.0.2.13)
+  - PPTopMostController (0.0.1)
+  - RMessage (2.1.5):
+    - HexColors (~> 4.0)
+    - PPTopMostController
+  - TORoundedTableView (0.1.3)
+
+DEPENDENCIES:
+  - CocoaLumberjack
+  - MarqueeLabel (= 3.1.4)
+  - MBCircularProgressBar (= 0.3.5)
+  - OpenSSL-Universal (= 1.0.2.13)
+  - RMessage (= 2.1.5)
+  - TORoundedTableView (= 0.1.3)
+
+SPEC CHECKSUMS:
+  CocoaLumberjack: 3c8c74683302f9012bb168e1c4b7ae3c0b558431
+  HexColors: 5f95843ef89aff6a72e1fd3a8ebabf205cc43379
+  MarqueeLabel: bf768455fe88d427f71476ebb23f9092b660f40b
+  MBCircularProgressBar: 0b795b722a5eb5b0923822f90474e2576a1a7855
+  OpenSSL-Universal: 401888162f11c33ebbd46f782d9229da35c61327
+  PPTopMostController: 4e6f1e5f8c645bdcc74cd837a20f607ff262c048
+  RMessage: 31d44bd26a8f353f987d2e7194f3e9ffb203cbf2
+  TORoundedTableView: cd1437ef81ab3888dea8c06d2dfe4795bcaac768
+
+PODFILE CHECKSUM: f97239f7db56cfa860e5b0a4c700a882d21b1889
+
+COCOAPODS: 1.4.0

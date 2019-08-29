@@ -5,6 +5,7 @@ pod 'MBCircularProgressBar', '0.3.5'
 pod 'MarqueeLabel', '3.1.4'
 pod 'TORoundedTableView', '0.1.3'
 pod 'RMessage', '2.1.5'
+pod 'CocoaLumberjack'
 end
 
 target 'macOS' do
