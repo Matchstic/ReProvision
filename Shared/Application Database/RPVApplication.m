@@ -127,7 +127,7 @@
 
 + (NSDictionary *)provisioningProfileAtPath:(NSString *)path {
     NSError *err;
-    NSString *stringContent = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&err];
+    NSString *stringContent = [NSString stringWithContentsOfFile:path encoding:NSASCIIStringEncoding error:&err];
     
     NSString *startMarker = @"<plist";
     NSString *endMarker = @"</plist>";
