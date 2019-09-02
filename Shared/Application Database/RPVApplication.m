@@ -103,7 +103,7 @@
         return [NSDate dateWithTimeIntervalSinceNow:172800];
     }
 
-    NSDictionary *provision = [self _provisioningProfileAtPath:provisionPath];
+    NSDictionary *provision = [RPVApplication provisioningProfileAtPath:provisionPath];
     if (!provision) {
         // Date that is 2 days away.
         return [NSDate dateWithTimeIntervalSinceNow:172800];
@@ -125,17 +125,27 @@
     return self.proxy.bundleURL;
 }
 
-- (NSDictionary *)_provisioningProfileAtPath:(NSString *)path {
++ (NSDictionary *)provisioningProfileAtPath:(NSString *)path {
     NSError *err;
     NSString *stringContent = [NSString stringWithContentsOfFile:path encoding:NSASCIIStringEncoding error:&err];
     
-    NSRange startRange = [stringContent rangeOfString:@"<plist"];
+    NSString *startMarker = @"<plist";
+    NSString *endMarker = @"</plist>";
     
-    stringContent = [stringContent substringFromIndex:startRange.location];
-    stringContent = [stringContent componentsSeparatedByString:@"</plist>"][0];
-    stringContent = [NSString stringWithFormat:@"%@%@", stringContent, @"</plist>"];
+    NSRange startRange = [stringContent rangeOfString:startMarker];
+    if (startRange.location == NSNotFound) {
+        return @{};
+    }
     
-    NSData *stringData = [stringContent dataUsingEncoding:NSASCIIStringEncoding];
+    NSRange endRange = [stringContent rangeOfString:endMarker];
+    if (endRange.location == NSNotFound) {
+        return @{};
+    }
+    
+    NSInteger length = (endRange.location + endMarker.length) - startRange.location;
+    stringContent = [stringContent substringWithRange:NSMakeRange(startRange.location, length)];
+    
+    NSData *stringData = [stringContent dataUsingEncoding:NSUTF8StringEncoding];
     
     NSError *error;
     NSPropertyListFormat format;

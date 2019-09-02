@@ -13,6 +13,8 @@
 
 @interface RPVApplication : NSObject
 
++ (NSDictionary *)provisioningProfileAtPath:(NSString *)path;
+
 // Don't call this yourself.
 - (instancetype)initWithApplicationProxy:(LSApplicationProxy*)proxy;
 

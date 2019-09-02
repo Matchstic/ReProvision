@@ -88,21 +88,8 @@ static RPVApplicationDatabase *sharedDatabase;
             if ([[NSFileManager defaultManager] fileExistsAtPath:provisionPath]) {
                 // Yep, definitely sideloaded!
                 
-                // Load profile from disk.
-                NSError *err;
-                NSString *stringContent = [NSString stringWithContentsOfFile:provisionPath encoding:NSASCIIStringEncoding error:&err];
-                stringContent = [stringContent componentsSeparatedByString:@"<plist version=\"1.0\">"][1];
-                stringContent = [NSString stringWithFormat:@"%@%@", @"<plist version=\"1.0\">", stringContent];
-                stringContent = [stringContent componentsSeparatedByString:@"</plist>"][0];
-                stringContent = [NSString stringWithFormat:@"%@%@", stringContent, @"</plist>"];
-                
-                NSData *stringData = [stringContent dataUsingEncoding:NSASCIIStringEncoding];
-                
-                NSError *error;
-                NSPropertyListFormat format;
-                
-                NSDictionary *plist = [NSPropertyListSerialization propertyListWithData:stringData options:NSPropertyListImmutable format:&format error:&error];
-                
+                NSDictionary *plist = [RPVApplication provisioningProfileAtPath:provisionPath];
+                    
                 // Check Team ID.
                 NSString *teamIDToCheck = [[plist objectForKey:@"TeamIdentifier"] firstObject];
                 
