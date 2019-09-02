@@ -278,7 +278,7 @@
     return [self.cachedInfoPlist objectForKey:@"CFBundleIdentifier"];
 }
 - (NSString*)applicationName {
-    return [self.cachedInfoPlist objectForKey:@"CFBundleName"];
+    return [self.cachedInfoPlist objectForKey:@"CFBundleDisplayName"];
 }
 
 - (NSString*)applicationVersion {
