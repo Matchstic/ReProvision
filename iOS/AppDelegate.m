@@ -40,6 +40,8 @@
 @interface AppDelegate ()
 
 @property (nonatomic, strong) NSXPCConnection *daemonConnection;
+@property (nonatomic, readwrite) BOOL applicationIsActive;
+@property (nonatomic, readwrite) BOOL pendingDaemonConnectionAlert;
 
 @end
 
@@ -76,6 +78,7 @@
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // nop
+    self.applicationIsActive = NO;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -92,6 +95,12 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // nop
     NSLog(@"*** [ReProvision] :: applicationDidBecomeActive");
+    
+    self.applicationIsActive = YES;
+    if (self.pendingDaemonConnectionAlert) {
+        [self _notifyDaemonFailedToConnect];
+        self.pendingDaemonConnectionAlert = NO;
+    }
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -237,9 +246,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 - (void)_setupDameonConnection {
-#if TARGET_OS_SIMULATOR
+/*#if TARGET_OS_SIMULATOR
     return;
-#endif
+#endif*/
+    
+    if (self.daemonConnection) {
+        [self.daemonConnection invalidate];
+        self.daemonConnection = nil;
+    }
     
     self.daemonConnection = [[NSXPCConnection alloc] initWithMachServiceName:@"com.matchstic.reprovisiond"];
     self.daemonConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(RPVDaemonProtocol)];
@@ -247,16 +261,13 @@
     self.daemonConnection.exportedInterface = [NSXPCInterface interfaceWithProtocol:@protocol(RPVApplicationProtocol)];
     self.daemonConnection.exportedObject = self;
     
+    [self.daemonConnection resume];
+    
     // Handle connection errors
     __weak AppDelegate *weakSelf = self;
     self.daemonConnection.interruptionHandler = ^{
-        [weakSelf.daemonConnection invalidate];
-        weakSelf.daemonConnection = nil;
+        NSLog(@"interruption handler called");
         
-        // Re-create connection
-        [weakSelf _setupDameonConnection];
-    };
-    self.daemonConnection.invalidationHandler = ^{
         [weakSelf.daemonConnection invalidate];
         weakSelf.daemonConnection = nil;
         
@@ -264,17 +275,58 @@
         [weakSelf _setupDameonConnection];
     };
     
-    [self.daemonConnection resume];
+    self.daemonConnection.invalidationHandler = ^{
+        NSLog(@"invalidation handler called");
+        
+        [weakSelf.daemonConnection invalidate];
+        weakSelf.daemonConnection = nil;
+        
+        // Notify of failed connection
+        [weakSelf _notifyDaemonFailedToConnect];
+    };
     
     // Notify daemon that we've now launched
-    [[self.daemonConnection remoteObjectProxy] applicationDidLaunch];
+    @try {
+        [[self.daemonConnection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
+            NSLog(@"%@", error);
+            
+            if (error.code == NSXPCConnectionInvalid) {
+                [weakSelf _notifyDaemonFailedToConnect];
+            }
+        }] applicationDidLaunch];
+
+    } @catch (NSException *e) {
+        [self _notifyDaemonFailedToConnect];
+        return;
+    }
     
     NSLog(@"*** [ReProvision] :: Setup daemon connection: %@", self.daemonConnection);
 }
 
+- (void)_notifyDaemonFailedToConnect {
+    if (!self.applicationIsActive) {
+        self.pendingDaemonConnectionAlert = YES;
+        return;
+    }
+    
+    // That's not good...
+    UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Error" message:@"Could not connect to daemon; automatic background signing is disabled.\n\nPlease reinstall ReProvision, or reboot your device." preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {}];
+    [av addAction:action];
+    
+    [self.window.rootViewController presentViewController:av animated:YES completion:nil];
+    
+    NSLog(@"*** [ReProvision] :: ERROR :: Failed to setup daemon connection: %@", self.daemonConnection);
+}
+
 - (void)_notifyDaemonOfMessageHandled {
     // Let the daemon know to release the background assertion.
-    [[self.daemonConnection remoteObjectProxy] applicationDidFinishTask];
+    @try {
+        [[self.daemonConnection remoteObjectProxy] applicationDidFinishTask];
+    } @catch (NSException *e) {
+        // Error previous shown
+    }
 }
 
 - (void)daemonDidRequestNewBackgroundSigning {
@@ -335,11 +387,19 @@
 }
 
 - (void)requestDebuggingBackgroundSigning {
-    [[self.daemonConnection remoteObjectProxy] applicationRequestsDebuggingBackgroundSigning];
+    @try {
+        [[self.daemonConnection remoteObjectProxy] applicationRequestsDebuggingBackgroundSigning];
+    } @catch (NSException *e) {
+        // Error previous shown
+    }
 }
 
 - (void)requestPreferencesUpdate {
-    [[self.daemonConnection remoteObjectProxy] applicationRequestsPreferencesUpdate];
+    @try {
+        [[self.daemonConnection remoteObjectProxy] applicationRequestsPreferencesUpdate];
+    } @catch (NSException *e) {
+        // Error previous shown
+    }
 }
 
 - (void)_sendBackgroundedNotificationWithTitle:(NSString*)title body:(NSString*)body isDebug:(BOOL)isDebug isUrgent:(BOOL)isUrgent withNotificationID:(NSString*)notifID {

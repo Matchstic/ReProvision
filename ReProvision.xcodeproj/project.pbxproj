@@ -2327,6 +2327,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1BED720855DAA03FC578B695 /* Pods-iOS.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
@@ -2357,6 +2358,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C46832E058CCB73D45E85EB /* Pods-iOS.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;

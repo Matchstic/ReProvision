@@ -13,10 +13,6 @@ function finish() {
 	echo "finish:${f}" >&${cydia[0]}
 }
 
-# Reload application cache
-echo "Reloading application cache"
-uicache
-
 # Clear Inbox folder
 if [ -d "/var/mobile/Library/Application Support/Containers/com.matchstic.reprovision.ios/Documents/Inbox" ]; then
     rm -rf "/var/mobile/Library/Application Support/Containers/com.matchstic.reprovision.ios/Documents/Inbox"
@@ -29,6 +25,10 @@ chown root /Library/LaunchDaemons/com.matchstic.reprovisiond.plist
 # Unload for an upgrade. - Might spew an error, so hide that.
 /bin/launchctl unload /Library/LaunchDaemons/com.matchstic.reprovisiond.plist 2>/dev/null
 /bin/launchctl load /Library/LaunchDaemons/com.matchstic.reprovisiond.plist
+
+# Reload application cache
+echo "Reloading application cache"
+uicache
 
 # Classic easter egg
 echo "Do, or do not. There is no try."
