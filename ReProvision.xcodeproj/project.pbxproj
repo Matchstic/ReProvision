@@ -131,6 +131,7 @@
 		C96FBFF120EBD287007E2EC3 /* RPVInstalledTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */; };
 		C97EF5BA20F6AA3B005CB1DB /* RMessageDesign.json in Resources */ = {isa = PBXBuildFile; fileRef = C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */; };
 		C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */ = {isa = PBXBuildFile; fileRef = C996746520EE314B00EEFBD2 /* PackageVersion.plist */; };
+		C99722A5237A145F009822FC /* RPVAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C99722A4237A145F009822FC /* RPVAuthentication.m */; };
 		C9A9446D2215FADD00F5C556 /* root.pem in Resources */ = {isa = PBXBuildFile; fileRef = C9A9446C2215FADC00F5C556 /* root.pem */; };
 		C9C5921D21206E1000DF2E19 /* RPVInstalledViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */; };
 		C9C5921E21206E1300DF2E19 /* RPVResources.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C1E20052B13000AD4C3 /* RPVResources.m */; };
@@ -403,6 +404,8 @@
 		C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledTableViewCell.m; sourceTree = "<group>"; };
 		C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = RMessageDesign.json; sourceTree = "<group>"; };
 		C996746520EE314B00EEFBD2 /* PackageVersion.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
+		C99722A3237A145F009822FC /* RPVAuthentication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVAuthentication.h; sourceTree = "<group>"; };
+		C99722A4237A145F009822FC /* RPVAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVAuthentication.m; sourceTree = "<group>"; };
 		C9A371152311D25B00DD5040 /* RPVDaemonProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVDaemonProtocol.h; sourceTree = "<group>"; };
 		C9A371162311D26900DD5040 /* RPVApplicationProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVApplicationProtocol.h; sourceTree = "<group>"; };
 		C9A9446A2215F72700F5C556 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -1030,7 +1033,6 @@
 				C9C6EAC32004280A00211FDD /* SAMKeychain */,
 				C9C6EAC92004280A00211FDD /* Signing */,
 				C9C6EACC2004280A00211FDD /* SSZipArchive */,
-				87BDA6FC237821CA00EA4540 /* AuthKit.h */,
 			);
 			path = libProvision;
 			sourceTree = "<group>";
@@ -1038,6 +1040,9 @@
 		C9C6EA762004280A00211FDD /* Apple Services */ = {
 			isa = PBXGroup;
 			children = (
+				87BDA6FC237821CA00EA4540 /* AuthKit.h */,
+				C99722A3237A145F009822FC /* RPVAuthentication.h */,
+				C99722A4237A145F009822FC /* RPVAuthentication.m */,
 				C9C6EA772004280A00211FDD /* EEAppleServices.h */,
 				C9C6EA782004280A00211FDD /* EEAppleServices.m */,
 				C9C6EA792004280A00211FDD /* NSData+GZIP.h */,
@@ -1895,6 +1900,7 @@
 				C92D3750205036F300F9F152 /* RPVAccountChecker.m in Sources */,
 				C9C6EB1F2004280A00211FDD /* aes_ni.c in Sources */,
 				C9C6EB112004280A00211FDD /* Node.cpp in Sources */,
+				C99722A5237A145F009822FC /* RPVAuthentication.m in Sources */,
 				C9C6EB072004280A00211FDD /* Dictionary.cpp in Sources */,
 				C9E9BB7720C5D12500EE27D9 /* RPVSplitViewDetailViewController.m in Sources */,
 				C9C6EB0F2004280A00211FDD /* node_iterator.c in Sources */,

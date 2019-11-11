@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AuthKit.h"
 #import <UIKit/UIKit.h>
 
 typedef enum : NSUInteger {
@@ -25,11 +24,6 @@ typedef enum : NSUInteger {
  * TODO: Docs!
  */
 - (NSString*)currentTeamID;
-
-/**
- * TODO: Docs!
- */
-- (void)signInWithViewController:(UIViewController*)viewController andCompletionHandler:(void (^)(NSError*, NSDictionary*, NSURLCredential*))completionHandler;
 
 /**
  * TODO: Docs!

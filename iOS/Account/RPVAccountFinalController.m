@@ -77,6 +77,8 @@
     self.username = username;
     self.password = password;
     self.teamId = teamID;
+    
+    NSLog(@"SETUP WITH USERNAME: %@ AND PASSWORD: %@", username, password);
 }
 
 - (void)_checkDevelopmentCertificates {

@@ -22,6 +22,9 @@
 - (void)setReason:(id)arg1;
 - (void)setServiceIdentifier:(NSString*)arg1;
 - (void)setServiceIdentifiers:(NSArray*)arg1;
+
+- (void)_setPassword:(id)arg1;
+- (void)setUsername:(id)arg1;
 @end
 
 @interface AKAppleIDAuthenticationInAppContext : AKAppleIDAuthenticationContext

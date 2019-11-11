@@ -15,6 +15,7 @@
 
 @property (nonatomic, strong) NSString *emailAddress;
 @property (nonatomic, strong) NSArray *_interimTeamIDArray;
+@property (nonatomic, strong) NSURLCredential *credentials;
 
 @end
 
@@ -39,10 +40,9 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)presentTeamIDViewControllerIfNecessaryWithTeamIDs:(NSArray*)teamids {
+- (void)presentTeamIDViewControllerIfNecessaryWithTeamIDs:(NSArray*)teamids credentials:(NSURLCredential*)credential {
     self._interimTeamIDArray = teamids;
-    
-    // Go to final if only one Team ID
+    self.credentials = credential;
     if ([teamids count] == 1) {
         [self presentFinalController];
     } else {
@@ -64,13 +64,15 @@
     [spinner startAnimating];
     
     [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithCustomView:spinner]];
+
     /*
-    [[RPVAccountChecker sharedInstance] checkUsername:self.emailAddress withPassword:self.passwordTextField.text andCompletionHandler:^(NSString *failureReason, NSString *resultCode, NSArray *teamIDArray) {
+     // TODO: Handle 2FA login code for the given credentials
+    [[RPVAccountChecker sharedInstance] checkUsername:self.emailAddress withPassword:self.passwordTextField.text andCompletionHandler:^(NSString *failureReason, NSString *resultCode, NSArray *teamIDArray, NSURLCredential *credential) {
         
         if (teamIDArray) {
             // Present the Team ID controller if necessary!
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self presentTeamIDViewControllerIfNecessaryWithTeamIDs:teamIDArray];
+                [self presentTeamIDViewControllerIfNecessaryWithTeamIDs:teamIDArray credentials:credential];
             });
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -129,8 +131,8 @@
         // or if the final controller, send everything through!
         
         NSString *teamID = [[self._interimTeamIDArray firstObject] objectForKey:@"teamId"];
-        NSString *username = self.emailAddress;
-        NSString *password = self.passwordTextField.text;
+        NSString *username = self.credentials.user;
+        NSString *password = self.credentials.password;
         
         RPVAccountFinalController *finalController = (RPVAccountFinalController*)[segue destinationViewController];
         

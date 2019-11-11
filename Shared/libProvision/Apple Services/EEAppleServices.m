@@ -8,12 +8,14 @@
 
 #import "EEAppleServices.h"
 #import "NSData+GZIP.h"
+#import "RPVAuthentication.h"
+#import "AuthKit.h"
 
 @interface EEAppleServices ()
 
 @property (nonatomic, strong) NSString *teamid;
-@property (nonatomic, strong) AKAppleIDSession* appleIDSession;
 @property (nonatomic, strong) NSURLCredential* credentials;
+@property (nonatomic, strong) RPVAuthentication *authentication;
 
 @end
 
@@ -34,6 +36,7 @@
     
     if (self) {
         self.teamid = @"";
+        self.authentication = [[RPVAuthentication alloc] init];
     }
     
     return self;
@@ -43,17 +46,9 @@
 // Private methods.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)ensureAppleIDSession {
-    if (!self.appleIDSession){
-        self.appleIDSession = [[AKAppleIDSession alloc] initWithIdentifier:@"com.apple.gs.xcode.auth"];
-    }
-}
-
 - (NSMutableURLRequest*)populateHeaders:(NSMutableURLRequest*)request {
     
-    [self ensureAppleIDSession];
-    
-    NSDictionary<NSString *, NSString *> *appleHeaders = [self.appleIDSession appleIDHeadersForRequest:request];
+    NSDictionary<NSString *, NSString *> *appleHeaders = [self.authentication appleIDHeadersForRequest:request];
     AKDevice* currentDevice = [AKDevice currentDevice];
     NSDictionary<NSString *, NSString *> *httpHeaders = @{
         @"Content-Type": @"text/x-xml-plist",
@@ -164,107 +159,56 @@
 // Sign-In methods.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)signInWithUsername:(NSString *)altDSID password:(NSString *)GSToken andCompletionHandler:(void (^)(NSError *, NSDictionary *,NSURLCredential*))completionHandler{
-
-    self.credentials = [[NSURLCredential alloc] initWithUser:[altDSID copy] password:[GSToken copy] persistence:NSURLCredentialPersistencePermanent];
+- (void)signInWithUsername:(NSString *)username password:(NSString *)password andCompletionHandler:(void (^)(NSError *, NSDictionary *, NSURLCredential*))completionHandler {
     
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://developerservices2.apple.com/services/QH65B2/listTeams.action?clientId=XABBG36SBA"]];
-    request.HTTPMethod = @"POST";
-    
-    NSMutableDictionary<NSString *, NSString *> *parameters = [@{
-        @"clientId": @"XABBG36SBA",
-        @"protocolVersion": @"QH65B2",
-        @"requestId": [[[NSUUID UUID] UUIDString] uppercaseString],
-    } mutableCopy];
-    
-    NSError *serializationError = nil;
-    NSData *bodyData = [NSPropertyListSerialization dataWithPropertyList:parameters format:NSPropertyListXMLFormat_v1_0 options:0 error:&serializationError];
-    if (!bodyData) {
-        completionHandler(nil, nil,nil);
-        return;
-    }
-    
-    request.HTTPBody = bodyData;
-    
-    request = [self populateHeaders:request];
-    
-    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:nil delegateQueue:nil];
-    
-    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable requestError) {
-        if (!data) {
-            completionHandler(requestError,nil,nil);
-            return;
-        }
+    [self.authentication authenticateWithUsername:username password:password withCompletion:^(NSError *error, NSString *userIdentity, NSString *gsToken) {
         
-        NSError *parseError = nil;
-        NSMutableDictionary *plist = [[NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:&parseError] mutableCopy];
-        if (!plist) {
-            NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadServerResponse userInfo:@{NSUnderlyingErrorKey: parseError}];
-            completionHandler(error,nil,nil);
-            return;
-        }
+        if (!self.credentials)
+            self.credentials = [[NSURLCredential alloc] initWithUser:userIdentity password:gsToken persistence:NSURLCredentialPersistencePermanent];
         
-        NSString *userString = [plist objectForKey:@"userString" ];
-        NSString *reason = @"";
-        
-        NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
-        
-        if ((!userString || [userString isEqualToString:@""]) && plist) {
-            // We now have been authenticated most likely.
-            reason = @"authenticated";
-            userString = @"";
-        } else if (plist) {
-            // Failure, but we have something useful.
+        // Do a request to listTeams.action to check that the user is a member of a team
+        [self listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+            NSArray *teams = [plist objectForKey:@"teams"];
             
-            // -22938 => App Specific Pwd?
-            // -20101 => incorrect credentials.
-            
-            NSString *resultCode = [plist objectForKey:@"resultCode"];
-            
-            if ([resultCode isEqualToString:@"-22938"] || [userString containsString:@"app-specific"]) {
-                reason = @"appSpecificRequired";
-            } else if ([resultCode isEqualToString:@"-20101"] || [resultCode isEqualToString:@"-1"]) {
-                reason = @"incorrectCredentials";
-            } else {
-                reason = resultCode;
+            if (!teams) {
+                // Error of some kind?
+                // TODO: HANDLE ME
+                
+                completionHandler(error, plist, nil);
             }
-        }
-        
-        [resultDictionary setObject:userString forKey:@"userString"];
-        [resultDictionary setObject:reason forKey:@"reason"];
-        
-        completionHandler(nil, resultDictionary, [self.credentials copy]);
+            
+            NSString *userString = [plist objectForKey:@"userString" ];
+            NSString *reason = @"";
+            
+            NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
+            
+            if ((!userString || [userString isEqualToString:@""]) && plist) {
+                // We now have been authenticated most likely.
+                reason = @"authenticated";
+                userString = @"";
+            } else if (plist) {
+                // Failure, but we have something useful.
+                
+                // -22938 => App Specific Pwd?
+                // -20101 => incorrect credentials.
+                
+                NSString *resultCode = [plist objectForKey:@"resultCode"];
+                
+                if ([resultCode isEqualToString:@"-22938"] || [userString containsString:@"app-specific"]) {
+                    reason = @"appSpecificRequired";
+                } else if ([resultCode isEqualToString:@"-20101"] || [resultCode isEqualToString:@"-1"]) {
+                    reason = @"incorrectCredentials";
+                } else {
+                    reason = resultCode;
+                }
+            }
+            
+            [resultDictionary setObject:userString forKey:@"userString"];
+            [resultDictionary setObject:reason forKey:@"reason"];
+            
+            completionHandler(nil, resultDictionary, self.credentials);
+        }];
     }];
-    
-    [dataTask resume];
-}
-
-- (void)signInWithViewController:(UIViewController*)viewController andCompletionHandler:(void (^)(NSError*, NSDictionary *, NSURLCredential*))completionHandler {
-    
-    AKAppleIDAuthenticationInAppContext* context = [[AKAppleIDAuthenticationInAppContext alloc] init];
-    [context setTitle:@"ReProvision"];
-    [context setReason:@"Sign in to the account you used for Cydia Impactor"];
-    [context setAuthenticationType:2];
-    [context setServiceIdentifier:@"com.apple.gs.xcode.auth"];
-    [context setServiceIdentifiers:[NSArray arrayWithObject:@"com.apple.gs.xcode.auth"]];
-    context.presentingViewController = viewController;
-    
-    AKAppleIDAuthenticationController* controller = [[AKAppleIDAuthenticationController alloc] initWithIdentifier:nil daemonXPCEndpoint:nil];
-    
-    [controller authenticateWithContext:context completion:^(id arg1) {
-        if(!arg1) {
-            return;
-        }
-        
-        NSString* AKUsername = [[arg1 objectForKey:@"AKUsername"] copy];
-        NSDictionary* IDMSToken = [arg1 objectForKey:@"AKIDMSToken"];
-        NSString* GSToken = [[IDMSToken objectForKey:@"com.apple.gs.xcode.auth"] copy];
-        NSString* AKAltDSID = [[arg1 objectForKey:@"AKAltDSID"] copy];
-        NSString* username = [[NSString alloc] initWithFormat:@"%@|%@",AKAltDSID,AKUsername];
-        [self signInWithUsername:username password:GSToken andCompletionHandler:completionHandler];
-    }];
-        
 }
 
 

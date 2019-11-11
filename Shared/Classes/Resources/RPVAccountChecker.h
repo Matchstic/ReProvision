@@ -12,9 +12,7 @@
 
 + (instancetype)sharedInstance;
 
-- (void)signInWithViewController:(UIViewController*)viewController andCompletionHandler:(void (^)(NSString*, NSString*, NSArray*,NSURLCredential*))completionHandler;
-
-- (void)checkUsername:(NSString*)username withPassword:(NSString*)password andCompletionHandler:(void (^)(NSString*, NSString*, NSArray*))completionHandler;
+- (void)checkUsername:(NSString*)username withPassword:(NSString*)password andCompletionHandler:(void (^)(NSString*, NSString*, NSArray*, NSURLCredential*))completionHandler;
 
 - (void)registerCurrentDeviceForTeamID:(NSString*)teamID withUsername:(NSString*)username password:(NSString*)password andCompletionHandler:(void (^)(NSError*))completionHandler;
 
