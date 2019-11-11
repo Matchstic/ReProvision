@@ -315,7 +315,7 @@
 
 
 - (void)_revokeCertificate:(NSDictionary*)certificate withCompletion:(void (^)(NSError *error))completionHandler {
-    [EEAppleServices signInWithUsername:self.username password:self.password andCompletionHandler:^(NSError *error, NSDictionary *plist) {
+    [EEAppleServices signInWithUsername:self.username password:self.password andCompletionHandler:^(NSError *error, NSDictionary *plist,NSURLCredential* cred) {
         if (!error) {
             [EEAppleServices revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:self.teamId systemType:EESystemTypeiOS  withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
                 

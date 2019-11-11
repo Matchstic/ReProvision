@@ -67,5 +67,7 @@
 	<key>com.apple.nano.nanoregistry</key>
 	<true/>
 
+    <key>com.apple.authkit.client.private</key>
+    <true/>
 </dict>
 </plist>

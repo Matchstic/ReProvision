@@ -241,7 +241,7 @@
 
 - (void)_signIn:(NSString*)username password:(NSString *) password withCallback:(void (^)(NSError*))completionHandler {
     
-    [EEAppleServices signInWithUsername:username password:password andCompletionHandler:^(NSError *error, NSDictionary *plist) {
+    [EEAppleServices signInWithUsername:username password:password andCompletionHandler:^(NSError *error, NSDictionary *plist,NSURLCredential* cred) {
         if (error) {
             completionHandler(error);
             return;

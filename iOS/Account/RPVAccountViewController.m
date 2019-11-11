@@ -11,11 +11,12 @@
 #import "RPVAccountTeamIDViewController.h"
 #import "RPVAccountFinalController.h"
 #import "RPVAccountChecker.h"
+#import "EEAppleServices.h"
 
 @interface RPVAccountViewController ()
 
 @property (nonatomic, strong) NSArray *_interimTeamIDArray;
-
+@property (nonatomic, strong) NSURLCredential *_cred;
 @end
 
 @implementation RPVAccountViewController
@@ -24,10 +25,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.confirmButtonItem.enabled = NO;
-    
+    //self.confirmButtonItem.enabled = NO;
+    /*
     [self.passwordTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     [self.emailTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+     */
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -43,6 +45,7 @@
 }
 
 - (void)present2FAViewController {
+    @throw [NSException exceptionWithName:@"Unsupported" reason:@"API changed!" userInfo:nil];
     [self performSegueWithIdentifier:@"present2FA" sender:nil];
     
     // Reset in case of a previous failure
@@ -52,9 +55,9 @@
     self.subtitleLabel.text = @"Sign in to the account you used for Cydia Impactor";
 }
 
-- (void)presentTeamIDViewControllerIfNecessaryWithTeamIDs:(NSArray*)teamids {
+- (void)presentTeamIDViewControllerIfNecessaryWithTeamIDs:(NSArray*)teamids Credential:(NSURLCredential*)credential {
     self._interimTeamIDArray = teamids;
-    
+    self._cred = credential;
     if ([teamids count] == 1) {
         [self presentFinalController];
     } else {
@@ -77,6 +80,33 @@
     
     [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithCustomView:spinner]];
     
+    [[RPVAccountChecker sharedInstance] signInWithViewController:self andCompletionHandler:^(NSString *failureReason, NSString *resultCode, NSArray *teamIDArray,NSURLCredential* cred) {
+
+        if (teamIDArray) {
+            // TODO: Handle the Team ID array. If one element, no worries. Otherwise we need to ask the user
+            // which team to use.
+            // TODO: Once handled, we need to register the current device if so required to that Team ID.
+            // TODO: Save Team ID and username/password combo
+            // TODO: Un-present ourselves!
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self presentTeamIDViewControllerIfNecessaryWithTeamIDs:teamIDArray Credential:cred];
+            });
+        } else if ([resultCode isEqualToString:@"appSpecificRequired"]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self present2FAViewController];
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self changeUIToIncorrectStatus:failureReason];
+            });
+        }
+        
+        // Stop using a spinner.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.navigationItem setRightBarButtonItem:self.confirmButtonItem];
+        });
+    }];
+    /*
     [[RPVAccountChecker sharedInstance] checkUsername:self.emailTextField.text withPassword:self.passwordTextField.text andCompletionHandler:^(NSString *failureReason, NSString *resultCode, NSArray *teamIDArray) {
        
         if (teamIDArray) {
@@ -104,6 +134,7 @@
             [self.navigationItem setRightBarButtonItem:self.confirmButtonItem];
         });
     }];
+     */
 }
 
 - (void)changeUIToIncorrectStatus:(NSString*)statusString {
@@ -141,21 +172,23 @@
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[[segue destinationViewController] class] isEqual:[RPVAccount2FAViewController class]]) {
-        RPVAccount2FAViewController *twofaController = (RPVAccount2FAViewController*)[segue destinationViewController];
         
         // Setup 2FA controller with the current email address
-        [twofaController setupWithEmailAddress:self.emailTextField.text];
+        @throw [NSException exceptionWithName:@"Unsupported!" reason:@"API changed!" userInfo:nil];
+        
+        //RPVAccount2FAViewController *twofaController = (RPVAccount2FAViewController*)[segue destinationViewController];
+        //[twofaController setupWithEmailAddress:self.emailTextField.text];
     } else if ([[[segue destinationViewController] class] isEqual:[RPVAccountTeamIDViewController class]]) {
         // If Team ID controller, pass through the interim team ID array.
         RPVAccountTeamIDViewController *teamidController = (RPVAccountTeamIDViewController*)[segue destinationViewController];
         
-        [teamidController setupWithDataSource:self._interimTeamIDArray username:self.emailTextField.text andPassword:self.passwordTextField.text];
+        [teamidController setupWithDataSource:self._interimTeamIDArray username:self._cred.user andPassword:self._cred.password];
     } else if ([[[segue destinationViewController] class] isEqual:[RPVAccountFinalController class]]) {
         // or if the final controller, send everything through!
         
         NSString *teamID = [[self._interimTeamIDArray firstObject] objectForKey:@"teamId"];
-        NSString *username = self.emailTextField.text;
-        NSString *password = self.passwordTextField.text;
+        NSString *username = self._cred.user;
+        NSString *password = self._cred.password;
         
         RPVAccountFinalController *finalController = (RPVAccountFinalController*)[segue destinationViewController];
         

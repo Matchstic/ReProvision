@@ -59,7 +59,7 @@
     
     // Logged in
     
-    NSString *title = [NSString stringWithFormat:@"Apple ID: %@", [RPVResources getUsername]];;
+    NSString *title = [NSString stringWithFormat:@"Apple ID: %@", [[RPVResources getUsername] componentsSeparatedByString:@"|"][1]];
     _loggedInSpec = [PSSpecifier preferenceSpecifierNamed:title target:self set:nil get:nil detail:nil cell:PSStaticTextCell edit:nil];
     [_loggedInSpec setProperty:@"appleid" forKey:@"key"];
     

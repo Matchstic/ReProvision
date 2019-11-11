@@ -27,8 +27,42 @@
 }
 
 // Returns a failure reason, failure code, or team ID array
+- (void)signInWithViewController:(UIViewController*)viewController andCompletionHandler:(void (^)(NSString*, NSString*, NSArray*,NSURLCredential*))completionHandler{
+    [EEAppleServices signInWithViewController:viewController andCompletionHandler:^(NSError *error, NSDictionary *plist,NSURLCredential *cred) {
+        if (error) {
+            completionHandler(error.localizedDescription, @"err", nil,nil);
+            return;
+        }
+        
+        NSString *resultCode = [plist objectForKey:@"reason"];
+        NSString *userString = [plist objectForKey:@"userString"];
+        
+        if ((!userString || [userString isEqualToString:@""]) && plist) {
+            // Get Team ID array
+            [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                if (error) {
+                    completionHandler(error.localizedDescription, @"err", nil,nil);
+                    return;
+                }
+                
+                NSArray *teams = [plist objectForKey:@"teams"];
+                if (teams.count == 0) {
+                    completionHandler(@"Please accept the Apple Developer terms at https://developer.apple.com", resultCode, teams,nil);
+                } else {
+                    NSString *userString = [plist objectForKey:@"userString"];
+                    completionHandler(userString, resultCode, teams,cred);
+                }
+            }];
+        } else if (plist) {
+            completionHandler(userString, resultCode, nil,cred);
+        } else {
+            completionHandler(nil, @"err", nil,cred);
+        }
+    }];
+}
 - (void)checkUsername:(NSString*)username withPassword:(NSString*)password andCompletionHandler:(void (^)(NSString*, NSString*, NSArray*))completionHandler {
-    
+    @throw [NSException exceptionWithName:@"No longer supported!" reason:@"API changed" userInfo:nil];
+    /*
     [EEAppleServices signInWithUsername:username password:password andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         
         if (error) {
@@ -61,6 +95,7 @@
             completionHandler(nil, @"err", nil);
         }
     }];
+     */
 }
 
 - (NSString*)nameForCurrentDevice {
