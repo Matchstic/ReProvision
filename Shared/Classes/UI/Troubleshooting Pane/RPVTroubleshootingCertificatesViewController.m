@@ -121,9 +121,9 @@
     [self.spinner startAnimating];
     self.overlayView.hidden = NO;
     
-    [EEAppleServices signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *plist, NSURLCredential *cred) {
+    [[EEAppleServices sharedInstance] signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *plist, NSURLCredential *cred) {
         if (!error) {
-            [EEAppleServices listAllDevelopmentCertificatesForTeamID:[RPVResources getTeamID] systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dict) {
+            [[EEAppleServices sharedInstance] listAllDevelopmentCertificatesForTeamID:[RPVResources getTeamID] systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dict) {
                 
                 self.dataSource = [[dict objectForKey:@"certificates"] mutableCopy];
                 
@@ -146,9 +146,9 @@
 }
 
 - (void)_revokeCertificate:(NSDictionary*)certificate withCompletion:(void (^)(NSError *error))completionHandler {
-    [EEAppleServices signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *plist, NSURLCredential *cred) {
+    [[EEAppleServices sharedInstance] signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *plist, NSURLCredential *cred) {
         if (!error) {
-            [EEAppleServices revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:[RPVResources getTeamID] systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
+            [[EEAppleServices sharedInstance] revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:[RPVResources getTeamID] systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
                 
                 completionHandler(error);
             }];
@@ -396,7 +396,7 @@
     }
     
     // Make sure we're signed in.
-    [EEAppleServices signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *dict,NSURLCredential *cred) {
+    [[EEAppleServices sharedInstance] signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *dict,NSURLCredential *cred) {
         if (error) {
             completionHandler(NO);
             return;
@@ -423,7 +423,7 @@
     }
     
     NSString *serial = [serials firstObject];
-    [EEAppleServices revokeCertificateForSerialNumber:serial andTeamID:teamId systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+    [[EEAppleServices sharedInstance] revokeCertificateForSerialNumber:serial andTeamID:teamId systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             completionHandler(error);
             return;

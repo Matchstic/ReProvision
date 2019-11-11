@@ -84,7 +84,7 @@
     self.subtitleLabel.text = @"Verifying...";
     
     // Check whether the user needs to revoke any existing codesigning certificate.
-    [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
+    [[EEAppleServices sharedInstance] listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
         if (error) {
             // TODO: handle!
             return;
@@ -117,7 +117,7 @@
         NSLog(@"Is free user? %d", isFreeUser);
         
         if (isFreeUser) {
-            [EEAppleServices listAllDevelopmentCertificatesForTeamID:self.teamId systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
+            [[EEAppleServices sharedInstance] listAllDevelopmentCertificatesForTeamID:self.teamId systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
                 if (error) {
                     // TODO: Handle error!
                 }
@@ -315,9 +315,9 @@
 
 
 - (void)_revokeCertificate:(NSDictionary*)certificate withCompletion:(void (^)(NSError *error))completionHandler {
-    [EEAppleServices signInWithUsername:self.username password:self.password andCompletionHandler:^(NSError *error, NSDictionary *plist,NSURLCredential* cred) {
+    [[EEAppleServices sharedInstance] signInWithUsername:self.username password:self.password andCompletionHandler:^(NSError *error, NSDictionary *plist,NSURLCredential* cred) {
         if (!error) {
-            [EEAppleServices revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:self.teamId systemType:EESystemTypeiOS  withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
+            [[EEAppleServices sharedInstance] revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:self.teamId systemType:EESystemTypeiOS  withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
                 
                 completionHandler(error);
             }];

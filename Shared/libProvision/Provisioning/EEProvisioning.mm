@@ -73,7 +73,7 @@
             return;
         }
         
-        [EEAppleServices addDevice:udid deviceName:name forTeamID:[EEAppleServices currentTeamID] systemType:systemType  withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+        [[EEAppleServices sharedInstance] addDevice:udid deviceName:name forTeamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType  withCompletionHandler:^(NSError *error, NSDictionary *plist) {
             
             if (error) {
                 completionHandler(error);
@@ -104,7 +104,7 @@
             return;
         }
         
-        [EEAppleServices listAllDevelopmentCertificatesForTeamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+        [[EEAppleServices sharedInstance] listAllDevelopmentCertificatesForTeamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
             if (error) {
                 completionHandler(error);
                 return;
@@ -128,7 +128,7 @@
                 // Revoke it!
                 NSString *serialNumber = [certificate objectForKey:@"serialNumber"];
                 
-                [EEAppleServices revokeCertificateForSerialNumber:serialNumber andTeamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                [[EEAppleServices sharedInstance] revokeCertificateForSerialNumber:serialNumber andTeamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
                     
                     if (error) {
                         completionHandler(error);
@@ -214,7 +214,7 @@
             // Only continue if authenticated!
             NSLog(@"Authenticated!");
             
-            [EEAppleServices updateCurrentTeamIDWithTeamIDCheck:teamIDCallback andCallback:^(NSError *error, NSString *teamid) {
+            [[EEAppleServices sharedInstance] updateCurrentTeamIDWithTeamIDCheck:teamIDCallback andCallback:^(NSError *error, NSString *teamid) {
                 if (error) {
                     NSError *error2 = [EEProvisioning _errorFromString:[@"updateCurrentTeamIDWithCompletionHandler: " stringByAppendingString:error.localizedDescription]];
                     completionHandler(error2);
@@ -241,7 +241,7 @@
 
 - (void)_signIn:(NSString*)username password:(NSString *) password withCallback:(void (^)(NSError*))completionHandler {
     
-    [EEAppleServices signInWithUsername:username password:password andCompletionHandler:^(NSError *error, NSDictionary *plist,NSURLCredential* cred) {
+    [[EEAppleServices sharedInstance] signInWithUsername:username password:password andCompletionHandler:^(NSError *error, NSDictionary *plist, NSURLCredential* cred) {
         if (error) {
             completionHandler(error);
             return;
@@ -282,7 +282,7 @@
 
 - (void)_handleDevelopmentCodesigningRequestIfNecessary:(void (^)(NSError*, NSString*, NSDictionary*))completionHandler systemType:(EESystemType)systemType {
     
-    [EEAppleServices listAllDevelopmentCertificatesForTeamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+    [[EEAppleServices sharedInstance] listAllDevelopmentCertificatesForTeamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             NSError *error2 = [EEProvisioning _errorFromString:[@"listAllDevelopmentCertificatesForTeamID: " stringByAppendingString:error.localizedDescription]];
             completionHandler(error2, nil, nil);
@@ -340,7 +340,7 @@
             }
         }
                                            
-        BOOL currentTeamIDMatchesStored = [[EEAppleServices currentTeamID] isEqualToString:privateKeyAssociatedTeamID];
+        BOOL currentTeamIDMatchesStored = [[[EEAppleServices sharedInstance] currentTeamID] isEqualToString:privateKeyAssociatedTeamID];
         
         if (!hasValidCertificate || [privateKey isEqualToString:@""] || privateKey == nil || !currentTeamIDMatchesStored) {
             // If the certificate exists already, then revoke.
@@ -359,7 +359,7 @@
                 
                 NSLog(@"Revoking certificate with serial number '%@', due to %@", serialNumber, reason);
                 
-                [EEAppleServices revokeCertificateForSerialNumber:serialNumber andTeamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                [[EEAppleServices sharedInstance] revokeCertificateForSerialNumber:serialNumber andTeamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
                     
                     if (error) {
                         // Handle error.
@@ -370,7 +370,7 @@
                     // No need to worry about any plist-based errors here.
                     
                     // Send in the new code-signing request to Apple.
-                    [self _submitNewCodeSigningRequestForTeamID:[EEAppleServices currentTeamID] machineName:[self _nameForCurrentMachine] machineId:[self _identifierForCurrentMachine] systemType:systemType withCallback:^(NSError *error, NSString *privateKey, NSDictionary *certificate) {
+                    [self _submitNewCodeSigningRequestForTeamID:[[EEAppleServices sharedInstance] currentTeamID] machineName:[self _nameForCurrentMachine] machineId:[self _identifierForCurrentMachine] systemType:systemType withCallback:^(NSError *error, NSString *privateKey, NSDictionary *certificate) {
                         if (error) {
                             // Handle error.
                             completionHandler(error, nil, nil);
@@ -380,7 +380,7 @@
                         // Store new private key into the keychain for future usage.
                         NSString *privateKeyAccount = @"privateKey";
                         [SAMKeychain setPassword:privateKey forService:@"com.matchstic.reprovision" account:privateKeyAccount];
-                        [SAMKeychain setPassword:[EEAppleServices currentTeamID] forService:@"com.matchstic.reprovision" account:@"privateKeyTeamID"];
+                        [SAMKeychain setPassword:[[EEAppleServices sharedInstance] currentTeamID] forService:@"com.matchstic.reprovision" account:@"privateKeyTeamID"];
                         
                         // Read certificate from result, and pass back to caller with the private key too.
                         completionHandler(nil, privateKey, certificate);
@@ -393,7 +393,7 @@
             // We need to make a code-signing request, such that we can sign on this machine.
             
             // Send in the new code-signing request to Apple.
-            [self _submitNewCodeSigningRequestForTeamID:[EEAppleServices currentTeamID]
+            [self _submitNewCodeSigningRequestForTeamID:[[EEAppleServices sharedInstance] currentTeamID]
                                             machineName:[self _nameForCurrentMachine]
                                               machineId:[self _identifierForCurrentMachine]
                                              systemType:systemType
@@ -407,7 +407,7 @@
                 // Store new private key into the keychain for future usage.
                 NSString *privateKeyAccount = @"privateKey";
                 [SAMKeychain setPassword:privateKey forService:@"com.matchstic.reprovision" account:privateKeyAccount];
-                [SAMKeychain setPassword:[EEAppleServices currentTeamID] forService:@"com.matchstic.reprovision" account:@"privateKeyTeamID"];
+                [SAMKeychain setPassword:[[EEAppleServices sharedInstance] currentTeamID] forService:@"com.matchstic.reprovision" account:@"privateKeyTeamID"];
                 
                 // Read certificate from result, and pass back to caller with the private key too.
                 completionHandler(nil, privateKey, certificate);
@@ -461,7 +461,7 @@
     machineName = [NSString stringWithFormat:@"RPV- %@", machineName];
     
     // Now that we have a CSR and private key, we can submit the CSR to Apple.
-    [EEAppleServices submitCodeSigningRequestForTeamID:teamid machineName:machineName machineID:machineId codeSigningRequest:codeSigningRequest systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+    [[EEAppleServices sharedInstance] submitCodeSigningRequestForTeamID:teamid machineName:machineName machineID:machineId codeSigningRequest:codeSigningRequest systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             completionHandler(error, nil, nil);
             return;
@@ -496,7 +496,7 @@
         // Grab the certificate, and return it with the private key to the caller.
         NSString *certificateSerialID = [certRequest objectForKey:@"serialNum"];
         
-        [EEAppleServices listAllDevelopmentCertificatesForTeamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+        [[EEAppleServices sharedInstance] listAllDevelopmentCertificatesForTeamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
             if (error) {
                 completionHandler(error, nil, nil);
                 return;
@@ -669,7 +669,7 @@ free_all:
 
 - (void)_addOrUpdateApplicationID:(NSString*)applicationIdentifier binaryLocation:(NSString*)binaryLocation systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSString*, NSDictionary*))completionHandler {
     
-    [EEAppleServices listAllApplicationsForTeamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+    [[EEAppleServices sharedInstance] listAllApplicationsForTeamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             NSError *err = [EEProvisioning _errorFromString:[@"listAllApplicationsForTeamID: " stringByAppendingString:error.localizedDescription]];
             completionHandler(err, @"", nil);
@@ -715,14 +715,14 @@ free_all:
         NSMutableDictionary *enabledFeatures = [NSMutableDictionary dictionary];
         
         // Grab entitlements and update them from the binary.
-        NSMutableDictionary *entitlements = [[EESigning updateEntitlementsForBinaryAtLocation:binaryLocation bundleIdentifier:identifier teamID:[EEAppleServices currentTeamID]] mutableCopy];
+        NSMutableDictionary *entitlements = [[EESigning updateEntitlementsForBinaryAtLocation:binaryLocation bundleIdentifier:identifier teamID:[[EEAppleServices sharedInstance] currentTeamID]] mutableCopy];
         
         // Set application-identifier to be the identifier we have here.
-        [entitlements setObject:[NSString stringWithFormat:@"%@.%@", [EEAppleServices currentTeamID], identifier] forKey:@"application-identifier"];
+        [entitlements setObject:[NSString stringWithFormat:@"%@.%@", [[EEAppleServices sharedInstance] currentTeamID], identifier] forKey:@"application-identifier"];
         
         // Setup enabledFeatures for this new application.
         // We need to check if the user has a paid account or not.
-        [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
+        [[EEAppleServices sharedInstance] listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
             if (error) {
                 // TODO: handle!
                 return;
@@ -735,7 +735,7 @@ free_all:
             for (NSDictionary *team in teams) {
                 NSString *teamIdToCheck = [team objectForKey:@"teamId"];
                 
-                if ([teamIdToCheck isEqualToString:[EEAppleServices currentTeamID]]) {
+                if ([teamIdToCheck isEqualToString:[[EEAppleServices sharedInstance] currentTeamID]]) {
                     NSArray *memberships = [team objectForKey:@"memberships"];
                     
                     for (NSDictionary *membership in memberships) {
@@ -869,7 +869,7 @@ free_all:
                 // /addAppId
                 NSLog(@"This appId doesn't exist yet, so making a new one.");
                 
-                [EEAppleServices addApplicationId:identifier name:name enabledFeatures:enabledFeatures teamID:[EEAppleServices currentTeamID] entitlements:entitlements systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                [[EEAppleServices sharedInstance] addApplicationId:identifier name:name enabledFeatures:enabledFeatures teamID:[[EEAppleServices sharedInstance] currentTeamID] entitlements:entitlements systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
                     if (error) {
                         NSError *err = [EEProvisioning _errorFromString:[@"addApplicationId: " stringByAppendingString:error.localizedDescription]];
                         completionHandler(err, @"", nil);
@@ -914,7 +914,7 @@ free_all:
                 // /updateAppId
                 NSLog(@"This appId already exists, so updating it.");
                 
-                [EEAppleServices updateApplicationIdId:appIdIdIfExists enabledFeatures:enabledFeatures teamID:[EEAppleServices currentTeamID] entitlements:entitlements systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                [[EEAppleServices sharedInstance] updateApplicationIdId:appIdIdIfExists enabledFeatures:enabledFeatures teamID:[[EEAppleServices sharedInstance] currentTeamID] entitlements:entitlements systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
                     if (error) {
                         NSError *err = [EEProvisioning _errorFromString:[@"updateApplicationIdId: " stringByAppendingString:error.localizedDescription]];
                         completionHandler(err, @"", nil);
@@ -991,7 +991,7 @@ free_all:
 }
 
 - (void)_assignApplicationIdId:(NSString*)applicationIdId toGroupIfNecessary:(NSString*)applicationGroupIdentifier systemType:(EESystemType)systemType withCompletionHandler:(void (^)(NSError*, NSString*))completionHandler {
-    [EEAppleServices listAllApplicationGroupsForTeamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+    [[EEAppleServices sharedInstance] listAllApplicationGroupsForTeamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
         
         if (error) {
             completionHandler(error, nil);
@@ -1061,7 +1061,7 @@ free_all:
             NSString *newGroupName = [NSString stringWithFormat:@"EE- group %@", [callerGroupIDNoPrefix stringByReplacingOccurrencesOfString:@"." withString:@" "]];
             
             // We normally add to the "group.EE-<UUID>.<identifier>" group.
-            [EEAppleServices addApplicationGroupWithIdentifier:newGroupIdentifier andName:newGroupName forTeamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+            [[EEAppleServices sharedInstance] addApplicationGroupWithIdentifier:newGroupIdentifier andName:newGroupName forTeamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
              
                 if (error) {
                     completionHandler(error, nil);
@@ -1097,7 +1097,7 @@ free_all:
     // Assign to application group.
     NSLog(@"Assigning appIdId '%@' to application group '%@'", appIdId, groupIdentifier);
     
-    [EEAppleServices assignApplicationGroup:groupIdentifier toApplicationIdId:appIdId teamID:[EEAppleServices currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
+    [[EEAppleServices sharedInstance] assignApplicationGroup:groupIdentifier toApplicationIdId:appIdId teamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType withCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             completionHandler(error);
             return;
@@ -1143,7 +1143,7 @@ free_all:
 
 -(void)_downloadTeamProvisioningProfileForAppIdId:(NSString*)appIdId systemType:(EESystemType)systemType withCallback:(void (^)(NSError*, NSData*))completionHandler {
     
-    [EEAppleServices getProvisioningProfileForAppIdId:appIdId withTeamID:[EEAppleServices currentTeamID] systemType:systemType andCompletionHandler:^(NSError *error, NSDictionary *plist) {
+    [[EEAppleServices sharedInstance] getProvisioningProfileForAppIdId:appIdId withTeamID:[[EEAppleServices sharedInstance] currentTeamID] systemType:systemType andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             NSError *err = [EEProvisioning _errorFromString:[@"getProvisioningProfileForAppIdId: " stringByAppendingString:error.localizedDescription]];
             completionHandler(err, nil);
@@ -1173,10 +1173,10 @@ free_all:
     
     NSLog(@"Revoking old provisioning profile for '%@' if possible", bundleIdentifier);
     
-    NSString *_actualIdentifier = [NSString stringWithFormat:@"%@.%@", [EEAppleServices currentTeamID], bundleIdentifier];
+    NSString *_actualIdentifier = [NSString stringWithFormat:@"%@.%@", [[EEAppleServices sharedInstance] currentTeamID], bundleIdentifier];
     
-    [EEAppleServices deleteProvisioningProfileForApplication:_actualIdentifier
-                                                   andTeamID:[EEAppleServices currentTeamID]
+    [[EEAppleServices sharedInstance] deleteProvisioningProfileForApplication:_actualIdentifier
+                                                   andTeamID:[[EEAppleServices sharedInstance] currentTeamID]
                                                   systemType:systemType 
                                        withCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {

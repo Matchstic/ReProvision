@@ -28,7 +28,7 @@
 
 // Returns a failure reason, failure code, or team ID array
 - (void)signInWithViewController:(UIViewController*)viewController andCompletionHandler:(void (^)(NSString*, NSString*, NSArray*,NSURLCredential*))completionHandler{
-    [EEAppleServices signInWithViewController:viewController andCompletionHandler:^(NSError *error, NSDictionary *plist,NSURLCredential *cred) {
+    [[EEAppleServices sharedInstance] signInWithViewController:viewController andCompletionHandler:^(NSError *error, NSDictionary *plist,NSURLCredential *cred) {
         if (error) {
             completionHandler(error.localizedDescription, @"err", nil,nil);
             return;
@@ -39,7 +39,7 @@
         
         if ((!userString || [userString isEqualToString:@""]) && plist) {
             // Get Team ID array
-            [EEAppleServices listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+            [[EEAppleServices sharedInstance] listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
                 if (error) {
                     completionHandler(error.localizedDescription, @"err", nil,nil);
                     return;
