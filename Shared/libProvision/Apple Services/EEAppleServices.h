@@ -7,8 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "AuthKit.h"
+#import <UIKit/UIKit.h>
 typedef enum : NSUInteger {
+    EESystemTypeUndefined,
     EESystemTypeiOS,
     EESystemTypewatchOS,
     EESystemTypetvOS
@@ -24,7 +26,13 @@ typedef enum : NSUInteger {
 /**
  * TODO: Docs!
  */
-+ (void)signInWithUsername:(NSString*)username password:(NSString*)password andCompletionHandler:(void (^)(NSError*, NSDictionary*))completionHandler;
++ (void)signInWithViewController:(UIViewController*)viewController andCompletionHandler:(void (^)(NSError*, NSDictionary*,NSURLCredential*))completionHandler;
+
+/**
+ * TODO: Docs!
+ */
++ (void)signInWithUsername:(NSString*)altDSID password:(NSString*)GSToken andCompletionHandler:(void (^)(NSError*, NSDictionary*,NSURLCredential*))completionHandler;
+
 
 /**
  * TODO: Docs!

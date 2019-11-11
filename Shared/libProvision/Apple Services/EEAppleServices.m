@@ -8,10 +8,10 @@
 
 #import "EEAppleServices.h"
 #import "NSData+GZIP.h"
-
-static NSString *acinfo = @"";
+static NSArray *acinfo = @"";
 static NSString *_teamid = @"";
-
+static AKAppleIDSession* appleIDSession = nil;
+static NSURLCredential* cred = nil;
 @implementation EEAppleServices
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,30 +43,42 @@ static NSString *_teamid = @"";
 }
 
 + (void)_doActionWithName:(NSString*)action systemType:(EESystemType)systemType extraDictionary:(NSDictionary*)extra andCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
-    
-    // watchOS is treated as iOS
-    NSString *os = systemType == EESystemTypeiOS || systemType == EESystemTypewatchOS ? @"ios" : @"tvos";
-    NSString *urlStr = [NSString stringWithFormat:@"https://developerservices2.apple.com/services/QH65B2/%@/%@?clientId=XABBG36SBA", os, action];
+    NSString *os = (systemType==EESystemTypeUndefined)?@"":(systemType == EESystemTypeiOS || systemType == EESystemTypewatchOS ? @"ios/" : @"tvos/");
+    NSString *urlStr = [NSString stringWithFormat:@"https://developerservices2.apple.com/services/QH65B2/%@%@?clientId=XABBG36SBA", os,action];
     
     NSLog(@"Request to URL: %@", urlStr);
     
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlStr]];
+    request.HTTPMethod = @"POST";
+    if(appleIDSession==nil){
+        appleIDSession = [[AKAppleIDSession alloc] initWithIdentifier:@"com.apple.gs.xcode.auth"];
+    }
+    NSDictionary<NSString *, NSString *> *appleHeaders = [appleIDSession appleIDHeadersForRequest:request];
+    AKDevice* currentDevice = [AKDevice currentDevice];
+    NSDictionary<NSString *, NSString *> *httpHeaders = @{
+                                                          @"Content-Type": @"text/x-xml-plist",
+                                                          @"User-Agent": @"Xcode",
+                                                          @"Accept": @"text/x-xml-plist",
+                                                          @"Accept-Language": @"en-us",
+                                                          @"Connection": @"keep-alive",
+                                                          @"X-Xcode-Version": @"11.2 (11B52)",
+                                                          @"X-Apple-I-Identity-Id": [[cred user] componentsSeparatedByString:@"|"][0],
+                                                          @"X-Apple-GS-Token": [cred password],
+                                                          @"X-Apple-App-Info": @"com.apple.gs.xcode.auth",
+                                                          @"X-Mme-Device-Id": [currentDevice uniqueDeviceIdentifier],
+                                                          @"X-MMe-Client-Info":[currentDevice serverFriendlyDescription]
+                                                          };
     
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"text/x-xml-plist" forHTTPHeaderField:@"Accept"];
-    [request setValue:@"en-us" forHTTPHeaderField:@"Accept-Language"];
-    [request setValue:@"text/x-xml-plist" forHTTPHeaderField:@"Content-Type"]; // Body is a plist.
-    [request setValue:@"Xcode" forHTTPHeaderField:@"User-Agent"];
-    [request setValue:@"7.0 (7A120f)" forHTTPHeaderField:@"X-Xcode-Version"];
-    
-    // The acinfo is set as a cookie for authentication purposes.
-    [request setValue:[NSString stringWithFormat:@"myacinfo=%@", acinfo] forHTTPHeaderField:@"Cookie"];
-    
+    [httpHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        [request setValue:value forHTTPHeaderField:key];
+    }];
+    [appleHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        [request setValue:value forHTTPHeaderField:key];
+    }];
     // Now, body.
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     
     [dict setObject:@"XABBG36SBA" forKey:@"clientId"];
-    [dict setObject:acinfo forKey:@"myacinfo"];
     [dict setObject:@"QH65B2" forKey:@"protocolVersion"];
     [dict setObject:[[NSUUID UUID] UUIDString] forKey:@"requestId"];
     [dict setObject:@[@"en_US"] forKey:@"userLocale"];
@@ -105,23 +117,18 @@ static NSString *_teamid = @"";
     
     // We want this as an XML plist.
     NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
-    
-    // Add content length too.
-    [request setValue:[NSString stringWithFormat:@"%lu", (unsigned long)data.length] forHTTPHeaderField:@"Content-Length"];
-    
+        
     [request setHTTPBody:data];
     
-    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:nil delegateQueue:nil];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if (error) {
+        if (error||data==nil) {
             completionHandler(error, nil);
         } else {
-            // The data we recieve needs to be unzipped, as it is gzip'd.
-            data = [data gunzippedData];
-            
-            NSDictionary *plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:nil];
-            
+            NSData* unpacked = [data isGzippedData]?[data gunzippedData]:data;
+            NSDictionary *plist = [NSPropertyListSerialization propertyListWithData:unpacked options:NSPropertyListImmutable format:nil error:nil];
+            if(plist==nil) completionHandler(error,nil);
             // Hit the completion handler.
             completionHandler(nil, plist);
         }
@@ -133,83 +140,124 @@ static NSString *_teamid = @"";
 // Sign-In methods.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// private sign in to this class.
-+ (void)_signInWithUsername:(NSString *)username password:(NSString *)password andCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
-    
-    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://idmsa.apple.com/IDMSWebAuth/clientDAW.cgi"]];
-    
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"text/x-xml-plist" forHTTPHeaderField:@"Accept"];
-    [request setValue:@"en-us" forHTTPHeaderField:@"Accept-Language"];
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    [request setValue:@"Xcode" forHTTPHeaderField:@"User-Agent"];
-    
-    NSString *postString = [NSString stringWithFormat:@"appIdKey=ba2ec180e6ca6e6c6a542255453b24d6e6e5b2be0cc48bc1b0d8ad64cfe0228f&userLocale=en_US&protocolVersion=A1234&appleId=%@&password=%@&format=plist", [self _urlEncodeString:username], [self _urlEncodeString:password]];
-    
-    [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:nil delegateQueue:nil];
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {        
-        if (error) {
-            completionHandler(error, nil);
-        } else {
-            NSDictionary *plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:nil];
++ (void)signInWithUsername:(NSString *)altDSID password:(NSString *)GSToken andCompletionHandler:(void (^)(NSError *, NSDictionary *,NSURLCredential*))completionHandler{
+
+    cred = [[NSURLCredential alloc] initWithUser:[altDSID copy] password:[GSToken copy] persistence:NSURLCredentialPersistencePermanent];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://developerservices2.apple.com/services/QH65B2/listTeams.action?clientId=XABBG36SBA"]];
+        request.HTTPMethod = @"POST";
+        
+        NSMutableDictionary<NSString *, NSString *> *parameters = [@{
+        @"clientId": @"XABBG36SBA",
+        @"protocolVersion": @"QH65B2",
+        @"requestId": [[[NSUUID UUID] UUIDString] uppercaseString],
+        } mutableCopy];
+        NSError *serializationError = nil;
+        NSData *bodyData = [NSPropertyListSerialization dataWithPropertyList:parameters format:NSPropertyListXMLFormat_v1_0 options:0 error:&serializationError];
+        if (bodyData == nil)
+        {
+            completionHandler(nil, nil,nil);
+            return;
+        }
+        request.HTTPBody = bodyData;
+        if(appleIDSession==nil){
+            appleIDSession = [[AKAppleIDSession alloc] initWithIdentifier:@"com.apple.gs.xcode.auth"];
+        }
+        NSDictionary<NSString *, NSString *> *appleHeaders = [appleIDSession appleIDHeadersForRequest:request];
+         AKDevice* currentDevice = [AKDevice currentDevice];
+        NSDictionary<NSString *, NSString *> *httpHeaders = @{
+                                                                 @"Content-Type": @"text/x-xml-plist",
+                                                                 @"User-Agent": @"Xcode",
+                                                                 @"Accept": @"text/x-xml-plist",
+                                                                 @"Accept-Language": @"en-us",
+                                                                 @"Connection": @"keep-alive",
+                                                                 @"X-Xcode-Version": @"11.2 (11B52)",
+                                                                 @"X-Apple-I-Identity-Id": [[cred user] componentsSeparatedByString:@"|"][0],
+                                                                 @"X-Apple-GS-Token": [cred password],
+                                                                 @"X-Apple-App-Info": @"com.apple.gs.xcode.auth",
+                                                                 @"X-Mme-Device-Id": [currentDevice uniqueDeviceIdentifier],
+                                                                 @"X-MMe-Client-Info":[currentDevice serverFriendlyDescription]
+        };
+        
+        [httpHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+            [request setValue:value forHTTPHeaderField:key];
+        }];
+        [appleHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+            [request setValue:value forHTTPHeaderField:key];
+        }];
+        NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:nil delegateQueue:nil];
+        NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable requestError) {
+            if (data == nil)
+            {
+                completionHandler(requestError,nil,nil);
+                return;
+            }
+            NSError *parseError = nil;
+            NSMutableDictionary *plist = [[NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:&parseError] mutableCopy];
+            if (plist == nil)
+            {
+                NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadServerResponse userInfo:@{NSUnderlyingErrorKey: parseError}];
+                completionHandler(error,nil,nil);
+                return;
+            }
+            NSString *userString = [plist objectForKey:@"userString" ];
+            NSString *reason = @"";
             
-            NSString *myacinfo = [plist objectForKey:@"myacinfo"];
-            if (myacinfo) {
-                acinfo = myacinfo;
+            NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
+            
+            if ((!userString || [userString isEqualToString:@""]) && plist) {
+                // We now have been authenticated most likely.
+                reason = @"authenticated";
+                userString = @"";
+            } else if (plist) {
+                // Failure, but we have something useful.
+                
+                // -22938 => App Specific Pwd?
+                // -20101 => incorrect credentials.
+                
+                NSString *resultCode = [plist objectForKey:@"resultCode"];
+                
+                if ([resultCode isEqualToString:@"-22938"] || [userString containsString:@"app-specific"]) {
+                    reason = @"appSpecificRequired";
+                } else if ([resultCode isEqualToString:@"-20101"] || [resultCode isEqualToString:@"-1"]) {
+                    reason = @"incorrectCredentials";
+                } else {
+                    reason = resultCode;
+                }
             }
             
-            // Hit the completion handler. It is possible that this request resulted in a need for 2FA.
-            completionHandler(nil, plist);
-        }
-    }];
-    [task resume];
+            [resultDictionary setObject:userString forKey:@"userString"];
+            [resultDictionary setObject:reason forKey:@"reason"];
+            completionHandler(nil, resultDictionary,[cred copy]);
+        }];
+        
+        [dataTask resume];
 }
-
-+ (void)signInWithUsername:(NSString *)username password:(NSString *)password andCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
-    
-    [self _signInWithUsername:username password:password andCompletionHandler:^(NSError *error, NSDictionary *plist) {
-        if (error) {
-            // Oh no.
-            NSLog(@"Error on sign-in! %@", error);
-            completionHandler(error, plist);
++ (void)signInWithViewController:(UIViewController*)viewController andCompletionHandler:(void (^)(NSError*, NSDictionary *,NSURLCredential*))completionHandler
+{
+    AKAppleIDAuthenticationInAppContext* context = [[AKAppleIDAuthenticationInAppContext alloc] init];
+    [context setTitle:@"ReProvision"];
+    [context setReason:@"Sign in to the account you used for Cydia Impactor"];
+    [context setAuthenticationType:2];
+    [context setServiceIdentifier:@"com.apple.gs.xcode.auth"];
+    [context setServiceIdentifiers:[NSArray arrayWithObject:@"com.apple.gs.xcode.auth"]];
+    context.presentingViewController = viewController;
+    AKAppleIDAuthenticationController* controller = [[AKAppleIDAuthenticationController alloc] initWithIdentifier:nil daemonXPCEndpoint:nil];
+    [controller authenticateWithContext:context completion:^(id arg1){
+        if(arg1==nil){
             return;
         }
         
-        NSString *userString = [plist objectForKey:@"userString"];
-        NSString *reason = @"";
-        
-        NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
-        [resultDictionary setObject:userString forKey:@"userString"];
-        
-        if ((!userString || [userString isEqualToString:@""]) && plist) {
-            // We now have been authenticated most likely.
-            reason = @"authenticated";
-            
-        } else if (plist) {
-            // Failure, but we have something useful.
-            
-            // -22938 => App Specific Pwd?
-            // -20101 => incorrect credentials.
-            
-            NSString *resultCode = [plist objectForKey:@"resultCode"];
-            
-            if ([resultCode isEqualToString:@"-22938"] || [userString containsString:@"app-specific"]) {
-                reason = @"appSpecificRequired";
-            } else if ([resultCode isEqualToString:@"-20101"] || [resultCode isEqualToString:@"-1"]) {
-                reason = @"incorrectCredentials";
-            } else {
-                reason = resultCode;
-            }
-        }
-        
-        [resultDictionary setObject:reason forKey:@"reason"];
-        
-        completionHandler(error, resultDictionary);
+        NSString* AKUsername = [[arg1 objectForKey:@"AKUsername"] copy];
+        NSDictionary* IDMSToken = [arg1 objectForKey:@"AKIDMSToken"];
+        NSString* GSToken = [[IDMSToken objectForKey:@"com.apple.gs.xcode.auth"] copy];
+        NSString* AKAltDSID = [[arg1 objectForKey:@"AKAltDSID"] copy];
+        NSString* username = [[NSString alloc] initWithFormat:@"%@|%@",AKAltDSID,AKUsername];
+        [self signInWithUsername:username password:GSToken andCompletionHandler:completionHandler];
     }];
+        
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Team ID methods.
@@ -259,99 +307,27 @@ static NSString *_teamid = @"";
 }
 
 + (void)viewDeveloperWithCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
-    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://developerservices2.apple.com/services/QH65B2/viewDeveloper.action?clientId=XABBG36SBA"]];
-    
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"text/x-xml-plist" forHTTPHeaderField:@"Accept"];
-    [request setValue:@"en-us" forHTTPHeaderField:@"Accept-Language"];
-    [request setValue:@"text/x-xml-plist" forHTTPHeaderField:@"Content-Type"]; // Body is a plist.
-    [request setValue:@"Xcode" forHTTPHeaderField:@"User-Agent"];
-    [request setValue:@"7.0 (7A120f)" forHTTPHeaderField:@"X-Xcode-Version"];
-    
-    // The acinfo is set as a cookie for authentication purposes.
-    [request setValue:[NSString stringWithFormat:@"myacinfo=%@", acinfo] forHTTPHeaderField:@"Cookie"];
-    
-    // Now, body.
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-    
-    [dict setObject:@"XABBG36SBA" forKey:@"clientId"];
-    [dict setObject:acinfo forKey:@"myacinfo"];
-    [dict setObject:@"QH65B2" forKey:@"protocolVersion"];
-    [dict setObject:[[NSUUID UUID] UUIDString] forKey:@"requestId"];
-    [dict setObject:@[@"en_US"] forKey:@"userLocale"];
-    
-    // We want this as an XML plist.
-    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
-    
-    // Add content length too.
-    [request setValue:[NSString stringWithFormat:@"%lu", (unsigned long)data.length] forHTTPHeaderField:@"Content-Length"];
-    
-    [request setHTTPBody:data];
-    
-    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:nil delegateQueue:nil];
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [self _doActionWithName:@"viewDeveloper.action" systemType:EESystemTypeUndefined extraDictionary:nil andCompletionHandler:^(NSError * error, NSDictionary *plist) {
         if (error) {
             completionHandler(error, nil);
         } else {
-            // The data we recieve needs to be unzipped, as it is gzip'd.
-            data = [data gunzippedData];
-            
-            NSDictionary *plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:nil];
-            
             // Hit the completion handler.
             completionHandler(nil, plist);
         }
     }];
-    [task resume];
 }
 
 + (void)listTeamsWithCompletionHandler:(void (^)(NSError*, NSDictionary *))completionHandler {
-    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://developerservices2.apple.com/services/QH65B2/listTeams.action?clientId=XABBG36SBA"]];
-    
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"text/x-xml-plist" forHTTPHeaderField:@"Accept"];
-    [request setValue:@"en-us" forHTTPHeaderField:@"Accept-Language"];
-    [request setValue:@"text/x-xml-plist" forHTTPHeaderField:@"Content-Type"]; // Body is a plist.
-    [request setValue:@"Xcode" forHTTPHeaderField:@"User-Agent"];
-    [request setValue:@"7.0 (7A120f)" forHTTPHeaderField:@"X-Xcode-Version"];
-    
-    // The acinfo is set as a cookie for authentication purposes.
-    [request setValue:[NSString stringWithFormat:@"myacinfo=%@", acinfo] forHTTPHeaderField:@"Cookie"];
-    
-    // Now, body.
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-    
-    [dict setObject:@"XABBG36SBA" forKey:@"clientId"];
-    [dict setObject:acinfo forKey:@"myacinfo"];
-    [dict setObject:@"QH65B2" forKey:@"protocolVersion"];
-    [dict setObject:[[NSUUID UUID] UUIDString] forKey:@"requestId"];
-    [dict setObject:@[@"en_US"] forKey:@"userLocale"];
-    
-    // We want this as an XML plist.
-    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
-    
-    // Add content length too.
-    [request setValue:[NSString stringWithFormat:@"%lu", (unsigned long)data.length] forHTTPHeaderField:@"Content-Length"];
-    
-    [request setHTTPBody:data];
-    
-    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:nil delegateQueue:nil];
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+            
+    [self _doActionWithName:@"listTeams.action" systemType:EESystemTypeUndefined extraDictionary:nil andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             completionHandler(error, nil);
         } else {
-            // The data we recieve needs to be unzipped, as it is gzip'd.
-            data = [data gunzippedData];
-            
-            NSDictionary *plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:nil];
-            
             // Hit the completion handler.
             completionHandler(nil, plist);
         }
     }];
-    [task resume];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

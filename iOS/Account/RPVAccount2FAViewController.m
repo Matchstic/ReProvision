@@ -64,7 +64,7 @@
     [spinner startAnimating];
     
     [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithCustomView:spinner]];
-    
+    /*
     [[RPVAccountChecker sharedInstance] checkUsername:self.emailAddress withPassword:self.passwordTextField.text andCompletionHandler:^(NSString *failureReason, NSString *resultCode, NSArray *teamIDArray) {
         
         if (teamIDArray) {
@@ -83,6 +83,7 @@
             [self.navigationItem setRightBarButtonItem:self.confirmBarButtonItem];
         });
     }];
+     */
 }
 
 - (void)changeUIToIncorrectStatus:(NSString*)statusString {
