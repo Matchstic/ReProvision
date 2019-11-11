@@ -163,6 +163,22 @@
     
     [self.authentication authenticateWithUsername:username password:password withCompletion:^(NSError *error, NSString *userIdentity, NSString *gsToken) {
         
+        if (error) {
+            NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
+            
+            if (error.code == -7006) {
+                [resultDictionary setObject:@"Your Apple ID or password is incorrect" forKey:@"userString"];
+                [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
+            } else {
+                [resultDictionary setObject:@"Unknown error occurred" forKey:@"userString"];
+                [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
+            }
+            
+            completionHandler(nil, resultDictionary, nil);
+            
+            return;
+        }
+        
         if (!self.credentials)
             self.credentials = [[NSURLCredential alloc] initWithUser:userIdentity password:gsToken persistence:NSURLCredentialPersistencePermanent];
         
@@ -175,6 +191,7 @@
                 // TODO: HANDLE ME
                 
                 completionHandler(error, plist, nil);
+                return;
             }
             
             NSString *userString = [plist objectForKey:@"userString" ];

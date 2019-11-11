@@ -80,11 +80,8 @@
     [[RPVAccountChecker sharedInstance] checkUsername:self.emailTextField.text withPassword:self.passwordTextField.text andCompletionHandler:^(NSString *failureReason, NSString *resultCode, NSArray *teamIDArray, NSURLCredential* credentials) {
        
         if (teamIDArray) {
-            // TODO: Handle the Team ID array. If one element, no worries. Otherwise we need to ask the user
+            // Handle the Team ID array. If one element, no worries. Otherwise we need to ask the user
             // which team to use.
-            // TODO: Once handled, we need to register the current device if so required to that Team ID.
-            // TODO: Save Team ID and username/password combo
-            // TODO: Un-present ourselves!
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self presentTeamIDViewControllerIfNecessaryWithTeamIDs:teamIDArray credentials:credentials];

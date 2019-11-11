@@ -29,17 +29,17 @@
     // Directly call into AuthKit for this context
     AKAppleIDAuthenticationController* controller = [[AKAppleIDAuthenticationController alloc] initWithIdentifier:nil daemonXPCEndpoint:nil];
     
-    [controller authenticateWithContext:context completion:^(id arg1) {
-        if (!arg1) {
-            completion([NSError errorWithDomain:NSURLErrorDomain code:-1 userInfo:nil], nil, nil);
+    [controller authenticateWithContext:context completion:^(id result, id error) {
+        NSLog(@"AUTHENTICATE WITH CONTEXT arg1: %@, arg2: %@", result, error);
+        
+        if (error) {
+            completion(error, nil, nil);
             return;
         }
         
-        NSLog(@"AUTHENTICATED WITH: %@", arg1);
-        
-        NSString* AKUsername = [arg1 objectForKey:@"AKUsername"];
-        NSDictionary* IDMSToken = [arg1 objectForKey:@"AKIDMSToken"];
-        NSString* AKAltDSID = [arg1 objectForKey:@"AKAltDSID"];
+        NSString* AKUsername = [result objectForKey:@"AKUsername"];
+        NSDictionary* IDMSToken = [result objectForKey:@"AKIDMSToken"];
+        NSString* AKAltDSID = [result objectForKey:@"AKAltDSID"];
         
         NSString* GSToken = [IDMSToken objectForKey:@"com.apple.gs.xcode.auth"];
         NSString* username = [[NSString alloc] initWithFormat:@"%@|%@", AKAltDSID, AKUsername];
