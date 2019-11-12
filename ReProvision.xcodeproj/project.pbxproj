@@ -10,7 +10,6 @@
 		87BDA6FD237821CA00EA4540 /* AuthKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 87BDA6FC237821CA00EA4540 /* AuthKit.h */; };
 		87BDA6FE237821CA00EA4540 /* AuthKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 87BDA6FC237821CA00EA4540 /* AuthKit.h */; };
 		87BDA7032378223700EA4540 /* AuthKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 87BDA7022378222400EA4540 /* AuthKit.tbd */; };
-		87BDA7042378224100EA4540 /* AuthKitUI.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 87BDA7012378222400EA4540 /* AuthKitUI.tbd */; };
 		87BDA7052378225300EA4540 /* AuthKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 87BDA7022378222400EA4540 /* AuthKit.tbd */; };
 		87BDA7062378225300EA4540 /* AuthKitUI.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 87BDA7012378222400EA4540 /* AuthKitUI.tbd */; };
 		87BDA7072378225F00EA4540 /* AuthKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 87BDA7022378222400EA4540 /* AuthKit.tbd */; };
@@ -615,11 +614,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9FDB2A2205195E8005934CD /* libMobileGestalt.tbd in Frameworks */,
-				87BDA7042378224100EA4540 /* AuthKitUI.tbd in Frameworks */,
-				C92D374A20502D7300F9F152 /* WebKit.framework in Frameworks */,
-				C938D396200842F7003802FF /* MobileCoreServices.framework in Frameworks */,
 				87BDA7032378223700EA4540 /* AuthKit.tbd in Frameworks */,
 				C9313C052005277E000AD4C3 /* Preferences.tbd in Frameworks */,
+				C92D374A20502D7300F9F152 /* WebKit.framework in Frameworks */,
+				C938D396200842F7003802FF /* MobileCoreServices.framework in Frameworks */,
 				A26601C23E41FF5D32A6DF6C /* libPods-iOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

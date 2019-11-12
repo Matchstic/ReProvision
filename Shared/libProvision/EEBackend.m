@@ -14,9 +14,9 @@
 
 @implementation EEBackend
 
-+ (void)provisionDevice:(NSString*)udid name:(NSString*)name username:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId systemType:(EESystemType)systemType withCallback:(void (^)(NSError *))completionHandler {
++ (void)provisionDevice:(NSString*)udid name:(NSString*)name identity:(NSString*)identity gsToken:(NSString*)gsToken priorChosenTeamID:(NSString*)teamId systemType:(EESystemType)systemType withCallback:(void (^)(NSError *))completionHandler {
     
-    EEProvisioning *provisioner = [EEProvisioning provisionerWithCredentials:username :password];
+    EEProvisioning *provisioner = [EEProvisioning provisionerWithCredentials:identity :gsToken];
     [provisioner provisionDevice:udid name:name withTeamIDCheck:^ NSString* (NSArray* teams) {
         
         // If this is called, then the user is on multiple teams, and must be asked which one they want to use.
@@ -30,9 +30,9 @@
     }];
 }
 
-+ (void)revokeDevelopmentCertificatesForCurrentMachineWithUsername:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId systemType:(EESystemType)systemType withCallback:(void (^)(NSError *))completionHandler {
++ (void)revokeDevelopmentCertificatesForCurrentMachineWithIdentity:(NSString*)identity gsToken:(NSString*)gsToken priorChosenTeamID:(NSString*)teamId systemType:(EESystemType)systemType withCallback:(void (^)(NSError *))completionHandler {
     
-    EEProvisioning *provisioner = [EEProvisioning provisionerWithCredentials:username :password];
+    EEProvisioning *provisioner = [EEProvisioning provisionerWithCredentials:identity :gsToken];
     [provisioner revokeCertificatesWithTeamIDCheck:^ NSString* (NSArray* teams) {
         
         // If this is called, then the user is on multiple teams, and must be asked which one they want to use.
@@ -46,7 +46,7 @@
     }];
 }
 
-+ (void)signBundleAtPath:(NSString*)path username:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId withCompletionHandler:(void (^)(NSError *error))completionHandler {
++ (void)signBundleAtPath:(NSString*)path identity:(NSString*)identity gsToken:(NSString*)gsToken priorChosenTeamID:(NSString*)teamId withCompletionHandler:(void (^)(NSError *error))completionHandler {
     
     // We need to handle application extensions, e.g. watchOS applications and VPN plugins etc.
     // These are stored in the bundle's root directory at the following locations:
@@ -69,7 +69,7 @@
             NSLog(@"Handling sub-bundle: %@", subBundlePath);
             
             // Sign the bundle
-            [self signBundleAtPath:subBundlePath username:username password:password priorChosenTeamID:teamId withCompletionHandler:^(NSError *error) {
+            [self signBundleAtPath:subBundlePath identity:identity gsToken:gsToken priorChosenTeamID:teamId withCompletionHandler:^(NSError *error) {
                 if (error)
                     [subBundleErrors addObject:error];
                 
@@ -91,7 +91,7 @@
             NSLog(@"Handling sub-bundle: %@", subBundlePath);
             
             // Sign the bundle
-            [self signBundleAtPath:subBundlePath username:username password:password priorChosenTeamID:teamId withCompletionHandler:^(NSError *error) {
+            [self signBundleAtPath:subBundlePath identity:identity gsToken:gsToken priorChosenTeamID:teamId withCompletionHandler:^(NSError *error) {
                 if (error)
                     [subBundleErrors addObject:error];
                 
@@ -148,7 +148,7 @@
     // We get entitlements from the binary using ldid::Analyze() during provisioning, updating them as needed
     // for the current Team ID.
     
-    EEProvisioning *provisioner = [EEProvisioning provisionerWithCredentials:username :password];
+    EEProvisioning *provisioner = [EEProvisioning provisionerWithCredentials:identity :gsToken];
     [provisioner downloadProvisioningProfileForApplicationIdentifier:applicationId binaryLocation:(NSString*)binaryLocation withTeamIDCheck:^ NSString* (NSArray* teams) {
         
         // If this is called, then the user is on multiple teams, and must be asked which one they want to use.
@@ -212,7 +212,7 @@
     }];
 }
 
-+ (void)signIpaAtPath:(NSString*)ipaPath outputPath:(NSString*)outputPath username:(NSString*)username password:(NSString*)password priorChosenTeamID:(NSString*)teamId withCompletionHandler:(void (^)(NSError *))completionHandler {
++ (void)signIpaAtPath:(NSString*)ipaPath outputPath:(NSString*)outputPath identity:(NSString*)identity gsToken:(NSString*)gsToken priorChosenTeamID:(NSString*)teamId withCompletionHandler:(void (^)(NSError *))completionHandler {
     
     // 1. Unpack IPA to a temporary directory.
     NSError *error;
@@ -253,7 +253,7 @@
     
     NSLog(@"Signing bundle at path '%@'", bundleDirectory);
     
-    [self signBundleAtPath:bundleDirectory username:username password:password priorChosenTeamID:teamId withCompletionHandler:^(NSError *err) {
+    [self signBundleAtPath:bundleDirectory identity:identity gsToken:gsToken priorChosenTeamID:teamId withCompletionHandler:^(NSError *err) {
         if (err) {
             completionHandler(err);
             return;

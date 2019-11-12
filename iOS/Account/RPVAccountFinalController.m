@@ -14,8 +14,8 @@
 
 @interface RPVAccountFinalController ()
 
-@property (nonatomic, strong) NSString *username;
-@property (nonatomic, strong) NSString *password;
+@property (nonatomic, strong) NSString *identity;
+@property (nonatomic, strong) NSString *gsToken;
 @property (nonatomic, strong) NSString *teamId;
 
 @end
@@ -74,8 +74,8 @@
 }
 
 - (void)setupWithUsername:(NSString*)username password:(NSString*)password andTeamID:(NSString*)teamID {
-    self.username = username;
-    self.password = password;
+    self.identity = username;
+    self.gsToken = password;
     self.teamId = teamID;
     
     NSLog(@"SETUP WITH USERNAME: %@ AND PASSWORD: %@", username, password);
@@ -173,7 +173,7 @@
         self.titleLabel.text = @"Checking Device Status";
         self.subtitleLabel.text = @"Verifying...";
     
-        [[RPVAccountChecker sharedInstance] registerCurrentDeviceForTeamID:self.teamId withUsername:self.username password:self.password andCompletionHandler:^(NSError *error) {
+        [[RPVAccountChecker sharedInstance] registerCurrentDeviceForTeamID:self.teamId withIdentity:self.identity gsToken:self.gsToken andCompletionHandler:^(NSError *error) {
             // Error only happens if user already has registered this device!
             [self _checkAppleWatchRegistration];
         }];
@@ -186,7 +186,7 @@
             self.titleLabel.text = @"Checking Apple Watch Status";
             self.subtitleLabel.text = @"Verifying...";
             
-            [[RPVAccountChecker sharedInstance] registerCurrentWatchForTeamID:self.teamId withUsername:self.username password:self.password andCompletionHandler:^(NSError *error) {
+            [[RPVAccountChecker sharedInstance] registerCurrentWatchForTeamID:self.teamId withIdentity:self.identity gsToken:self.gsToken andCompletionHandler:^(NSError *error) {
                 // Error only happens if user already has registered this device!
                 [self _storeUserDetails];
             }];
@@ -203,7 +203,7 @@
         self.subtitleLabel.text = @"Working...";
     
         // Store details of the user to RPVResources
-        [RPVResources storeUsername:self.username password:self.password andTeamID:self.teamId];
+        [RPVResources storeUsername:self.identity password:self.gsToken andTeamID:self.teamId];
     
         [self performSelector:@selector(_done) withObject:nil afterDelay:2.0];
     });
@@ -317,7 +317,7 @@
 
 
 - (void)_revokeCertificate:(NSDictionary*)certificate withCompletion:(void (^)(NSError *error))completionHandler {
-    [[EEAppleServices sharedInstance] signInWithUsername:self.username password:self.password andCompletionHandler:^(NSError *error, NSDictionary *plist,NSURLCredential* cred) {
+    [[EEAppleServices sharedInstance] ensureSessionWithIdentity:self.identity gsToken:self.gsToken andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (!error) {
             [[EEAppleServices sharedInstance] revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:self.teamId systemType:EESystemTypeiOS  withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
                 

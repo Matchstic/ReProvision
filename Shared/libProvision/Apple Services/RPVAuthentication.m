@@ -18,11 +18,13 @@
 - (void)authenticateWithUsername:(NSString*)username password:(NSString*)password withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion {
     
     // Configure authentication context
-    AKAppleIDAuthenticationInAppContext* context = [[AKAppleIDAuthenticationInAppContext alloc] init];
+    AKAppleIDAuthenticationContext* context = [[AKAppleIDAuthenticationContext alloc] init];
     [context setUsername:username];
     [context _setPassword:password];
     
-    [context setAuthenticationType:2];
+    if ([context respondsToSelector:@selector(setAuthenticationType:)])
+        [context setAuthenticationType:2];
+    
     [context setServiceIdentifier:@"com.apple.gs.xcode.auth"];
     [context setServiceIdentifiers:[NSArray arrayWithObject:@"com.apple.gs.xcode.auth"]];
     

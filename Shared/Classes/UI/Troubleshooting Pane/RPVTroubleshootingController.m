@@ -268,7 +268,7 @@
             } case 1: {
                 // Register active Apple Watch
                 if ([RPVResources hasActivePairedWatch])
-                    [[RPVAccountChecker sharedInstance] registerCurrentWatchForTeamID:[RPVResources getTeamID] withUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error) {
+                    [[RPVAccountChecker sharedInstance] registerCurrentWatchForTeamID:[RPVResources getTeamID] withIdentity:[RPVResources getUsername] gsToken:[RPVResources getPassword] andCompletionHandler:^(NSError *error) {
                         // Error only happens if user already has registered this device!
                     
                         NSString *notificationString = @"";

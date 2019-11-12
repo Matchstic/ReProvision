@@ -25,6 +25,8 @@ typedef enum : NSUInteger {
  */
 - (NSString*)currentTeamID;
 
+- (void)ensureSessionWithIdentity:(NSString*)identity gsToken:(NSString*)token andCompletionHandler:(void (^)(NSError *error, NSDictionary *plist))completionHandler;
+
 /**
  * TODO: Docs!
  */

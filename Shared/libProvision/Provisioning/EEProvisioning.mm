@@ -31,16 +31,16 @@
 // Initialisation
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-+ (instancetype)provisionerWithCredentials:(NSString*)username :(NSString*)password {
-    return [[EEProvisioning alloc] initWithCredentials:username :password];
++ (instancetype)provisionerWithCredentials:(NSString*)identity :(NSString*)gsToken {
+    return [[EEProvisioning alloc] initWithCredentials:identity :gsToken];
 }
 
-- (instancetype)initWithCredentials:(NSString*)username :(NSString*)password {
+- (instancetype)initWithCredentials:(NSString*)identity :(NSString*)gsToken {
     self = [super init];
     
     if (self) {
-        _username = username;
-        _password = password;
+        _identity = identity;
+        _gsToken = gsToken;
     }
     
     return self;
@@ -209,7 +209,7 @@
      * 2. Update Team ID value stored locally.
      */
     
-    [self _signIn:_username password:_password withCallback:^(NSError *error) {
+    [self _signIn:_identity gsToken:_gsToken withCallback:^(NSError *error) {
         if (!error) {
             // Only continue if authenticated!
             NSLog(@"Authenticated!");
@@ -239,9 +239,9 @@
     }];
 }
 
-- (void)_signIn:(NSString*)username password:(NSString *) password withCallback:(void (^)(NSError*))completionHandler {
+- (void)_signIn:(NSString*)identity gsToken:(NSString *)gsToken withCallback:(void (^)(NSError*))completionHandler {
     
-    [[EEAppleServices sharedInstance] signInWithUsername:username password:password andCompletionHandler:^(NSError *error, NSDictionary *plist, NSURLCredential* cred) {
+    [[EEAppleServices sharedInstance] ensureSessionWithIdentity:identity gsToken:gsToken andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (error) {
             completionHandler(error);
             return;

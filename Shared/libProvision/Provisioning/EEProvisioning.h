@@ -10,18 +10,18 @@
 #import "EEAppleServices.h"
 
 @interface EEProvisioning : NSObject {
-    NSString *_username;
-    NSString *_password;
+    NSString *_identity;
+    NSString *_gsToken;
 }
 
 /**
  Creates a new instance of EEProvisioning with the given credentials.
  Note: if using 2-Factor Authentication, make sure to generate an App-Specific password
  
- @param username The username to sign in to Apple developer with.
- @param password The password associated with the username.
+ @param identity The DSIS identity to sign in to Apple developer with.
+ @param gsToken The GS token associated with the identity.
  */
-+ (instancetype)provisionerWithCredentials:(NSString*)username :(NSString*)password;
++ (instancetype)provisionerWithCredentials:(NSString*)identity :(NSString*)gsToken;
 
 /**
  Adds the current device to Apple's Developer portal for the current team. It is likely this should only need

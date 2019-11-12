@@ -255,7 +255,8 @@
     _hasCachedUser = hasCachedUser;
     
     // Update "Apple ID: XXX"
-    NSString *title = [NSString stringWithFormat:@"Apple ID: %@", username];
+    NSString *realName = [username componentsSeparatedByString:@"|"].count > 1 ? [username componentsSeparatedByString:@"|"][1] : username;
+    NSString *title = [NSString stringWithFormat:@"Apple ID: %@", realName];
     [_loggedInSpec setName:title];
     [_loggedInSpec setProperty:title forKey:@"label"];
     

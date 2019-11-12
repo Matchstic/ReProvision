@@ -121,7 +121,7 @@
     [self.spinner startAnimating];
     self.overlayView.hidden = NO;
     
-    [[EEAppleServices sharedInstance] signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *plist, NSURLCredential *cred) {
+    [[EEAppleServices sharedInstance] ensureSessionWithIdentity:[RPVResources getUsername] gsToken:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (!error) {
             [[EEAppleServices sharedInstance] listAllDevelopmentCertificatesForTeamID:[RPVResources getTeamID] systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dict) {
                 
@@ -146,7 +146,7 @@
 }
 
 - (void)_revokeCertificate:(NSDictionary*)certificate withCompletion:(void (^)(NSError *error))completionHandler {
-    [[EEAppleServices sharedInstance] signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *plist, NSURLCredential *cred) {
+    [[EEAppleServices sharedInstance] ensureSessionWithIdentity:[RPVResources getUsername] gsToken:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *plist) {
         if (!error) {
             [[EEAppleServices sharedInstance] revokeCertificateForSerialNumber:[certificate objectForKey:@"serialNumber"] andTeamID:[RPVResources getTeamID] systemType:EESystemTypeiOS withCompletionHandler:^(NSError *error, NSDictionary *dictionary) {
                 
@@ -396,7 +396,7 @@
     }
     
     // Make sure we're signed in.
-    [[EEAppleServices sharedInstance] signInWithUsername:[RPVResources getUsername] password:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *dict,NSURLCredential *cred) {
+    [[EEAppleServices sharedInstance] ensureSessionWithIdentity:[RPVResources getUsername] gsToken:[RPVResources getPassword] andCompletionHandler:^(NSError *error, NSDictionary *dict) {
         if (error) {
             completionHandler(NO);
             return;

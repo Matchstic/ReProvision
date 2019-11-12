@@ -110,11 +110,9 @@
     
     self.subtitleLabel.text = statusString != nil ? statusString : @"Unknown error";
     
-    // Reset input fields
-    self.emailTextField.text = @"";
-    [self.emailTextField becomeFirstResponder];
-    
+    // Reset password field
     self.passwordTextField.text = @"";
+    [self.passwordTextField becomeFirstResponder];
     
     // And disable button
     self.confirmButtonItem.enabled = NO;

@@ -159,6 +159,20 @@
 // Sign-In methods.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+- (void)ensureSessionWithIdentity:(NSString*)identity gsToken:(NSString*)token andCompletionHandler:(void (^)(NSError *error, NSDictionary *plist))completionHandler {
+    
+    if (!self.credentials)
+        self.credentials = [[NSURLCredential alloc] initWithUser:identity password:token persistence:NSURLCredentialPersistencePermanent];
+    
+    // TODO: Validate credentials
+    
+    NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
+    [resultDictionary setObject:@"authenticated" forKey:@"reason"];
+    [resultDictionary setObject:@"" forKey:@"userString"];
+    
+    completionHandler(nil, resultDictionary);
+}
+
 - (void)signInWithUsername:(NSString *)username password:(NSString *)password andCompletionHandler:(void (^)(NSError *, NSDictionary *, NSURLCredential*))completionHandler {
     
     [self.authentication authenticateWithUsername:username password:password withCompletion:^(NSError *error, NSString *userIdentity, NSString *gsToken) {
@@ -166,7 +180,7 @@
         if (error) {
             NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
             
-            if (error.code == -7006) {
+            if (error.code == -7006 || error.code == -7027) {
                 [resultDictionary setObject:@"Your Apple ID or password is incorrect" forKey:@"userString"];
                 [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
             } else {

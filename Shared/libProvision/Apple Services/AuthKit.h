@@ -27,7 +27,7 @@
 - (void)setUsername:(id)arg1;
 @end
 
-@interface AKAppleIDAuthenticationInAppContext : AKAppleIDAuthenticationContext
+/*@interface AKAppleIDAuthenticationInAppContext : AKAppleIDAuthenticationContext
 @property (nonatomic) UIViewController *presentingViewController;
 - (id) init;
 - (void)_setupAuthenticationPromptControllerAtMode:(long long)arg1;
@@ -60,7 +60,7 @@
 - (void)presentBasicLoginUIWithCompletion:(id)arg1;
 - (void)setHostWindow:(id)arg1;
 - (void)setDisplayImage:(id)arg1;
-@end
+@end*/
 
 
 @interface AKAppleIDAuthenticationController : NSObject

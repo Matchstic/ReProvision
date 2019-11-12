@@ -82,16 +82,16 @@
 #endif
 }
 
-- (void)registerCurrentDeviceForTeamID:(NSString*)teamID withUsername:(NSString*)username password:(NSString*)password andCompletionHandler:(void (^)(NSError*))completionHandler {
+- (void)registerCurrentDeviceForTeamID:(NSString*)teamID withIdentity:(NSString*)identity gsToken:(NSString*)gsToken andCompletionHandler:(void (^)(NSError*))completionHandler {
     
-    [EEBackend provisionDevice:[self UDIDForCurrentDevice] name:[self nameForCurrentDevice] username:username password:password priorChosenTeamID:teamID systemType:[self platformTypeForCurrentDevice] withCallback:^(NSError *error) {
+    [EEBackend provisionDevice:[self UDIDForCurrentDevice] name:[self nameForCurrentDevice] identity:identity gsToken:gsToken priorChosenTeamID:teamID systemType:[self platformTypeForCurrentDevice] withCallback:^(NSError *error) {
         completionHandler(error);
     }];
 }
 
-- (void)registerCurrentWatchForTeamID:(NSString*)teamID withUsername:(NSString*)username password:(NSString*)password andCompletionHandler:(void (^)(NSError*))completionHandler {
+- (void)registerCurrentWatchForTeamID:(NSString*)teamID withIdentity:(NSString*)identity gsToken:(NSString*)gsToken andCompletionHandler:(void (^)(NSError*))completionHandler {
     
-    [EEBackend provisionDevice:[RPVResources activePairedWatchUDID] name:[RPVResources activePairedWatchName] username:username password:password priorChosenTeamID:teamID systemType:EESystemTypewatchOS withCallback:^(NSError *error) {
+    [EEBackend provisionDevice:[RPVResources activePairedWatchUDID] name:[RPVResources activePairedWatchName] identity:identity gsToken:gsToken priorChosenTeamID:teamID systemType:EESystemTypewatchOS withCallback:^(NSError *error) {
         completionHandler(error);
     }];
 }
