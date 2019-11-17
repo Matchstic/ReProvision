@@ -77,7 +77,8 @@
 - (void)applicationSigningDidEncounterError:(NSError *)error forBundleIdentifier:(NSString *)bundleIdentifier {}
 
 - (void)applicationSigningCompleteWithError:(NSError *)error {
-    self.completionHandler();
+    if (self.completionHandler)
+        self.completionHandler();
 }
 
 @end
