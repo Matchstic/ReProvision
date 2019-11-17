@@ -65,9 +65,10 @@
     
     [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithCustomView:spinner]];
 
-    /*
-     // TODO: Handle 2FA login code for the given credentials
-    [[RPVAccountChecker sharedInstance] checkUsername:self.emailAddress withPassword:self.passwordTextField.text andCompletionHandler:^(NSString *failureReason, NSString *resultCode, NSArray *teamIDArray, NSURLCredential *credential) {
+    // Handle 2FA login code for the given credentials
+    long long code = [self.passwordTextField.text longLongValue];
+    
+    [[RPVAccountChecker sharedInstance] validateLoginCode:code withCompletionHandler:^(NSString *failureReason, NSString *resultCode, NSArray *teamIDArray, NSURLCredential *credential) {
         
         if (teamIDArray) {
             // Present the Team ID controller if necessary!
@@ -85,7 +86,6 @@
             [self.navigationItem setRightBarButtonItem:self.confirmBarButtonItem];
         });
     }];
-     */
 }
 
 - (void)changeUIToIncorrectStatus:(NSString*)statusString {

@@ -15,7 +15,9 @@
 @end
 
 @interface AKAppleIDAuthenticationContext : NSObject
-- (id) init;
+@property (copy) NSString *username;
+
+- (id)init;
 - (id)_initWithIdentifier:(id)arg1;
 - (void)setAuthenticationType:(unsigned long long)arg1;
 - (void)setTitle:(id)arg1;
@@ -25,42 +27,8 @@
 
 - (void)_setPassword:(id)arg1;
 - (void)setUsername:(id)arg1;
-@end
 
-/*@interface AKAppleIDAuthenticationInAppContext : AKAppleIDAuthenticationContext
-@property (nonatomic) UIViewController *presentingViewController;
-- (id) init;
-- (void)_setupAuthenticationPromptControllerAtMode:(long long)arg1;
-- (void)_updateUI:(id)arg1;
-- (void)showCDPView:(id)arg1 modalForWindow:(id)arg2 withController:(id)arg3;
-- (void)endCDPView;
-- (void)presentBiometricOrPasscodeValidationForAppleID:(id)arg1 completion:(id)arg2;
-- (void)_dismissServerProvidedUIWithCompletion:(id)arg1;
-- (void)_presentServerProvidedUIWithConfiguration:(id)arg1 completion:(id)arg2;
-- (void)_presentIDPProvidedUIWithConfiguration:(id)arg1 completion:(id)arg2;
-- (void)dismissSecondFactorUIWithCompletion:(id)arg1;
-- (void)presentSecondFactorAlertWithError:(id)arg1 title:(id)arg2 message:(id)arg3 completion:(id)arg4;
-- (void)presentSecondFactorUIWithCompletion:(id)arg1;
-- (void)dismissKeepUsingUIWithCompletion:(id)arg1;
-- (void)presentKeepUsingUIForAppleID:(id)arg1 completion:(id)arg2;
-- (void)dismissBasicLoginUIWithCompletion:(id)arg1;
-- (void)presentLoginAlertWithError:(id)arg1 title:(id)arg2 message:(id)arg3 completion:(id)arg4;
-- (void)_setupButtonActionsForSignInController:(id)arg1 completion:(id)arg2;
-- (void)_presentBasicLoginUIAlertWithCompletion:(id)arg1;
-- (BOOL)_isSatisfyingPasswordRequirements;
-- (void)_contextDidEndPresentingSecondaryUI;
-- (void)_contextWillBeginPresentingSecondaryUI;
-- (void)_contextDidDismissLoginAlertController;
-- (void)_contextWillDismissLoginAlertController;
-- (void)_contextDidPresentLoginController;
-- (void)dismissServerProvidedUIWithCompletion:(id)arg1;
-- (void)dismissNativeRecoveryUIWithCompletion:(id)arg1;
-- (void)presentNativeRecoveryUIWithContext:(id)arg1 completion:(id)arg2;
-- (void)presentServerProvidedUIWithConfiguration:(id)arg1 completion:(id)arg2;
-- (void)presentBasicLoginUIWithCompletion:(id)arg1;
-- (void)setHostWindow:(id)arg1;
-- (void)setDisplayImage:(id)arg1;
-@end*/
+@end
 
 
 @interface AKAppleIDAuthenticationController : NSObject

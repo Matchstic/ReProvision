@@ -161,8 +161,7 @@
 
 - (void)ensureSessionWithIdentity:(NSString*)identity gsToken:(NSString*)token andCompletionHandler:(void (^)(NSError *error, NSDictionary *plist))completionHandler {
     
-    if (!self.credentials)
-        self.credentials = [[NSURLCredential alloc] initWithUser:identity password:token persistence:NSURLCredentialPersistencePermanent];
+    self.credentials = [[NSURLCredential alloc] initWithUser:identity password:token persistence:NSURLCredentialPersistencePermanent];
     
     // TODO: Validate credentials
     
@@ -193,8 +192,7 @@
             return;
         }
         
-        if (!self.credentials)
-            self.credentials = [[NSURLCredential alloc] initWithUser:userIdentity password:gsToken persistence:NSURLCredentialPersistencePermanent];
+        self.credentials = [[NSURLCredential alloc] initWithUser:userIdentity password:gsToken persistence:NSURLCredentialPersistencePermanent];
         
         // Do a request to listTeams.action to check that the user is a member of a team
         [self listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
@@ -208,34 +206,52 @@
                 return;
             }
             
-            NSString *userString = [plist objectForKey:@"userString" ];
-            NSString *reason = @"";
+            NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
+            
+            [resultDictionary setObject:@"" forKey:@"userString"];
+            [resultDictionary setObject:@"authenticated" forKey:@"reason"];
+            
+            completionHandler(nil, resultDictionary, self.credentials);
+        }];
+    }];
+}
+
+- (void)validateLoginCode:(long long)code andCompletionHandler:(void (^)(NSError*, NSDictionary*, NSURLCredential*))completionHandler {
+    [self.authentication validateLoginCode:code withCompletion:^(NSError *error, NSString *userIdentity, NSString *gsToken) {
+        if (error) {
+            NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
+            
+            if (error.code == -7006 || error.code == -7027) {
+                [resultDictionary setObject:@"Your Apple ID or password is incorrect" forKey:@"userString"];
+                [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
+            } else {
+                [resultDictionary setObject:@"Unknown error occurred" forKey:@"userString"];
+                [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
+            }
+            
+            completionHandler(nil, resultDictionary, nil);
+            
+            return;
+        }
+        
+        self.credentials = [[NSURLCredential alloc] initWithUser:userIdentity password:gsToken persistence:NSURLCredentialPersistencePermanent];
+        
+        // Do a request to listTeams.action to check that the user is a member of a team
+        [self listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+            NSArray *teams = [plist objectForKey:@"teams"];
+            
+            if (!teams) {
+                // Error of some kind?
+                // TODO: HANDLE ME
+                
+                completionHandler(error, plist, nil);
+                return;
+            }
             
             NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
             
-            if ((!userString || [userString isEqualToString:@""]) && plist) {
-                // We now have been authenticated most likely.
-                reason = @"authenticated";
-                userString = @"";
-            } else if (plist) {
-                // Failure, but we have something useful.
-                
-                // -22938 => App Specific Pwd?
-                // -20101 => incorrect credentials.
-                
-                NSString *resultCode = [plist objectForKey:@"resultCode"];
-                
-                if ([resultCode isEqualToString:@"-22938"] || [userString containsString:@"app-specific"]) {
-                    reason = @"appSpecificRequired";
-                } else if ([resultCode isEqualToString:@"-20101"] || [resultCode isEqualToString:@"-1"]) {
-                    reason = @"incorrectCredentials";
-                } else {
-                    reason = resultCode;
-                }
-            }
-            
-            [resultDictionary setObject:userString forKey:@"userString"];
-            [resultDictionary setObject:reason forKey:@"reason"];
+            [resultDictionary setObject:@"" forKey:@"userString"];
+            [resultDictionary setObject:@"authenticated" forKey:@"reason"];
             
             completionHandler(nil, resultDictionary, self.credentials);
         }];

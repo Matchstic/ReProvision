@@ -15,6 +15,11 @@
  */
 - (void)authenticateWithUsername:(NSString*)username password:(NSString*)password withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion;
 
+/**
+ Validates a login code for the current authentication context
+ */
+- (void)validateLoginCode:(long long)code withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion;
+
 - (NSDictionary*)appleIDHeadersForRequest:(NSURLRequest*)request;
 
 @end

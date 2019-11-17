@@ -11,28 +11,63 @@
 
 @interface RPVAuthentication ()
 @property (nonatomic, strong) AKAppleIDSession* appleIDSession;
+@property (nonatomic, strong) AKAppleIDAuthenticationController* authenticationController;
+@property (nonatomic, strong) AKAppleIDAuthenticationContext *currentContext;
 @end
 
 @implementation RPVAuthentication
 
+- (void)_ensureAuthenticationController {
+    if (!self.authenticationController) {
+        AKAppleIDAuthenticationController *controller = [AKAppleIDAuthenticationController alloc];
+        
+        if ([controller respondsToSelector:@selector(initWithIdentifier:daemonXPCEndpoint:)])
+            controller = [controller initWithIdentifier:nil daemonXPCEndpoint:nil];
+        else
+            controller = [controller initWithIdentifier:nil];
+        
+        self.authenticationController = controller;
+    }
+}
+
 - (void)authenticateWithUsername:(NSString*)username password:(NSString*)password withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion {
     
     // Configure authentication context
-    AKAppleIDAuthenticationContext* context = [[AKAppleIDAuthenticationContext alloc] init];
-    [context setUsername:username];
-    [context _setPassword:password];
+    self.currentContext = [[AKAppleIDAuthenticationContext alloc] init];
+    [self.currentContext setUsername:username];
+    [self.currentContext _setPassword:password];
     
-    if ([context respondsToSelector:@selector(setAuthenticationType:)])
-        [context setAuthenticationType:2];
+    if ([self.currentContext respondsToSelector:@selector(setAuthenticationType:)])
+        [self.currentContext setAuthenticationType:2];
     
-    [context setServiceIdentifier:@"com.apple.gs.xcode.auth"];
-    [context setServiceIdentifiers:[NSArray arrayWithObject:@"com.apple.gs.xcode.auth"]];
+    [self.currentContext setServiceIdentifier:@"com.apple.gs.xcode.auth"];
+    [self.currentContext setServiceIdentifiers:[NSArray arrayWithObject:@"com.apple.gs.xcode.auth"]];
     
     // Directly call into AuthKit for this context
-    AKAppleIDAuthenticationController* controller = [[AKAppleIDAuthenticationController alloc] initWithIdentifier:nil daemonXPCEndpoint:nil];
+    [self _ensureAuthenticationController];
     
-    [controller authenticateWithContext:context completion:^(id result, id error) {
+    [self.authenticationController authenticateWithContext:self.currentContext completion:^(id result, id error) {
         NSLog(@"AUTHENTICATE WITH CONTEXT arg1: %@, arg2: %@", result, error);
+        
+        if (error) {
+            completion(error, nil, nil);
+            return;
+        }
+        
+        NSString* AKUsername = [result objectForKey:@"AKUsername"];
+        NSDictionary* IDMSToken = [result objectForKey:@"AKIDMSToken"];
+        NSString* AKAltDSID = [result objectForKey:@"AKAltDSID"];
+        
+        NSString* GSToken = [IDMSToken objectForKey:@"com.apple.gs.xcode.auth"];
+        NSString* username = [[NSString alloc] initWithFormat:@"%@|%@", AKAltDSID, AKUsername];
+        
+        completion(nil, username, GSToken);
+    }];
+}
+
+- (void)validateLoginCode:(long long)code withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion {
+    [self.authenticationController validateLoginCode:code forAppleID:self.currentContext.username completion:^(id result, id error) {
+        NSLog(@"validateLoginCode arg1: %@, arg2: %@", result, error);
         
         if (error) {
             completion(error, nil, nil);
