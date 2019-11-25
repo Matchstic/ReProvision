@@ -342,13 +342,13 @@ void perform_login(NSString *username, NSString *password, RPVLoginResultBlock c
     [clientData addEntriesFromDictionary:deviceData()];
 
     ccsrp_const_gp_t gp = ccsrp_gp_rfc5054_2048();
-
+    
     const struct ccdigest_info *di_info = ccsha256_di();
-    struct ccdigest_ctx di_ctx[ccdigest_di_size(di_info)];
+    struct ccdigest_ctx *di_ctx = (struct ccdigest_ctx *)malloc(ccdigest_di_size(di_info));
     ccdigest_init(di_info, di_ctx);
-
+    
     // MARK: AppleIDAuthSupport`stateClientNeg1
-
+    
     const struct ccdigest_info *srp_di = ccsha256_di();
     struct ccsrp_ctx_body *srp_ctx = (struct ccsrp_ctx_body *)malloc(ccsrp_sizeof_srp(di_info, gp));
     ccsrp_ctx_init(srp_ctx, srp_di, gp);
