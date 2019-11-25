@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#define CURRENT_CREDENTIALS_VERSION @"1"
+
 @interface RPVResources : NSObject
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,6 +35,7 @@
 + (NSString*)getUsername;
 + (NSString*)getPassword;
 + (NSString*)getTeamID;
++ (NSString*)getCredentialsVersion;
 + (void)storeUsername:(NSString*)username password:(NSString*)password andTeamID:(NSString*)teamId;
 
 + (void)userDidRequestAccountSignIn;

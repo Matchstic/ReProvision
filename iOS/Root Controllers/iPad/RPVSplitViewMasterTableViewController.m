@@ -42,7 +42,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidRequestAccountViewController:) name:@"RPVDisplayAccountSignInController" object:nil];
     
     // Check if we need to present the account view based upon settings.
-    if (![RPVResources getUsername] || [[RPVResources getUsername] isEqualToString:@""])
+    // Check if we need to present the account view based upon settings.
+    if (![RPVResources getUsername] ||
+        [[RPVResources getUsername] isEqualToString:@""] ||
+        ![[RPVResources getCredentialsVersion] isEqualToString:CURRENT_CREDENTIALS_VERSION])
         [self presentAccountViewControllerAnimated:YES];
 }
 

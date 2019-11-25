@@ -111,7 +111,7 @@ static dispatch_once_t nanoRegistryOnceToken;
 + (NSString*)getUsername {
     NSString* username = [[NSUserDefaults standardUserDefaults] objectForKey:@"cachedUsername"];
     NSArray* components = [username componentsSeparatedByString:@"|"];
-    if([components count]<2) return nil;
+    if([components count] < 2) return nil;
     return username;
 }
 
@@ -123,12 +123,18 @@ static dispatch_once_t nanoRegistryOnceToken;
     return [[NSUserDefaults standardUserDefaults] objectForKey:@"cachedTeamID"];
 }
 
++ (NSString*)getCredentialsVersion {
+    NSString* version = [[NSUserDefaults standardUserDefaults] objectForKey:@"credentialsVersion"];
+    return version ? version : @"0";
+}
+
 + (void)storeUsername:(NSString*)username password:(NSString*)password andTeamID:(NSString*)teamId {
     [[NSUserDefaults standardUserDefaults] setObject:username forKey:@"cachedUsername"];
     
     [SAMKeychain setPassword:password forService:SERVICENAME account:username];
     
     [[NSUserDefaults standardUserDefaults] setObject:teamId forKey:@"cachedTeamID"];
+    [[NSUserDefaults standardUserDefaults] setObject:CURRENT_CREDENTIALS_VERSION forKey:@"credentialsVersion"];
 }
 
 + (void)userDidRequestAccountSignIn {

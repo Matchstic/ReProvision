@@ -359,7 +359,11 @@
     NSLog(@"*** [ReProvision] :: daemonDidRequestCredentialsCheck");
     
     // Check that user credentials exist, notify if not
-    if (![RPVResources getUsername] || [[RPVResources getUsername] isEqualToString:@""] || ![RPVResources getPassword] || [[RPVResources getPassword] isEqualToString:@""]) {
+    if (![RPVResources getUsername] ||
+        [[RPVResources getUsername] isEqualToString:@""] ||
+        ![RPVResources getPassword] ||
+        [[RPVResources getPassword] isEqualToString:@""] ||
+        ![[RPVResources getCredentialsVersion] isEqualToString:CURRENT_CREDENTIALS_VERSION]) {
         
         [[RPVNotificationManager sharedInstance] sendNotificationWithTitle:@"Login Required" body:@"Tap to login to ReProvision. This is needed to re-sign applications." isDebugMessage:NO isUrgentMessage:YES andNotificationID:@"login"];
         
