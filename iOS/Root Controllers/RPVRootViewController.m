@@ -59,6 +59,7 @@
     masterController.detailViewController = detailController;
     
     // Present applications controller
+    [detailController setupController];
     [detailController presentSelectedItem:kItemApplications];
     [masterController.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
 }

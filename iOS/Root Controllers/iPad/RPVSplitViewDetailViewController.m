@@ -16,9 +16,7 @@
 
 @implementation RPVSplitViewDetailViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
+- (void)setupController {
     // Load the controllers.
     self.installedController = [self.storyboard instantiateViewControllerWithIdentifier:@"InstalledController"];
     self.settingsController = [self.storyboard instantiateViewControllerWithIdentifier:@"SettingsController"];

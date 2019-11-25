@@ -16,6 +16,7 @@ typedef enum : NSUInteger {
 
 @interface RPVSplitViewDetailViewController : UIViewController
 
+- (void)setupController;
 - (void)presentSelectedItem:(RPVSplitViewSelectedItem)item;
 
 @end
