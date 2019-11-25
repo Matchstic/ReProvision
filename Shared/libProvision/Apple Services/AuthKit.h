@@ -10,8 +10,8 @@
 #define AuthKit_h
 @interface AKDevice : NSObject
 + (id)currentDevice;
-- (id)uniqueDeviceIdentifier;
-- (id)serverFriendlyDescription;
+- (NSString*)uniqueDeviceIdentifier;
+- (NSString*)serverFriendlyDescription;
 @end
 
 @interface AKAppleIDAuthenticationContext : NSObject

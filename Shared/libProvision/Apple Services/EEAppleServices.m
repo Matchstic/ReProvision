@@ -59,9 +59,7 @@
         @"X-Xcode-Version": @"11.2 (11B52)",
         @"X-Apple-I-Identity-Id": [[self.credentials user] componentsSeparatedByString:@"|"][0],
         @"X-Apple-GS-Token": [self.credentials password],
-        @"X-Apple-App-Info": @"com.apple.gs.xcode.auth",
         @"X-Mme-Device-Id": [currentDevice uniqueDeviceIdentifier],
-        @"X-MMe-Client-Info":[currentDevice serverFriendlyDescription]
     };
     
     [httpHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
@@ -70,6 +68,10 @@
     
     [appleHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
         [request setValue:value forHTTPHeaderField:key];
+    }];
+    
+    [request.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        NSLog(@"%@: %@", key, value);
     }];
     
     return request;
@@ -179,11 +181,17 @@
         if (error) {
             NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
             
-            if (error.code == -7006 || error.code == -7027) {
-                [resultDictionary setObject:@"Your Apple ID or password is incorrect" forKey:@"userString"];
+            if (error.code == -20101 || error.code == -22406) {
+                [resultDictionary setObject:@"Your Apple ID or password is incorrect. App-specific passwords are not supported." forKey:@"userString"];
                 [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
+            } else if (error.code == 500) { // Internal error
+                [resultDictionary setObject:error.localizedDescription forKey:@"userString"];
+                [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
+            } else if (error.code == -22938) {
+                [resultDictionary setObject:@"2FA code is required" forKey:@"userString"];
+                [resultDictionary setObject:@"appSpecificRequired" forKey:@"reason"];
             } else {
-                [resultDictionary setObject:@"Unknown error occurred" forKey:@"userString"];
+                [resultDictionary setObject:[NSString stringWithFormat:@"Unknown error occurred (%ld)", (long)error.code] forKey:@"userString"];
                 [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
             }
             
@@ -217,11 +225,17 @@
 }
 
 - (void)validateLoginCode:(long long)code andCompletionHandler:(void (^)(NSError*, NSDictionary*, NSURLCredential*))completionHandler {
-    [self.authentication validateLoginCode:code withCompletion:^(NSError *error, NSString *userIdentity, NSString *gsToken) {
+    NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
+    [resultDictionary setObject:@"2FA codes are not yet supported" forKey:@"userString"];
+    [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
+    
+    completionHandler(nil, resultDictionary, nil);
+    
+    /*[self.authentication validateLoginCode:code withCompletion:^(NSError *error, NSString *userIdentity, NSString *gsToken) {
         if (error) {
             NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
             
-            if (error.code == -7006 || error.code == -7027) {
+            if (error.code == -7006 || error.code == -7027 || error.code == -20101) {
                 [resultDictionary setObject:@"Your Apple ID or password is incorrect" forKey:@"userString"];
                 [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
             } else {
@@ -255,7 +269,7 @@
             
             completionHandler(nil, resultDictionary, self.credentials);
         }];
-    }];
+    }];*/
 }
 
 
