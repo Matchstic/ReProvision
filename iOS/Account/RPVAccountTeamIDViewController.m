@@ -30,7 +30,13 @@
     self.tableView.tableHeaderView = nil;
     self.tableView.tableFooterView = nil;
     
-    self.tableView.backgroundColor = [UIColor whiteColor];
+    if (@available(iOS 13.0, *)) {
+        self.tableView.backgroundColor = [UIColor systemBackgroundColor];
+        self.view.backgroundColor = [UIColor systemBackgroundColor];
+    } else {
+        self.tableView.backgroundColor = [UIColor whiteColor];
+        self.view.backgroundColor = [UIColor whiteColor];
+    }
     
     [self.tableView reloadData];
 }

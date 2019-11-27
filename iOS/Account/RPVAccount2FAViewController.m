@@ -26,6 +26,22 @@
     // Do any additional setup after loading the view.
     
     [self.passwordTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    
+    // Handle colour
+    
+    if (@available(iOS 13.0, *)) {
+        self.view.backgroundColor = [UIColor systemBackgroundColor];
+        self.titleLabel.textColor = [UIColor labelColor];
+        self.subtitleLabel.textColor = [UIColor labelColor];
+    } else {
+        self.view.backgroundColor = [UIColor whiteColor];
+        self.titleLabel.textColor = [UIColor blackColor];
+        self.subtitleLabel.textColor = [UIColor blackColor];
+    }
+    
+    // OVERRIDES
+    self.confirmBarButtonItem.enabled = NO;
+    self.subtitleLabel.textColor = [UIColor redColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -61,6 +77,9 @@
     // Set right bar item to a spinning wheel
     UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     spinner.hidesWhenStopped = YES;
+    if (@available(iOS 13.0, *)) {
+        spinner.color = [UIColor labelColor];
+    }
     [spinner startAnimating];
     
     [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithCustomView:spinner]];

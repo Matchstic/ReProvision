@@ -20,8 +20,6 @@
 
 #import <dlfcn.h>
 
-#define DEBUG 0
-
 struct ccrng_state *ccDRBGGetRngState(void);
 
 @interface AKAppleIDSession : NSObject

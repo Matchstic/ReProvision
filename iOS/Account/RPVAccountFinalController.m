@@ -26,6 +26,12 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    if (@available(iOS 13.0, *)) {
+        self.view.backgroundColor = [UIColor systemBackgroundColor];
+        self.activityIndicatorView.color = [UIColor labelColor];
+    } else {
+        self.view.backgroundColor = [UIColor whiteColor];
+    }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -45,7 +51,11 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.hidden = YES;
-    self.tableView.backgroundColor = [UIColor whiteColor];
+    if (@available(iOS 13.0, *)) {
+        self.tableView.backgroundColor = [UIColor systemBackgroundColor];
+    } else {
+        self.tableView.backgroundColor = [UIColor whiteColor];
+    }
     self.tableView.scrollEnabled = NO;
     [self.tableView setEditing:YES animated:NO];
     
@@ -57,6 +67,12 @@
     self.certificatesExplanation.font = [UIFont systemFontOfSize:17];
     self.certificatesExplanation.textAlignment = NSTextAlignmentCenter;
     self.certificatesExplanation.hidden = YES;
+    
+    if (@available(iOS 13.0, *)) {
+        self.certificatesExplanation.textColor = [UIColor labelColor];
+    } else {
+        self.certificatesExplanation.textColor = [UIColor blackColor];
+    }
     
     [self.view addSubview:self.certificatesExplanation];
 }

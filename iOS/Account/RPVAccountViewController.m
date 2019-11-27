@@ -28,6 +28,18 @@
     self.confirmButtonItem.enabled = NO;
     [self.passwordTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     [self.emailTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    
+    // Handle colour
+    
+    if (@available(iOS 13.0, *)) {
+        self.view.backgroundColor = [UIColor systemBackgroundColor];
+        self.titleLabel.textColor = [UIColor labelColor];
+        self.subtitleLabel.textColor = [UIColor labelColor];
+    } else {
+        self.view.backgroundColor = [UIColor whiteColor];
+        self.titleLabel.textColor = [UIColor blackColor];
+        self.subtitleLabel.textColor = [UIColor blackColor];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -47,9 +59,14 @@
     
     // Reset in case of a previous failure
     self.titleLabel.text = @"Apple ID";
-    self.titleLabel.textColor = [UIColor blackColor];
     
-    self.subtitleLabel.text = @"Sign in to the account you used for Cydia Impactor";
+    if (@available(iOS 13.0, *)) {
+        self.titleLabel.textColor = [UIColor labelColor];
+    } else {
+        self.titleLabel.textColor = [UIColor blackColor];
+    }
+    
+    self.subtitleLabel.text = @"Sign in with your Apple ID";
 }
 
 - (void)presentTeamIDViewControllerIfNecessaryWithTeamIDs:(NSArray*)teamids credentials:(NSURLCredential*)credential {
@@ -73,6 +90,9 @@
     // Set right bar item to a spinning wheel
     UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     spinner.hidesWhenStopped = YES;
+    if (@available(iOS 13.0, *)) {
+        spinner.color = [UIColor labelColor];
+    }
     [spinner startAnimating];
     
     [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithCustomView:spinner]];

@@ -187,7 +187,7 @@
             } else if (error.code == 500) { // Internal error
                 [resultDictionary setObject:error.localizedDescription forKey:@"userString"];
                 [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
-            } else if (error.code == 401) {
+            } else if (error.code == 401 || error.code == -22411) {
                 [resultDictionary setObject:@"2FA code is required" forKey:@"userString"];
                 [resultDictionary setObject:@"appSpecificRequired" forKey:@"reason"];
             } else {
