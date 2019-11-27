@@ -12,6 +12,7 @@
 #import <Foundation/Foundation.h>
 
 #define RPVInternalLoginError 500
+#define RPVInternalLogin2FARequiredError 401
 
 // do a typedef for the block
 typedef void (^RPVLoginResultBlock)(NSError *error, NSString *userIdentity, NSString *gsToken);

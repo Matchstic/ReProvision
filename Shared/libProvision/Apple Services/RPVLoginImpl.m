@@ -20,20 +20,41 @@
 
 #import <dlfcn.h>
 
+#define DEBUG 0
+
 struct ccrng_state *ccDRBGGetRngState(void);
 
-@interface AKAppleIDSession
+@interface AKAppleIDSession : NSObject
 - (AKAppleIDSession *)initWithIdentifier:(NSString *)identifier;
 - (NSDictionary *)appleIDHeadersForRequest:(NSURLRequest *)request;
 @end
 
-@interface AKDevice
+@interface AKDevice : NSObject
 + (AKDevice *)currentDevice;
 - (NSString *)uniqueDeviceIdentifier;
 - (NSString *)MLBSerialNumber;
 - (NSString *)ROMAddress;
 - (NSString *)serialNumber;
 @end
+
+static void writeToLogFile(const char *string) {
+#if DEBUG
+    NSString *txtFileName = @"/var/mobile/Documents/ReProvisionDebug.txt";
+    NSString *final = [NSString stringWithFormat:@"(%@) %s", [NSDate date], string];
+     
+    NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:txtFileName];
+    if (fileHandle) {
+        [fileHandle seekToEndOfFile];
+        [fileHandle writeData:[final dataUsingEncoding:NSUTF8StringEncoding]];
+        [fileHandle closeFile];
+    } else {
+        [final writeToFile:txtFileName
+                atomically:NO
+                  encoding:NSStringEncodingConversionAllowLossy
+                     error:nil];
+    }
+#endif
+}
 
 OS_FORMAT_PRINTF(1, 2)
 static void log_error(const char *format, ...) {
@@ -44,6 +65,7 @@ static void log_error(const char *format, ...) {
     va_end(args);
 
     NSLog(@"[ERROR] %s", str);
+    writeToLogFile(str);
 
     free(str);
 }
@@ -58,6 +80,7 @@ static void log_debug(const char *format, ...) {
     va_end(args);
 
     NSLog(@"[DEBUG] %s", str);
+    writeToLogFile(str);
 
     free(str);
 #endif
@@ -100,17 +123,23 @@ static NSDictionary *deviceData() {
     AKDevice *device = [NSClassFromString(@"AKDevice") currentDevice];
     
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    
     if (device.uniqueDeviceIdentifier)
         [result setObject:device.uniqueDeviceIdentifier forKey:@"X-Mme-Device-Id"];
-    if (device.MLBSerialNumber)
+    
+    if ([device respondsToSelector:@selector(MLBSerialNumber)] && device.MLBSerialNumber)
         [result setObject:device.MLBSerialNumber forKey:@"X-Apple-I-MLB"];
-    if (device.ROMAddress)
+    
+    if ([device respondsToSelector:@selector(ROMAddress)] && device.ROMAddress)
         [result setObject:device.ROMAddress forKey:@"X-Apple-I-ROM"];
+    
     if (device.serialNumber)
         [result setObject:device.serialNumber forKey:@"X-Apple-I-SRL-NO"];
     
     return result;
 }
+
+static const char hexchars[] = "0123456789abcdef";
 
 // AppleIDAuthSupport`AppleIDAuthSupportPBKDF2SRP
 static NSData *PBKDF2SRP(const struct ccdigest_info *di_info, BOOL notS2K, NSString *password, NSData *salt, NSNumber *iterations) {
@@ -123,12 +152,11 @@ static NSData *PBKDF2SRP(const struct ccdigest_info *di_info, BOOL notS2K, NSStr
     char digest[final_digest_len];
 
     if (notS2K) {
-        // s2k_fo appears to be some sort of weird wchar (UTF-16LE) thing
-        // WARNING: Untested
+        // s2k_fo passes a hex string version of the bytes instead
         for (size_t i = 0; i < password_di_info->output_size; i++) {
-            char digest_byte = digest_raw[i];
-            digest[i * 2] = digest_byte >> 4;
-            digest[i * 2 + 1] = digest_byte & 0x0F;
+            char byte = digest_raw[i];
+            digest[i * 2 + 0] = hexchars[(byte >> 4) & 0x0F];
+            digest[i * 2 + 1] = hexchars[(byte >> 0) & 0x0F];
         }
     } else {
         memcpy(digest, digest_raw, final_digest_len);
@@ -308,7 +336,8 @@ static NSDictionary *makeRequest(NSDictionary *requestDict) {
 
     NSDictionary *status = response[@"Status"];
     if (status != nil && [status[@"ec"] intValue]) {
-        log_error("Got error from server: %s", [status[@"em"] description].UTF8String);
+        NSLog(@"Got error from server: %@", status[@"em"]);
+        NSLog(@"Status: %@", status);
         return status;
     }
 
@@ -431,8 +460,17 @@ void perform_login(NSString *username, NSString *password, RPVLoginResultBlock c
     });
     if (!completeResponse) return;
     if ([completeResponse objectForKey:@"em"]) {
+        NSError *responseError = nil;
+        
+        // Handle 2FA if required
+        NSString *authType = completeResponse[@"au"];
+        if ([authType isEqualToString:@"trustedDeviceSecondaryAuth"]) {
+            responseError = _createError([completeResponse objectForKey:@"em"], RPVInternalLogin2FARequiredError);
+        } else {
+            responseError = _createError([completeResponse objectForKey:@"em"], [[completeResponse objectForKey:@"ec"] intValue]);
+        }
+        
         // Error during request
-        NSError *responseError = _createError([completeResponse objectForKey:@"em"], [[completeResponse objectForKey:@"ec"] intValue]);
         completionHandler(responseError, nil, nil);
         return;
     }
