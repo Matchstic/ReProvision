@@ -143,7 +143,7 @@
 ////////////////////////////////////////////////////////
 
 - (void)textFieldDidChange:(id)sender {
-    if ([self.emailTextField.text containsString:@"@"] && self.passwordTextField.text.length > 0) {
+    if (self.passwordTextField.text.length > 0) {
         self.confirmButtonItem.enabled = YES;
     } else {
         self.confirmButtonItem.enabled = NO;
