@@ -20,7 +20,8 @@
 - (void)authenticateWithUsername:(NSString*)username password:(NSString*)password withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion {
     
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        perform_login(username, password, completion);
+        // Ensure username is lowercase        
+        perform_login([username lowercaseString], password, completion);
     });
 }
 
