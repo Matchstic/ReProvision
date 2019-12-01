@@ -6,25 +6,26 @@
 //  Copyright © 2019 Matt Clarke. All rights reserved.
 //
 
-#ifndef RPVLoginImpl_hpp
-#define RPVLoginImpl_hpp
-
 #import <Foundation/Foundation.h>
 
-#define RPVInternalLoginError 500
-#define RPVInternalLogin2FARequiredError 401
+// Error definitions
+#define RPVInternalLoginError 5000
+#define RPVInternalLogin2FARequiredTrustedDeviceError 4010
+#define RPVInternalLogin2FARequiredSecondaryAuthError 4011
+#define RPVInternalLoginIncorrect2FACodeError 4012
 
-// do a typedef for the block
-typedef void (^RPVLoginResultBlock)(NSError *error, NSString *userIdentity, NSString *gsToken);
+// Block definitions
+typedef void (^RPVLoginResultBlock)(NSError *error, NSString *userIdentity, NSString *gsToken, NSString *idmsToken);
+typedef void (^RPVTwoFactorResultBlock)(NSError *error);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+@interface RPVLoginImpl : NSObject
 
-void perform_login(NSString *username, NSString *password, RPVLoginResultBlock completionHandler);
+@property (nonatomic, strong) NSString *clientInfoOverride;
 
-#ifdef __cplusplus
-}
-#endif
+- (void)loginWithUsername:(NSString*)username password:(NSString*)password completion:(RPVLoginResultBlock)completionHandler;
 
-#endif /* RPVLoginImpl_hpp */
+- (void)requestTwoFactorCodeWithUserIdentity:(NSString*)userIdentity idmsToken:(NSString*)token mode:(int)mode andCompletion:(void (^)(NSError *error))completionHandler;
+
+- (void)submitTwoFactorCode:(NSString*)code withUserIdentity:(NSString*)userIdentity idmsToken:(NSString*)token andCompletion:(RPVTwoFactorResultBlock)completionHandler;
+
+@end

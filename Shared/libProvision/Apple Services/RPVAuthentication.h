@@ -20,6 +20,11 @@
  */
 - (void)validateLoginCode:(long long)code withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion;
 
+/**
+ Requests a login code for the current authentication content
+ */
+- (void)requestLoginCodeWithCompletion:(void(^)(NSError*))completionHandler;
+
 - (NSDictionary*)appleIDHeadersForRequest:(NSURLRequest*)request;
 
 @end

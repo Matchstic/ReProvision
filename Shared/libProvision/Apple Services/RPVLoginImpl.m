@@ -6,7 +6,7 @@
 //  Adapted by Matt Clarke on 24/11/19.
 //
 
-#include "RPVLoginImpl.h"
+#import "RPVLoginImpl.h"
 
 #import <corecrypto/ccsrp.h>
 #import <corecrypto/ccdrbg.h>
@@ -19,6 +19,8 @@
 #import <corecrypto/ccpad.h>
 
 #import <dlfcn.h>
+
+#define DEBUG 1
 
 struct ccrng_state *ccDRBGGetRngState(void);
 
@@ -82,59 +84,6 @@ static void log_debug(const char *format, ...) {
 
     free(str);
 #endif
-}
-
-static NSDictionary *anisetteData() {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    formatter.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
-    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss'Z'";
-    NSString *dateString = [formatter stringFromDate:[NSDate date]];
-
-    dlopen("/System/Library/PrivateFrameworks/AuthKit.framework/AuthKit", RTLD_NOW);
-    Class AKAppleIDSession = NSClassFromString(@"AKAppleIDSession");
-    NSDictionary *headers = [[[AKAppleIDSession alloc] initWithIdentifier:@"com.apple.gs.xcode.auth"] appleIDHeadersForRequest:nil];
-    
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    
-    [result setObject:dateString forKey:@"X-Apple-I-Client-Time"];
-    [result setObject:NSLocale.currentLocale.localeIdentifier forKey:@"X-Apple-Locale"];
-    [result setObject:NSTimeZone.localTimeZone.abbreviation forKey:@"X-Apple-I-TimeZone"];
-    
-    [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
-        [result setObject:value forKey:key];
-    }];
-
-    return result;
-}
-
-static NSDictionary *deviceData() {
-    // Note: X-Apple-I-PRK is also sent, however it's a password reset key which (I think) may not always
-    // be present even in genuine requests. It requires another account on device. So let's not include
-    // it for now.
-    //
-    // In fact, the only X-whatever key required here is the device X-Mme-Device-Id
-    // (which I believe must match that of a provisioned device)
-
-    dlopen("/System/Library/PrivateFrameworks/AuthKit.framework/AuthKit", RTLD_NOW);
-    AKDevice *device = [NSClassFromString(@"AKDevice") currentDevice];
-    
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    
-    if (device.uniqueDeviceIdentifier)
-        [result setObject:device.uniqueDeviceIdentifier forKey:@"X-Mme-Device-Id"];
-    
-    if ([device respondsToSelector:@selector(MLBSerialNumber)] && device.MLBSerialNumber)
-        [result setObject:device.MLBSerialNumber forKey:@"X-Apple-I-MLB"];
-    
-    if ([device respondsToSelector:@selector(ROMAddress)] && device.ROMAddress)
-        [result setObject:device.ROMAddress forKey:@"X-Apple-I-ROM"];
-    
-    if (device.serialNumber)
-        [result setObject:device.serialNumber forKey:@"X-Apple-I-SRL-NO"];
-    
-    return result;
 }
 
 static const char hexchars[] = "0123456789abcdef";
@@ -290,59 +239,19 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
     return data;
 }
 
-static NSDictionary *makeRequest(NSDictionary *requestDict) {
-    NSMutableDictionary *headerDict = [NSMutableDictionary dictionary];
-    headerDict[@"Version"] = @"1.0.1";
+@implementation RPVLoginImpl
 
-    NSDictionary *bodyDict = @{
-        @"Header": headerDict,
-        @"Request": requestDict
-    };
-
-    log_debug("Body: %s", bodyDict.description.UTF8String);
-
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://gsa.apple.com/grandslam/GsService2"]];
-    request.HTTPMethod = @"POST";
-    request.HTTPBody = [NSPropertyListSerialization dataWithPropertyList:bodyDict format:NSPropertyListXMLFormat_v1_0 options:0 error:nil];
-    [request setValue:@"text/x-xml-plist" forHTTPHeaderField:@"Content-Type"];
-    [request setValue:@"<MacBookPro11,5> <Mac OS X;10.14.6;18G103> <com.apple.AuthKit/1 (com.apple.akd/1.0)>" forHTTPHeaderField:@"X-MMe-Client-Info"];
-
-    __block NSDictionary *initialResponse = nil;
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    [[NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if (data) {
-            initialResponse = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:nil];
-        } else {
-            log_error("%s", error.description.UTF8String);
-        }
-        dispatch_semaphore_signal(semaphore);
-    }] resume];
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-
-    if (!initialResponse) {
-        log_error("Could not decode response plist!");
-        return nil;
+- (instancetype)init {
+    self = [super init];
+    
+    if (self) {
+        self.clientInfoOverride = @"<MacBookPro11,5> <Mac OS X;10.14.6;18G103> <com.apple.AuthKit/1 (com.apple.akd/1.0)>";
     }
-
-    NSDictionary *response = initialResponse[@"Response"];
-    if (!response) {
-        log_error("No response!");
-        return nil;
-    }
-
-    log_debug("Response: %s", response.description.UTF8String);
-
-    NSDictionary *status = response[@"Status"];
-    if (status != nil && [status[@"ec"] intValue]) {
-        NSLog(@"Got error from server: %@", status[@"em"]);
-        NSLog(@"Status: %@", status);
-        return status;
-    }
-
-    return response;
+    
+    return self;
 }
 
-NSError* _createError(NSString *string, int code) {
+-(NSError*)createError:(NSString *)string :(int)code {
     NSDictionary *userInfo = @{
                                NSLocalizedDescriptionKey: NSLocalizedString(string, nil),
                                NSLocalizedFailureReasonErrorKey: NSLocalizedString(string, nil),
@@ -356,7 +265,126 @@ NSError* _createError(NSString *string, int code) {
     return error;
 }
 
-void perform_login(NSString *username, NSString *password, RPVLoginResultBlock completionHandler) {
+- (void)_ensureAuthKitAvailable {
+    dlopen("/System/Library/PrivateFrameworks/AuthKit.framework/AuthKit", RTLD_NOW);
+}
+
+- (NSDictionary *)_anisetteData {
+    NSDateFormatter *formatter = [NSDateFormatter new];
+    formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    formatter.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
+    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss'Z'";
+    NSString *dateString = [formatter stringFromDate:[NSDate date]];
+
+    [self _ensureAuthKitAvailable];
+
+    Class AKAppleIDSession = NSClassFromString(@"AKAppleIDSession");
+    NSDictionary *headers = [[[AKAppleIDSession alloc] initWithIdentifier:@"com.apple.gs.xcode.auth"] appleIDHeadersForRequest:nil];
+    
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    
+    [result setObject:dateString forKey:@"X-Apple-I-Client-Time"];
+    [result setObject:NSLocale.currentLocale.localeIdentifier forKey:@"X-Apple-Locale"];
+    [result setObject:NSTimeZone.localTimeZone.abbreviation forKey:@"X-Apple-I-TimeZone"];
+    [result setObject:self.clientInfoOverride forKey:@"X-MMe-Client-Info"];
+    
+    [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        [result setObject:value forKey:key];
+    }];
+
+    return result;
+}
+
+- (NSDictionary *)_deviceData {
+    // Note: X-Apple-I-PRK is also sent, however it's a password reset key which (I think) may not always
+    // be present even in genuine requests. It requires another account on device. So let's not include
+    // it for now.
+    //
+    // In fact, the only X-whatever key required here is the device X-Mme-Device-Id
+    // (which I believe must match that of a provisioned device)
+
+    [self _ensureAuthKitAvailable];
+    
+    AKDevice *device = [NSClassFromString(@"AKDevice") currentDevice];
+    
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    
+    if (device.uniqueDeviceIdentifier)
+        [result setObject:device.uniqueDeviceIdentifier forKey:@"X-Mme-Device-Id"];
+    
+    if ([device respondsToSelector:@selector(MLBSerialNumber)] && device.MLBSerialNumber)
+        [result setObject:device.MLBSerialNumber forKey:@"X-Apple-I-MLB"];
+    
+    if ([device respondsToSelector:@selector(ROMAddress)] && device.ROMAddress)
+        [result setObject:device.ROMAddress forKey:@"X-Apple-I-ROM"];
+    
+    if (device.serialNumber)
+        [result setObject:device.serialNumber forKey:@"X-Apple-I-SRL-NO"];
+    
+    return result;
+}
+
+- (NSDictionary*)defaultRequestHeaders {
+    return @{
+        @"X-MMe-Client-Info": self.clientInfoOverride,
+        @"Content-Type": @"text/x-xml-plist",
+        @"User-Agent": @"akd/1.0 CFNetwork/978.0.7 Darwin/18.7.0",
+        @"Accept": @"*/*"
+    };
+}
+
+- (void)makeRequestWithParameters:(NSDictionary*)params completion:(void (^)(NSError *err, NSDictionary *response))completionHandler {
+    NSString *internalEndpoint = @"https://gsa.apple.com/grandslam/GsService2";
+    
+    NSDictionary *defaultHeaders = [self defaultRequestHeaders];
+
+    NSDictionary *requestBody = @{
+        @"Header": @{
+            @"Version": @"1.0.1"
+        },
+        @"Request": params
+    };
+
+    log_debug("Request Body: %s", requestBody.description.UTF8String);
+
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:internalEndpoint]];
+    request.HTTPMethod = @"POST";
+    request.HTTPBody = [NSPropertyListSerialization dataWithPropertyList:requestBody
+                                                                  format:NSPropertyListXMLFormat_v1_0
+                                                                 options:0
+                                                                   error:nil];
+    
+    [defaultHeaders enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        [request setValue:obj forHTTPHeaderField:key];
+    }];
+    
+    NSURLSessionTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        
+        if (error) {
+            completionHandler(error, nil);
+        } else if (!data) {
+            completionHandler(nil, nil);
+        } else {
+            NSDictionary *response = [NSPropertyListSerialization propertyListWithData:data
+                                                                               options:0
+                                                                                format:nil
+                                                                                 error:nil];
+            NSDictionary *packedResponse = [response objectForKey:@"Response"];
+            
+            log_debug("Response: %s", packedResponse.description.UTF8String);
+            
+            completionHandler(nil, packedResponse);
+        }
+        
+    }];
+    [task resume];
+}
+
+#pragma mark API
+
+- (void)loginWithUsername:(NSString*)username password:(NSString*)password completion:(RPVLoginResultBlock)completionHandler {
+    
     NSMutableDictionary *clientData = @{
         @"bootstrap": @YES,
         @"icscrec": @YES,
@@ -365,8 +393,8 @@ void perform_login(NSString *username, NSString *password, RPVLoginResultBlock c
         @"prkgen": @YES,
         @"svct": @"iCloud",
     }.mutableCopy;
-    [clientData addEntriesFromDictionary:anisetteData()];
-    [clientData addEntriesFromDictionary:deviceData()];
+    [clientData addEntriesFromDictionary:[self _anisetteData]];
+    [clientData addEntriesFromDictionary:[self _deviceData]];
 
     ccsrp_const_gp_t gp = ccsrp_gp_rfc5054_2048();
     
@@ -396,23 +424,45 @@ void perform_login(NSString *username, NSString *password, RPVLoginResultBlock c
     NSData *AData = [NSData dataWithBytes:A_bytes length:A_size];
 
     addStringToNegProt(di_info, di_ctx, "|");
-
-    NSDictionary *initResponse = makeRequest(@{
+    
+    // Initial request to GSA
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    __block NSDictionary *initResponse = nil;
+    [self makeRequestWithParameters:@{
         @"A2k": AData,
         @"ps": ps,
         @"cpd": clientData,
         @"u": username,
         @"o": @"init"
-    });
-    if (!initResponse) return;
-    if ([initResponse objectForKey:@"em"]) {
+    } completion:^(NSError *err, NSDictionary *response) {
+        if (response) {
+            initResponse = response;
+        } else {
+            completionHandler(err, nil, nil, nil);
+        }
+        
+        dispatch_semaphore_signal(semaphore);
+    }];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    
+    // Handle response
+    if (!initResponse) {
+        return;
+    }
+    
+    NSDictionary *initialResponseStatus = [initResponse objectForKey:@"Status"];
+    if ([initialResponseStatus objectForKey:@"ec"] &&
+        [[initialResponseStatus objectForKey:@"ec"] intValue] != 0) {
         // Error during request
-        NSError *responseError = _createError([initResponse objectForKey:@"em"], [[initResponse objectForKey:@"ec"] intValue]);
-        completionHandler(responseError, nil, nil);
+        NSError *responseError = [self createError:[initialResponseStatus objectForKey:@"em"]
+                                                  :[[initialResponseStatus objectForKey:@"ec"] intValue]];
+        completionHandler(responseError, nil, nil, nil);
         return;
     }
 
     // MARK: AppleIDAuthSupport`stateClientNeg2
+    // Generate the password key with the salt and interations requested by GSA
 
     size_t M_len = ccsrp_get_session_key_length(srp_ctx);
     char M_buf[M_len];
@@ -430,8 +480,8 @@ void perform_login(NSString *username, NSString *password, RPVLoginResultBlock c
     NSData *passKey = PBKDF2SRP(di_info, !isS2K, password, respSalt, respIterations);
     if (!passKey) {
         log_error("Could not generate password key!");
-        NSError *error = _createError(@"Could not generate password key", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
+        NSError *error = [self createError:@"Could not generate password key" :RPVInternalLoginError];
+        completionHandler(error, nil, nil, nil);
         return;
     }
 
@@ -443,34 +493,53 @@ void perform_login(NSString *username, NSString *password, RPVLoginResultBlock c
                                                 M_buf);
     if (result != 0) {
         log_error("Could not process challenge!");
-        NSError *error = _createError(@"Could not process challenge", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
+        NSError *error = [self createError:@"Could not process challenge" :RPVInternalLoginError];
+        completionHandler(error, nil, nil, nil);
         return;
     }
 
     NSData *MData = [NSData dataWithBytes:M_buf length:M_len];
-    NSDictionary *completeResponse = makeRequest(@{
+    
+    
+    // 'Complete' response to GSA
+    semaphore = dispatch_semaphore_create(0);
+    __block NSDictionary *completeResponse = nil;
+    [self makeRequestWithParameters:@{
         @"c": respC,
         @"M1": MData,
         @"cpd": clientData,
         @"u": username,
         @"o": @"complete"
-    });
-    if (!completeResponse) return;
-    if ([completeResponse objectForKey:@"em"]) {
-        NSError *responseError = nil;
-        
-        // Handle 2FA if required
-        NSString *authType = completeResponse[@"au"];
-        if ([authType isEqualToString:@"trustedDeviceSecondaryAuth"]) {
-            responseError = _createError([completeResponse objectForKey:@"em"], RPVInternalLogin2FARequiredError);
+    } completion:^(NSError *err, NSDictionary *response) {
+        if (response) {
+            completeResponse = response;
         } else {
-            responseError = _createError([completeResponse objectForKey:@"em"], [[completeResponse objectForKey:@"ec"] intValue]);
+            completionHandler(err, nil, nil, nil);
         }
         
-        // Error during request
-        completionHandler(responseError, nil, nil);
+        dispatch_semaphore_signal(semaphore);
+    }];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    
+    // Handle 'complete' response
+    if (!completeResponse) {
         return;
+    }
+    
+    NSDictionary *completeResponseStatus = [completeResponse objectForKey:@"Status"];
+    if ([completeResponseStatus objectForKey:@"ec"] &&
+        [[completeResponseStatus objectForKey:@"ec"] intValue] != 0) {
+        // Don't error out just yet if 2FA has been requested
+        // We need the idms token for that to be handled correctly
+        
+        if ([completeResponseStatus objectForKey:@"au"]) {
+            // Ignore the error for now, because authentication is still required
+        } else {
+            NSError *responseError = [self createError:[completeResponseStatus objectForKey:@"em"]
+                                                      :[[completeResponseStatus objectForKey:@"ec"] intValue]];
+            completionHandler(responseError, nil, nil, nil);
+            return;
+        }
     }
 
     // MARK: AppleIDAuthSupport`stateClientNeg3
@@ -478,22 +547,22 @@ void perform_login(NSString *username, NSString *password, RPVLoginResultBlock c
     NSData *M2Data = completeResponse[@"M2"];
     if (!M2Data) {
         log_error("Missing M2 data!");
-        NSError *error = _createError(@"Missing M2 data", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
+        NSError *error = [self createError:@"Missing M2 data" :RPVInternalLoginError];
+        completionHandler(error, nil, nil, nil);
         return;
     }
     size_t data_len = M2Data.length;
     if (data_len != ccsrp_get_session_key_length(srp_ctx)) {
         log_error("Invalid M2 len!");
-        NSError *error = _createError(@"Invalid M2 len", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
+        NSError *error = [self createError:@"Invalid M2 len" :RPVInternalLoginError];
+        completionHandler(error, nil, nil, nil);
         return;
     }
 
     if (!ccsrp_client_verify_session(srp_ctx, M2Data.bytes)) {
         log_error("Could not verify session!");
-        NSError *error = _createError(@"Could not verify session", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
+        NSError *error = [self createError:@"Could not verify session" :RPVInternalLoginError];
+        completionHandler(error, nil, nil, nil);
         return;
     }
 
@@ -514,8 +583,8 @@ void perform_login(NSString *username, NSString *password, RPVLoginResultBlock c
     NSData *negProto = completeResponse[@"np"];
     if (!negProto) {
         log_error("Neg proto missing!");
-        NSError *error = _createError(@"Neg proto missing", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
+        NSError *error = [self createError:@"Neg proto missing" :RPVInternalLoginError];
+        completionHandler(error, nil, nil, nil);
         return;
     }
 
@@ -523,8 +592,8 @@ void perform_login(NSString *username, NSString *password, RPVLoginResultBlock c
 
     if (negProto.length != digest_len) {
         log_error("Neg proto hash too short");
-        NSError *error = _createError(@"Neg proto hash too short", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
+        NSError *error = [self createError:@"Neg proto hash too short" :RPVInternalLoginError];
+        completionHandler(error, nil, nil, nil);
         return;
     }
 
@@ -540,77 +609,241 @@ void perform_login(NSString *username, NSString *password, RPVLoginResultBlock c
 
     if (cc_cmp_safe(digest_len, hmac_out, negProto.bytes)) {
         log_error("Invalid neg prot hmac!");
-        NSError *error = _createError(@"Invalid neg prot hmac", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
+        NSError *error = [self createError:@"Invalid neg prot hmac" :RPVInternalLoginError];
+        completionHandler(error, nil, nil, nil);
         return;
     }
 
     NSData *decrypted = decryptCBC(srp_ctx, spd);
     if (!decrypted) {
         log_error("Could not decrypt login response!");
-        NSError *error = _createError(@"Could not decrypt login response", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
+        NSError *error = [self createError:@"Could not decrypt login response" :RPVInternalLoginError];
+        completionHandler(error, nil, nil, nil);
         return;
     }
     NSDictionary *decryptedDict = [NSPropertyListSerialization propertyListWithData:decrypted options:0 format:nil error:nil];
     if (!decryptedDict) {
         log_error("Could not parse decrypted login response plist!");
-        NSError *error = _createError(@"Could not parse decrypted login response plist", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
+        NSError *error = [self createError:@"Could not parse decrypted login response plist" :RPVInternalLoginError];
+        completionHandler(error, nil, nil, nil);
         return;
     }
-    
-    NSString *altDSID = [NSString stringWithFormat:@"%@|%@", [decryptedDict objectForKey:@"adsid"], [decryptedDict objectForKey:@"acname"]];
 
     // MARK: AppleIDAuthSupport`AppleIDAuthSupportCopyAppTokensOptions
 
-    NSString *app = @"com.apple.gs.xcode.auth";
-    NSArray<NSString *> *apps = @[app];
     NSString *adsid = decryptedDict[@"adsid"];
+    NSString *acname = decryptedDict[@"acname"];
+    NSString *altDSID = [NSString stringWithFormat:@"%@|%@", adsid, acname];
 
     NSString *idmsToken = decryptedDict[@"GsIdmsToken"];
-    NSData *completeSK = decryptedDict[@"sk"];
-    NSData *completeC = decryptedDict[@"c"];
-
-    NSData *checksum = createAppTokensChecksum(completeSK, adsid, apps);
     
-    NSDictionary *tokensResponse = makeRequest(@{
-        @"u": adsid,
-        @"app": apps,
-        @"c": completeC,
-        @"t": idmsToken,
-        @"checksum": checksum,
-        @"cpd": clientData,
-        @"o": @"apptokens"
-    });
-    if (!tokensResponse) return;
-    if ([tokensResponse objectForKey:@"em"]) {
-        // Error during request
-        NSError *responseError = _createError([tokensResponse objectForKey:@"em"], [[tokensResponse objectForKey:@"ec"] intValue]);
+    // At this point, check if 2FA is required. If so, return with the idms token and adsid
+    if ([completeResponseStatus objectForKey:@"au"]) {
         
-        completionHandler(responseError, nil, nil);
-        return;
-    }
-
-    NSData *encryptedToken = tokensResponse[@"et"];
-    NSData *decryptedToken = decryptGCM(completeSK, encryptedToken);
-    if (!decryptedToken) {
-        log_error("Could not decrypt apptoken!");
-        NSError *error = _createError(@"Could not decrypt apptoken", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
-        return;
-    }
-    NSDictionary *decryptedTokDict = [NSPropertyListSerialization propertyListWithData:decryptedToken options:0 format:nil error:nil];
-    if (!decryptedTokDict) {
-        log_error("Could not parse decrypted apptoken plist!");
-        NSError *error = _createError(@"Could not parse decrypted apptoken plist", RPVInternalLoginError);
-        completionHandler(error, nil, nil);
-        return;
-    }
-    log_debug("Decrypted token dict: %s", decryptedTokDict.description.UTF8String);
-
-    NSDictionary *tokenDict = decryptedTokDict[@"t"][app];
-    NSString *token = tokenDict[@"token"];
+        int mode = [[completeResponseStatus objectForKey:@"au"] isEqualToString:@"trustedDeviceSecondaryAuth"] ?
+            RPVInternalLogin2FARequiredTrustedDeviceError :
+            RPVInternalLogin2FARequiredSecondaryAuthError;
+        
+        NSError *responseError = [self createError:[completeResponseStatus objectForKey:@"em"]
+                                                  :mode];
+        
+        completionHandler(responseError, altDSID, nil, idmsToken);
+    } else {
     
-    completionHandler(nil, altDSID, token);
+        NSData *completeSK = decryptedDict[@"sk"];
+        NSData *completeC = decryptedDict[@"c"];
+        
+        NSString *app = @"com.apple.gs.xcode.auth";
+        NSArray<NSString *> *apps = @[app];
+
+        NSData *checksum = createAppTokensChecksum(completeSK, adsid, apps);
+        
+        // 'Tokens' response to GSA
+        semaphore = dispatch_semaphore_create(0);
+        __block NSDictionary *tokensResponse = nil;
+        [self makeRequestWithParameters:@{
+            @"u": adsid,
+            @"app": apps,
+            @"c": completeC,
+            @"t": idmsToken,
+            @"checksum": checksum,
+            @"cpd": clientData,
+            @"o": @"apptokens"
+        } completion:^(NSError *err, NSDictionary *response) {
+            if (response) {
+                tokensResponse = response;
+            } else {
+                completionHandler(err, nil, nil, nil);
+            }
+            
+            dispatch_semaphore_signal(semaphore);
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        
+        // Handle 'complete' response
+        if (!tokensResponse) {
+            return;
+        }
+        
+        NSDictionary *tokensResponseStatus = [tokensResponse objectForKey:@"Status"];
+        if ([tokensResponseStatus objectForKey:@"ec"] &&
+            [[tokensResponseStatus objectForKey:@"ec"] intValue] != 0) {
+            // Error during request
+            NSError *responseError = [self createError:[tokensResponseStatus objectForKey:@"em"]
+                                                      :[[tokensResponseStatus objectForKey:@"ec"] intValue]];
+            
+            completionHandler(responseError, nil, nil, nil);
+            return;
+        }
+
+        NSData *encryptedToken = tokensResponse[@"et"];
+        NSData *decryptedToken = decryptGCM(completeSK, encryptedToken);
+        if (!decryptedToken) {
+            log_error("Could not decrypt apptoken!");
+            NSError *error = [self createError:@"Could not decrypt apptoken" :RPVInternalLoginError];
+            completionHandler(error, nil, nil, nil);
+            return;
+        }
+        NSDictionary *decryptedTokDict = [NSPropertyListSerialization propertyListWithData:decryptedToken options:0 format:nil error:nil];
+        if (!decryptedTokDict) {
+            log_error("Could not parse decrypted apptoken plist!");
+            NSError *error = [self createError:@"Could not parse decrypted apptoken plist" : RPVInternalLoginError];
+            completionHandler(error, nil, nil, nil);
+            return;
+        }
+        log_debug("Decrypted token dict: %s", decryptedTokDict.description.UTF8String);
+
+        NSDictionary *tokenDict = decryptedTokDict[@"t"][app];
+        NSString *token = tokenDict[@"token"];
+        
+        completionHandler(nil, altDSID, token, nil);
+    }
+    
 }
+
+- (void)requestTwoFactorCodeWithUserIdentity:(NSString*)userIdentity idmsToken:(NSString*)token mode:(int)mode andCompletion:(void (^)(NSError *error))completionHandler {
+    
+    // Parse the real dsid out of the identity
+    NSString *dsid = [userIdentity componentsSeparatedByString:@"|"].firstObject;
+    
+    // TODO: Change URL depending on the mode
+    
+    NSURL *URL = [NSURL URLWithString:@"https://gsa.apple.com/auth/verify/trusteddevice"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+    
+    log_debug("Request to: %s", URL.description.UTF8String);
+    
+    NSString *identityToken = [NSString stringWithFormat:@"%@:%@", dsid, token];
+    
+    NSData *identityTokenData = [identityToken dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *encodedIdentityToken = [identityTokenData base64EncodedStringWithOptions:0];
+    
+    // Sort out headers
+    NSMutableDictionary<NSString *, NSString *> *httpHeaders = [@{
+        @"Content-Type": @"text/x-xml-plist",
+        @"User-Agent": @"Xcode",
+        @"Accept": @"text/x-xml-plist",
+        @"Accept-Language": @"en-us",
+        @"X-Apple-App-Info": @"com.apple.gs.xcode.auth",
+        @"X-Xcode-Version": @"11.2 (11B41)",
+        @"X-Apple-Identity-Token": encodedIdentityToken,
+    } mutableCopy];
+    
+    [httpHeaders addEntriesFromDictionary:[self _anisetteData]];
+    [httpHeaders addEntriesFromDictionary:[self _deviceData]];
+    
+    [httpHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        [request setValue:value forHTTPHeaderField:key];
+    }];
+    
+    log_debug("Request Headers: %s", httpHeaders.description.UTF8String);
+    
+    // Do the request
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request
+        completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        
+        if (!data || error) {
+            completionHandler(error);
+        } else {
+            completionHandler(nil);
+        }
+    }];
+    [task resume];
+}
+
+- (void)submitTwoFactorCode:(NSString*)code withUserIdentity:(NSString*)userIdentity idmsToken:(NSString*)token andCompletion:(RPVTwoFactorResultBlock)completionHandler {
+    
+    // Parse the real dsid out of the identity
+    NSString *dsid = [userIdentity componentsSeparatedByString:@"|"].firstObject;
+    
+    NSURL *URL = [NSURL URLWithString:@"https://gsa.apple.com/grandslam/GsService2/validate"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+    
+    log_debug("Request to: %s", URL.description.UTF8String);
+    
+    NSString *identityToken = [NSString stringWithFormat:@"%@:%@", dsid, token];
+    
+    NSData *identityTokenData = [identityToken dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *encodedIdentityToken = [identityTokenData base64EncodedStringWithOptions:0];
+    
+    // Sort out headers
+    NSMutableDictionary<NSString *, NSString *> *httpHeaders = [@{
+        @"security-code": code,
+        @"Content-Type": @"text/x-xml-plist",
+        @"User-Agent": @"Xcode",
+        @"Accept": @"text/x-xml-plist",
+        @"Accept-Language": @"en-us",
+        @"X-Apple-App-Info": @"com.apple.gs.xcode.auth",
+        @"X-Xcode-Version": @"11.2 (11B41)",
+        @"X-Apple-Identity-Token": encodedIdentityToken,
+    } mutableCopy];
+    
+    [httpHeaders addEntriesFromDictionary:[self _anisetteData]];
+    [httpHeaders addEntriesFromDictionary:[self _deviceData]];
+    
+    [httpHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        [request setValue:value forHTTPHeaderField:key];
+    }];
+    
+    log_debug("Request Headers: %s", httpHeaders.description.UTF8String);
+    
+    // Do the request
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request
+        completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        
+        if (!data || error) {
+            completionHandler(error);
+        } else {
+            
+            // Parse the response
+            NSError *parseError;
+            NSDictionary *responseDictionary = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:&parseError];
+            
+            // Handle parse issues
+            if (!responseDictionary) {
+                NSError *error = [self createError:parseError.localizedDescription :RPVInternalLoginError];
+                completionHandler(error);
+                return;
+            }
+            
+            log_debug("Request Reponse: %s", responseDictionary.description.UTF8String);
+            
+            NSInteger errorCode = [responseDictionary[@"ec"] integerValue]; // Same for NSString or NSNumber.
+            if (errorCode == 0) {
+                // Success! However, still need to re-login again
+                completionHandler(nil);
+            } else if (errorCode == -21669) {
+                NSError *error = [self createError:@"Incorrect 2FA code" :RPVInternalLoginIncorrect2FACodeError];
+                completionHandler(error);
+            } else {
+                NSError *responseError = [self createError:[responseDictionary objectForKey:@"em"]
+                                                          :[[responseDictionary objectForKey:@"ec"] intValue]];
+                
+                completionHandler(responseError);
+            }
+        }
+    }];
+    [task resume];
+}
+
+@end

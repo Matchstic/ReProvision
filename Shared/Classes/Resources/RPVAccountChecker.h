@@ -14,6 +14,8 @@
 
 - (void)checkUsername:(NSString*)username withPassword:(NSString*)password andCompletionHandler:(void (^)(NSString*, NSString*, NSArray*, NSURLCredential*))completionHandler;
 
+- (void)requestLoginCodeWithCompletionHandler:(void (^)(NSError *error))completion;
+
 - (void)validateLoginCode:(long long)code withCompletionHandler:(void (^)(NSString*, NSString*, NSArray*, NSURLCredential*))completionHandler;
 
 - (void)registerCurrentDeviceForTeamID:(NSString*)teamID withIdentity:(NSString*)username gsToken:(NSString*)password andCompletionHandler:(void (^)(NSError*))completionHandler;

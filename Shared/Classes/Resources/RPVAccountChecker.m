@@ -63,6 +63,10 @@
     }];
 }
 
+- (void)requestLoginCodeWithCompletionHandler:(void (^)(NSError *error))completion {
+    [[EEAppleServices sharedInstance] requestTwoFactorLoginCodeWithCompletionHandler:completion];
+}
+
 - (void)validateLoginCode:(long long)code withCompletionHandler:(void (^)(NSString*, NSString*, NSArray*, NSURLCredential*))completionHandler {
     [[EEAppleServices sharedInstance] validateLoginCode:code andCompletionHandler:^(NSError *error, NSDictionary *plist, NSURLCredential *credentials) {
         

@@ -16,6 +16,7 @@
 @property (nonatomic, strong) NSString *emailAddress;
 @property (nonatomic, strong) NSArray *_interimTeamIDArray;
 @property (nonatomic, strong) NSURLCredential *credentials;
+@property (nonatomic, readwrite) BOOL _requested2FACode;
 
 @end
 
@@ -38,10 +39,6 @@
         self.titleLabel.textColor = [UIColor blackColor];
         self.subtitleLabel.textColor = [UIColor blackColor];
     }
-    
-    // OVERRIDES
-    self.confirmBarButtonItem.enabled = NO;
-    self.subtitleLabel.textColor = [UIColor redColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -49,6 +46,17 @@
     
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+    
+    if (!self._requested2FACode) {
+        [[RPVAccountChecker sharedInstance] requestLoginCodeWithCompletionHandler:^(NSError *error) {
+            if (error) {
+                NSString *failureReason = [NSString stringWithFormat:@"Failed to request 2FA code: %@", error.localizedDescription];
+                [self changeUIToIncorrectStatus:failureReason];
+            }
+            
+            self._requested2FACode = YES;
+        }];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
