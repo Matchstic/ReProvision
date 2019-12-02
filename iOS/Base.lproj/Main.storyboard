@@ -60,8 +60,8 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Root View Controller" id="Etv-MA-OD7"/>
                     <connections>
-                        <segue destination="abm-ps-cqm" kind="presentation" identifier="presentAccountController" animates="NO" id="OI2-1U-8bB"/>
-                        <segue destination="abm-ps-cqm" kind="presentation" identifier="presentAccountControllerAnimated" id="wOt-Kt-FeS"/>
+                        <segue destination="abm-ps-cqm" kind="presentation" identifier="presentAccountController" animates="NO" modalPresentationStyle="fullScreen" id="OI2-1U-8bB"/>
+                        <segue destination="abm-ps-cqm" kind="presentation" identifier="presentAccountControllerAnimated" modalPresentationStyle="fullScreen" id="wOt-Kt-FeS"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dye-Lq-47f" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -134,7 +134,7 @@
                         <viewControllerLayoutGuide type="bottom" id="Skx-c0-r6U"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="9pe-I1-Ovq">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="702"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Apple ID" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0zO-9q-ceZ">
@@ -157,7 +157,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p6y-F9-cKx">
-                                <rect key="frame" x="16" y="628" width="343" height="30"/>
+                                <rect key="frame" x="16" y="650" width="343" height="30"/>
                                 <state key="normal" title="Privacy Policy"/>
                                 <connections>
                                     <segue destination="bKg-Eg-N9Y" kind="show" id="kqa-XW-O5j"/>
@@ -286,7 +286,7 @@
                         <viewControllerLayoutGuide type="bottom" id="yie-Px-PgC"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="WY3-8B-NTA">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="702"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2-Factor Authentication" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bqK-GH-e76">
@@ -295,21 +295,21 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter your security code to authenticate" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jdX-Na-2Yu">
-                                <rect key="frame" x="16" y="121.33333333333333" width="343" height="20.333333333333329"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="A security code has been sent to your trusted devices" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jdX-Na-2Yu">
+                                <rect key="frame" x="16" y="121.33333333333336" width="343" height="40.666666666666671"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ykr-7g-1eH">
-                                <rect key="frame" x="16" y="628" width="343" height="30"/>
+                                <rect key="frame" x="16" y="650" width="343" height="30"/>
                                 <state key="normal" title="Privacy Policy"/>
                                 <connections>
                                     <segue destination="bKg-Eg-N9Y" kind="show" id="yQw-Ft-jD9"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kyb-vZ-mHu" userLabel="Sep1">
-                                <rect key="frame" x="20" y="181.66666666666666" width="355" height="1"/>
+                                <rect key="frame" x="20" y="202" width="355" height="1"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="1" id="UyB-Ty-JWW"/>
@@ -317,7 +317,7 @@
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Code" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sQS-kT-Jq0" userLabel="password Label">
-                                <rect key="frame" x="20" y="182.66666666666666" width="100" height="70"/>
+                                <rect key="frame" x="20" y="203" width="100" height="70"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="3DO-VC-XrD"/>
                                     <constraint firstAttribute="height" constant="70" id="iTt-vh-y3B"/>
@@ -327,7 +327,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="23H-uO-Zix" userLabel="Sep2">
-                                <rect key="frame" x="20" y="252.66666666666669" width="355" height="1"/>
+                                <rect key="frame" x="20" y="273" width="355" height="1"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="1" id="ZYV-tW-iMI"/>
@@ -335,7 +335,7 @@
                                 </constraints>
                             </view>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Authentication Code" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="NLD-6Y-rgD" userLabel="password input">
-                                <rect key="frame" x="120" y="182.66666666666666" width="239" height="70"/>
+                                <rect key="frame" x="120" y="203" width="239" height="70"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="70" id="O0x-bJ-9D8"/>
                                 </constraints>
@@ -343,7 +343,7 @@
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" secureTextEntry="YES" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no" textContentType="one-time-code"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your details are only sent to Apple" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yj7-tT-7Ht">
-                                <rect key="frame" x="0.0" y="273.66666666666669" width="375" height="17"/>
+                                <rect key="frame" x="0.0" y="294" width="375" height="17"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -405,7 +405,7 @@
                         <viewControllerLayoutGuide type="bottom" id="h8j-Qq-IRU"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Frl-Hr-33f">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="702"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Checking Device Status" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rUM-EK-KXh">
@@ -421,7 +421,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="6BF-q3-rIw">
-                                <rect key="frame" x="169" y="332.66666666666669" width="37" height="37"/>
+                                <rect key="frame" x="169" y="343.66666666666669" width="37" height="37"/>
                                 <color key="color" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </activityIndicatorView>
                         </subviews>
@@ -464,7 +464,7 @@
                         <viewControllerLayoutGuide type="bottom" id="Wug-hE-NEn"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="eN7-Kt-Zii">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="702"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Team ID" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cua-Fl-nyH">
@@ -480,7 +480,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" dataMode="prototypes" style="grouped" separatorStyle="singleLineEtched" rowHeight="60" estimatedRowHeight="60" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="Wtf-Y5-IxU">
-                                <rect key="frame" x="0.0" y="162" width="375" height="506"/>
+                                <rect key="frame" x="0.0" y="162" width="375" height="528"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="teamid.cell" textLabel="T48-SJ-Uur" detailTextLabel="Txe-fA-nQe" style="IBUITableViewCellStyleSubtitle" id="Yag-LG-wki">
@@ -549,7 +549,7 @@
                         <viewControllerLayoutGuide type="bottom" id="t5A-k9-Qbb"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="874-QI-GIo">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="702"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
@@ -568,8 +568,8 @@
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                     </tabBar>
                     <connections>
-                        <segue destination="abm-ps-cqm" kind="presentation" identifier="presentAccountController" animates="NO" id="heH-fA-v2l"/>
-                        <segue destination="abm-ps-cqm" kind="presentation" identifier="presentAccountControllerAnimated" id="uVf-F2-EYQ"/>
+                        <segue destination="abm-ps-cqm" kind="presentation" identifier="presentAccountController" animates="NO" modalPresentationStyle="fullScreen" id="heH-fA-v2l"/>
+                        <segue destination="abm-ps-cqm" kind="presentation" identifier="presentAccountControllerAnimated" modalPresentationStyle="fullScreen" id="uVf-F2-EYQ"/>
                         <segue destination="9pv-A4-QxB" kind="relationship" relationship="viewControllers" id="u7Y-xg-7CH"/>
                         <segue destination="A2g-Du-E6O" kind="relationship" relationship="viewControllers" id="ncY-EM-TBf"/>
                         <segue destination="8rJ-Kc-sve" kind="relationship" relationship="viewControllers" id="lzU-1b-eKA"/>
@@ -595,7 +595,7 @@
                 <navigationController storyboardIdentifier="accountNavController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="abm-ps-cqm" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="oiy-dj-AkP">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
+                        <rect key="frame" x="0.0" y="44" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -617,7 +617,7 @@
         <image name="troubleshootingActive" width="26" height="26"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="uVf-F2-EYQ"/>
+        <segue reference="OI2-1U-8bB"/>
         <segue reference="yQw-Ft-jD9"/>
         <segue reference="wDq-bR-Jyb"/>
         <segue reference="kw9-cF-VrK"/>
