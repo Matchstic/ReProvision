@@ -12,6 +12,7 @@
 + (id)currentDevice;
 - (NSString*)uniqueDeviceIdentifier;
 - (NSString*)serverFriendlyDescription;
+- (void)setServerFriendlyDescription:(NSString*)arg1;
 @end
 
 @interface AKAppleIDAuthenticationContext : NSObject

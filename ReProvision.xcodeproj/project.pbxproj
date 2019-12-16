@@ -130,6 +130,7 @@
 		C96FBFF120EBD287007E2EC3 /* RPVInstalledTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */; };
 		C97C5F5D238B20FB0042638C /* RPVLoginImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = C97C5F5B238B20FB0042638C /* RPVLoginImpl.m */; };
 		C97EF5BA20F6AA3B005CB1DB /* RMessageDesign.json in Resources */ = {isa = PBXBuildFile; fileRef = C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */; };
+		C985A50C23A582F200A443A9 /* RPVLoginFallbackImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = C985A50B23A582F200A443A9 /* RPVLoginFallbackImpl.m */; };
 		C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */ = {isa = PBXBuildFile; fileRef = C996746520EE314B00EEFBD2 /* PackageVersion.plist */; };
 		C99722A5237A145F009822FC /* RPVAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C99722A4237A145F009822FC /* RPVAuthentication.m */; };
 		C9A9446D2215FADD00F5C556 /* root.pem in Resources */ = {isa = PBXBuildFile; fileRef = C9A9446C2215FADC00F5C556 /* root.pem */; };
@@ -406,6 +407,8 @@
 		C97C5F5B238B20FB0042638C /* RPVLoginImpl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVLoginImpl.m; sourceTree = "<group>"; };
 		C97C5F5C238B20FB0042638C /* RPVLoginImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVLoginImpl.h; sourceTree = "<group>"; };
 		C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = RMessageDesign.json; sourceTree = "<group>"; };
+		C985A50A23A582F200A443A9 /* RPVLoginFallbackImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVLoginFallbackImpl.h; sourceTree = "<group>"; };
+		C985A50B23A582F200A443A9 /* RPVLoginFallbackImpl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVLoginFallbackImpl.m; sourceTree = "<group>"; };
 		C996746520EE314B00EEFBD2 /* PackageVersion.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
 		C99722A3237A145F009822FC /* RPVAuthentication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVAuthentication.h; sourceTree = "<group>"; };
 		C99722A4237A145F009822FC /* RPVAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVAuthentication.m; sourceTree = "<group>"; };
@@ -1052,6 +1055,8 @@
 				C9C6EA7A2004280A00211FDD /* NSData+GZIP.m */,
 				C97C5F5C238B20FB0042638C /* RPVLoginImpl.h */,
 				C97C5F5B238B20FB0042638C /* RPVLoginImpl.m */,
+				C985A50A23A582F200A443A9 /* RPVLoginFallbackImpl.h */,
+				C985A50B23A582F200A443A9 /* RPVLoginFallbackImpl.m */,
 			);
 			path = "Apple Services";
 			sourceTree = "<group>";
@@ -1980,6 +1985,7 @@
 				C9C90B1E20FCA7F1001258C3 /* RPVCalendarController.m in Sources */,
 				C97C5F5D238B20FB0042638C /* RPVLoginImpl.m in Sources */,
 				C9C6EB282004280A00211FDD /* crypt.c in Sources */,
+				C985A50C23A582F200A443A9 /* RPVLoginFallbackImpl.m in Sources */,
 				C9C6EB082004280A00211FDD /* hashtable.c in Sources */,
 				C9C6EAFE2004280A00211FDD /* ldid.cpp in Sources */,
 				C9C6EB0A2004280A00211FDD /* Key.cpp in Sources */,

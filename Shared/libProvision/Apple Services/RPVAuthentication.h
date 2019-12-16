@@ -18,12 +18,17 @@
 /**
  Validates a login code for the current authentication context
  */
-- (void)validateLoginCode:(long long)code withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion;
+- (void)validateLoginCode:(NSString*)code withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion;
 
 /**
  Requests a login code for the current authentication content
  */
 - (void)requestLoginCodeWithCompletion:(void(^)(NSError*))completionHandler;
+
+/**
+ Requests a login code via direct AuthKit calls
+ */
+- (void)fallback2FACodeRequest:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completionHandler;
 
 - (NSDictionary*)appleIDHeadersForRequest:(NSURLRequest*)request;
 

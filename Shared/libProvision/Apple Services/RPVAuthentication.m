@@ -9,11 +9,13 @@
 #import "RPVAuthentication.h"
 #import "AuthKit.h"
 #include "RPVLoginImpl.h"
+#include "RPVLoginFallbackImpl.h"
 
 @interface RPVAuthentication ()
 
 @property (nonatomic, strong) AKAppleIDSession* appleIDSession;
 @property (nonatomic, strong) RPVLoginImpl *loginImpl;
+@property (nonatomic, strong) RPVLoginFallbackImpl *fallbackImpl;
 
 @property (nonatomic, strong) NSString *cachedIdmsTokenFor2FA;
 @property (nonatomic, strong) NSString *cachedUserIdentityFor2FA;
@@ -29,12 +31,24 @@
     
     if (self) {
         self.loginImpl = [[RPVLoginImpl alloc] init];
+        self.fallbackImpl = [[RPVLoginFallbackImpl alloc] initWithClientInfoOverride:self.loginImpl.clientInfoOverride];
     }
     
     return self;
 }
 
 - (void)authenticateWithUsername:(NSString*)username password:(NSString*)password withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion {
+    
+    // Use fallback impl on iOS 9 only, due to missing corecrypto functionality
+    NSOperatingSystemVersion version;
+    version.majorVersion = 10;
+    version.minorVersion = 0;
+    version.patchVersion = 0;
+    
+    if (![[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:version]) {
+        [self.fallbackImpl loginWithUsername:username password:password completion:completion];
+        return;
+    }
     
     // Reset cached data for 2FA
     self.cachedUserIdentityFor2FA = nil;
@@ -65,10 +79,10 @@
                                    andCompletion:completionHandler];
 }
 
-- (void)validateLoginCode:(long long)code withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion {
+- (void)validateLoginCode:(NSString*)code withCompletion:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completion {
     
     // First, validate the code.
-    [self.loginImpl submitTwoFactorCode:[NSString stringWithFormat:@"%llu", code]
+    [self.loginImpl submitTwoFactorCode:code
                        withUserIdentity:self.cachedUserIdentityFor2FA
                               idmsToken:self.cachedIdmsTokenFor2FA
                           andCompletion:^(NSError *error) {
@@ -90,6 +104,20 @@
                 
                 completion(error, userIdentity, gsToken);
             }];
+        }
+    }];
+}
+
+- (void)fallback2FACodeRequest:(void(^)(NSError *error, NSString *userIdentity, NSString *gsToken))completionHandler {
+
+    NSString *username = [self.cachedUserIdentityFor2FA componentsSeparatedByString:@"|"].lastObject;
+    
+    [self.fallbackImpl loginWithUsername:username password:self.cachedUserPasswordFor2FA completion:^(NSError *error, NSString *userIdentity, NSString *gsToken) {
+        if (!error) {
+            // Do real login again now that 2FA is dealt with
+            [self authenticateWithUsername:username password:self.cachedUserPasswordFor2FA withCompletion:completionHandler];
+        } else {
+            completionHandler(error, nil, nil);
         }
     }];
 }

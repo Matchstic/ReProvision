@@ -297,8 +297,8 @@ ccsrp_ctx_init_option(ccsrp_ctx_t srp,
 // Legacy function, initialize for the RFC5054 variant.
 CC_NONNULL_TU((1,3)) CC_NONNULL((2))
 CC_INLINE void
-ccsrp_ctx_init(ccsrp_ctx_t srp, const struct ccdigest_info *di, ccsrp_const_gp_t gp) {
-    ccsrp_ctx_init_option(srp,di,gp,CCSRP_OPTION_SRP6a_HASH,ccrng(NULL));
+ccsrp_ctx_init(ccsrp_ctx_t srp, const struct ccdigest_info *di, ccsrp_const_gp_t gp, struct ccrng_state *blinding_rng) {
+    ccsrp_ctx_init_option(srp,di,gp,CCSRP_OPTION_SRP6a_HASH,blinding_rng);
 }
 
 /******************************************************************************

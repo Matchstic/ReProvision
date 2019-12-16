@@ -17,6 +17,7 @@
 #import <corecrypto/cchmac.h>
 #import <corecrypto/ccaes.h>
 #import <corecrypto/ccpad.h>
+#import <corecrypto/ccrng_system.h>
 
 #import <dlfcn.h>
 
@@ -40,7 +41,7 @@ struct ccrng_state *ccDRBGGetRngState(void);
 static void writeToLogFile(const char *string) {
 #if DEBUG
     NSString *txtFileName = @"/var/mobile/Documents/ReProvisionDebug.txt";
-    NSString *final = [NSString stringWithFormat:@"(%@) %s", [NSDate date], string];
+    NSString *final = [NSString stringWithFormat:@"(%@) %s\n", [NSDate date], string];
      
     NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:txtFileName];
     if (fileHandle) {
@@ -243,6 +244,10 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
 
 @property (nonatomic, strong) NSDictionary *lookupURLs;
 
+#if TARGET_OS_IOS
+@property (nonatomic, readwrite) struct ccrng_state *rngState;
+#endif
+
 @end
 
 @implementation RPVLoginImpl
@@ -252,9 +257,42 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
     
     if (self) {
         self.clientInfoOverride = @"<MacBookPro11,5> <Mac OS X;10.14.6;18G103> <com.apple.AuthKit/1 (com.apple.akd/1.0)>";
+        
+#if TARGET_OS_IOS
+        // Create rng pointer
+        
+        NSOperatingSystemVersion version;
+        version.majorVersion = 10;
+        version.minorVersion = 0;
+        version.patchVersion = 0;
+        
+        if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:version]) {
+            self.rngState = ccrng(NULL);
+        } else {
+            self.rngState = (struct ccrng_state*)malloc(sizeof(struct ccrng_system_state));
+            ccrng_system_init((struct ccrng_system_state*)self.rngState);
+        }
+#endif
+        
     }
     
     return self;
+}
+
+- (void)dealloc {
+#if TARGET_OS_IOS
+
+    // Free rng pointer if needed
+    NSOperatingSystemVersion version;
+    version.majorVersion = 10;
+    version.minorVersion = 0;
+    version.patchVersion = 0;
+    
+    if (![[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:version]) {
+        ccrng_system_done((struct ccrng_system_state*)self.rngState);
+    }
+    
+#endif
 }
 
 -(NSError*)createError:(NSString *)string :(int)code {
@@ -293,11 +331,12 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
     [result setObject:dateString forKey:@"X-Apple-I-Client-Time"];
     [result setObject:NSLocale.currentLocale.localeIdentifier forKey:@"X-Apple-Locale"];
     [result setObject:NSTimeZone.localTimeZone.abbreviation forKey:@"X-Apple-I-TimeZone"];
-    [result setObject:self.clientInfoOverride forKey:@"X-MMe-Client-Info"];
     
     [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
         [result setObject:value forKey:key];
     }];
+    
+    [result setObject:self.clientInfoOverride forKey:@"X-MMe-Client-Info"];
 
     return result;
 }
@@ -403,7 +442,7 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
     // Sort out headers
     NSMutableDictionary<NSString *, NSString *> *httpHeaders = [@{
         @"Content-Type": @"text/x-xml-plist",
-        @"User-Agent": @"Xcode",
+        @"User-Agent": @"akd/1.0 CFNetwork/978.0.7 Darwin/18.7.0",
         @"Accept": @"text/x-xml-plist",
         @"Accept-Language": @"en-us",
         @"X-Apple-App-Info": @"com.apple.gs.xcode.auth",
@@ -477,9 +516,15 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
             
             const struct ccdigest_info *srp_di = ccsha256_di();
             struct ccsrp_ctx_body *srp_ctx = (struct ccsrp_ctx_body *)malloc(ccsrp_sizeof_srp(di_info, gp));
-            ccsrp_ctx_init(srp_ctx, srp_di, gp);
 
+#if TARGET_OS_IOS
+            ccsrp_ctx_init(srp_ctx, srp_di, gp, self.rngState);
+            srp_ctx->hdr.blinding_rng = self.rngState;
+#else
+            ccsrp_ctx_init(srp_ctx, srp_di, gp, ccrng(NULL));
             srp_ctx->hdr.blinding_rng = ccrng(NULL);
+#endif
+            
             srp_ctx->hdr.flags.noUsernameInX = true;
 
             NSArray<NSString *> *ps = @[@"s2k", @"s2k_fo"];
@@ -795,6 +840,69 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
     }];
 }
 
+- (void)_checkAuthEndpointWithUserIdentity:(NSString*)userIdentity idmsToken:(NSString*)token andCompletion:(void (^)(NSError *error, NSArray *deviceIds))completionHandler {
+    
+    NSString *dsid = [userIdentity componentsSeparatedByString:@"|"].firstObject;
+    
+    NSURL *URL = self.lookupURLs ?
+        [NSURL URLWithString:[self.lookupURLs objectForKey:@"secondaryAuth"]] :
+        [NSURL URLWithString:@"https://gsa.apple.com/auth"];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+    
+    log_debug("Request to: %s", URL.description.UTF8String);
+    
+    NSString *identityToken = [NSString stringWithFormat:@"%@:%@", dsid, token];
+    
+    NSData *identityTokenData = [identityToken dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *encodedIdentityToken = [identityTokenData base64EncodedStringWithOptions:0];
+    
+    // Sort out headers
+    NSMutableDictionary<NSString *, NSString *> *httpHeaders = [@{
+        @"Content-Type": @"text/x-xml-plist",
+        @"User-Agent": @"akd/1.0 CFNetwork/978.0.7 Darwin/18.7.0",
+        @"Accept": @"text/x-xml-plist",
+        @"Accept-Language": @"en-us",
+        @"X-Apple-Client-App-Name": @"Xcode",
+        @"X-Apple-App-Info": @"com.apple.gs.xcode.auth",
+        @"X-Xcode-Version": @"11.2 (11B41)",
+        @"X-Apple-Identity-Token": encodedIdentityToken,
+    } mutableCopy];
+    
+    [httpHeaders addEntriesFromDictionary:[self _anisetteData]];
+    [httpHeaders addEntriesFromDictionary:[self _deviceData]];
+    
+    [httpHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        [request setValue:value forHTTPHeaderField:key];
+    }];
+    
+    [request setValue:self.clientInfoOverride forHTTPHeaderField:@"X-MMe-Client-Info"];
+    
+    // Do the request
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request
+        completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        
+        log_debug("Response code: %ld", (long)[(NSHTTPURLResponse*)response statusCode]);
+        
+        if (!data || error) {
+            log_debug("NO DATA OR ERROR");
+            completionHandler(error, @[]);
+        } else {
+            // Parse the response
+            NSError *parseError;
+            NSDictionary *responseDictionary = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:&parseError];
+            
+            if (responseDictionary) {
+                log_debug("Reponse: %s", responseDictionary.description.UTF8String);
+            }
+            
+            // TODO: Something with the response
+            completionHandler(nil, @[]);
+        }
+    }];
+    [task resume];
+}
+
 - (void)requestTwoFactorCodeWithUserIdentity:(NSString*)userIdentity idmsToken:(NSString*)token mode:(int)mode andCompletion:(void (^)(NSError *error))completionHandler {
     
     // Parse the real dsid out of the identity
@@ -807,9 +915,7 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
                 [NSURL URLWithString:[self.lookupURLs objectForKey:@"trustedDeviceSecondaryAuth"]] :
                 [NSURL URLWithString:@"https://gsa.apple.com/auth/verify/trusteddevice"];
     } else {
-        URL = self.lookupURLs ?
-                [NSURL URLWithString:[self.lookupURLs objectForKey:@"secondaryAuth"]] :
-                [NSURL URLWithString:@"https://gsa.apple.com/auth"];
+        URL = [NSURL URLWithString:@"https://gsa.apple.com/auth/verify/phone/put?mode=sms&referrer=/auth/verify/trusteddevice"];
     }
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
@@ -824,10 +930,11 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
     // Sort out headers
     NSMutableDictionary<NSString *, NSString *> *httpHeaders = [@{
         @"Content-Type": @"text/x-xml-plist",
-        @"User-Agent": @"Xcode",
+        @"User-Agent": @"akd/1.0 CFNetwork/978.0.7 Darwin/18.7.0",
         @"Accept": @"text/x-xml-plist",
         @"Accept-Language": @"en-us",
         @"X-Apple-App-Info": @"com.apple.gs.xcode.auth",
+        @"X-Apple-Client-App-Name": @"Xcode",
         @"X-Xcode-Version": @"11.2 (11B41)",
         @"X-Apple-Identity-Token": encodedIdentityToken,
     } mutableCopy];
@@ -839,7 +946,29 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
         [request setValue:value forHTTPHeaderField:key];
     }];
     
+    [request setValue:self.clientInfoOverride forHTTPHeaderField:@"X-MMe-Client-Info"];
+    
     log_debug("Request Headers: %s", httpHeaders.description.UTF8String);
+    
+    // Match post data used by Preferences
+    if (mode == RPVInternalLogin2FARequiredSecondaryAuthError) {
+        // This really should be querying https://gsa.apple.com/auth/ for available numbers?
+        NSDictionary *postData = @{
+            @"serverInfo": @{
+                @"phoneNumber.id": @"1"
+            },
+        };
+        
+        request.HTTPMethod = @"POST";
+        request.HTTPBody = [NSPropertyListSerialization dataWithPropertyList:postData
+                                                                      format:NSPropertyListXMLFormat_v1_0
+                                                                     options:0
+                                                                       error:nil];
+        
+        [self _checkAuthEndpointWithUserIdentity:userIdentity idmsToken:token andCompletion:^(NSError *error, NSArray *deviceIds) {
+            
+        }];
+    }
     
     // Do the request
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request
@@ -889,10 +1018,11 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
     NSMutableDictionary<NSString *, NSString *> *httpHeaders = [@{
         @"security-code": code,
         @"Content-Type": @"text/x-xml-plist",
-        @"User-Agent": @"Xcode",
+        @"User-Agent": @"akd/1.0 CFNetwork/978.0.7 Darwin/18.7.0",
         @"Accept": @"text/x-xml-plist",
         @"Accept-Language": @"en-us",
         @"X-Apple-App-Info": @"com.apple.gs.xcode.auth",
+        @"X-Apple-Client-App-Name": @"Xcode",
         @"X-Xcode-Version": @"11.2 (11B41)",
         @"X-Apple-Identity-Token": encodedIdentityToken,
     } mutableCopy];
@@ -903,6 +1033,8 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
     [httpHeaders enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
         [request setValue:value forHTTPHeaderField:key];
     }];
+    
+    [request setValue:self.clientInfoOverride forHTTPHeaderField:@"X-MMe-Client-Info"];
     
     log_debug("Request Headers: %s", httpHeaders.description.UTF8String);
     

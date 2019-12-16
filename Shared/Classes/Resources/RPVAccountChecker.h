@@ -16,7 +16,9 @@
 
 - (void)requestLoginCodeWithCompletionHandler:(void (^)(NSError *error))completion;
 
-- (void)validateLoginCode:(long long)code withCompletionHandler:(void (^)(NSString*, NSString*, NSArray*, NSURLCredential*))completionHandler;
+- (void)request2FAFallbackWithCompletionHandler:(void (^)(NSString*, NSString*, NSArray*, NSURLCredential*))completionHandler;
+
+- (void)validateLoginCode:(NSString*)code withCompletionHandler:(void (^)(NSString*, NSString*, NSArray*, NSURLCredential*))completionHandler;
 
 - (void)registerCurrentDeviceForTeamID:(NSString*)teamID withIdentity:(NSString*)username gsToken:(NSString*)password andCompletionHandler:(void (^)(NSError*))completionHandler;
 

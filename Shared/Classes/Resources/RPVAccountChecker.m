@@ -67,8 +67,43 @@
     [[EEAppleServices sharedInstance] requestTwoFactorLoginCodeWithCompletionHandler:completion];
 }
 
-- (void)validateLoginCode:(long long)code withCompletionHandler:(void (^)(NSString*, NSString*, NSArray*, NSURLCredential*))completionHandler {
+- (void)validateLoginCode:(NSString*)code withCompletionHandler:(void (^)(NSString*, NSString*, NSArray*, NSURLCredential*))completionHandler {
     [[EEAppleServices sharedInstance] validateLoginCode:code andCompletionHandler:^(NSError *error, NSDictionary *plist, NSURLCredential *credentials) {
+        
+        if (error) {
+            completionHandler(error.localizedDescription, @"err", nil,nil);
+            return;
+        }
+        
+        NSString *resultCode = [plist objectForKey:@"reason"];
+        NSString *userString = [plist objectForKey:@"userString"];
+        
+        if ((!userString || [userString isEqualToString:@""]) && plist) {
+            // Get Team ID array
+            [[EEAppleServices sharedInstance] listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+                if (error) {
+                    completionHandler(error.localizedDescription, @"err", nil,nil);
+                    return;
+                }
+                
+                NSArray *teams = [plist objectForKey:@"teams"];
+                if (teams.count == 0) {
+                    completionHandler(@"Please accept the Apple Developer terms at https://developer.apple.com", resultCode, teams,nil);
+                } else {
+                    NSString *userString = [plist objectForKey:@"userString"];
+                    completionHandler(userString, resultCode, teams, credentials);
+                }
+            }];
+        } else if (plist) {
+            completionHandler(userString, resultCode, nil, credentials);
+        } else {
+            completionHandler(nil, @"err", nil, credentials);
+        }
+    }];
+}
+
+- (void)request2FAFallbackWithCompletionHandler:(void (^)(NSString*, NSString*, NSArray*, NSURLCredential*))completionHandler {
+    [[EEAppleServices sharedInstance] fallback2FACodeRequest:^(NSError *error, NSDictionary *plist, NSURLCredential *credentials) {
         
         if (error) {
             completionHandler(error.localizedDescription, @"err", nil,nil);
@@ -112,7 +147,7 @@
 }
 
 - (EESystemType)platformTypeForCurrentDevice {
-#ifdef TARGET_OS_IOS
+#if TARGET_OS_IOS
     return EESystemTypeiOS;
 #elif TARGET_OS_WATCHOS
     return EESystemTypewatchOS;

@@ -233,7 +233,7 @@
     [self.authentication requestLoginCodeWithCompletion:completion];
 }
 
-- (void)validateLoginCode:(long long)code andCompletionHandler:(void (^)(NSError*, NSDictionary*, NSURLCredential*))completionHandler {
+- (void)validateLoginCode:(NSString*)code andCompletionHandler:(void (^)(NSError*, NSDictionary*, NSURLCredential*))completionHandler {
     
     [self.authentication validateLoginCode:code withCompletion:^(NSError *error, NSString *userIdentity, NSString *gsToken) {
         
@@ -282,6 +282,52 @@
     }];
 }
 
+- (void)fallback2FACodeRequest:(void(^)(NSError *, NSDictionary *, NSURLCredential *))completionHandler {
+    [self.authentication fallback2FACodeRequest:^(NSError *error, NSString *userIdentity, NSString *gsToken) {
+        if (error) {
+            NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
+            
+            if (error.code == 4012) {
+                [resultDictionary setObject:@"2FA code is incorrect" forKey:@"userString"];
+                [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
+            } else {
+                if (![error.localizedDescription isEqualToString:@""]) {
+                    [resultDictionary setObject:[NSString stringWithFormat:@"%@ (%ld)", error.localizedDescription, (long)error.code] forKey:@"userString"];
+                } else {
+                    [resultDictionary setObject:[NSString stringWithFormat:@"Unknown error occurred (%ld)", (long)error.code] forKey:@"userString"];
+                }
+                
+                [resultDictionary setObject:@"incorrectCredentials" forKey:@"reason"];
+            }
+            
+            completionHandler(nil, resultDictionary, nil);
+            
+            return;
+        }
+        
+        self.credentials = [[NSURLCredential alloc] initWithUser:userIdentity password:gsToken persistence:NSURLCredentialPersistencePermanent];
+        
+        // Do a request to listTeams.action to check that the user is a member of a team
+        [self listTeamsWithCompletionHandler:^(NSError *error, NSDictionary *plist) {
+            NSArray *teams = [plist objectForKey:@"teams"];
+            
+            if (!teams) {
+                // Error of some kind?
+                // TODO: HANDLE ME
+                
+                completionHandler(error, plist, nil);
+                return;
+            }
+            
+            NSMutableDictionary *resultDictionary = [NSMutableDictionary dictionary];
+            
+            [resultDictionary setObject:@"" forKey:@"userString"];
+            [resultDictionary setObject:@"authenticated" forKey:@"reason"];
+            
+            completionHandler(nil, resultDictionary, self.credentials);
+        }];
+    }];
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Team ID methods.
