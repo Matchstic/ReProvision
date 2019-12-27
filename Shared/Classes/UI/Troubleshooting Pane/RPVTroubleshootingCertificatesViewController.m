@@ -45,13 +45,25 @@
     [self.view addSubview:self.overlayView];
     
     self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    [self.spinner setColor:[UIColor grayColor]];
+    
+    if (@available(iOS 13.0, *)) {
+        self.spinner.color = [UIColor labelColor];
+    } else {
+        self.spinner.tintColor = [UIColor darkTextColor];
+    }
+    
     [self.overlayView addSubview:self.spinner];
     
     self.label = [[UILabel alloc] initWithFrame:CGRectZero];
     self.label.text = @"Loading";
     self.label.textAlignment = NSTextAlignmentCenter;
-    self.label.textColor = self.spinner.color;
+    
+    if (@available(iOS 13.0, *)) {
+        self.label.textColor = [UIColor labelColor];
+    } else {
+        self.label.textColor = [UIColor darkTextColor];
+    }
+    
 #if TARGET_OS_TV
     self.label.font = [UIFont systemFontOfSize:28 weight:UIFontWeightRegular];
 #else
@@ -195,7 +207,13 @@
     if (indexPath.section == 0) {
         if (self.dataSource.count == 0) {
             cell.textLabel.text = @"No certificates";
-            cell.textLabel.textColor = [UIColor grayColor];
+            
+            if (@available(iOS 13.0, *)) {
+                cell.textLabel.textColor = [UIColor secondaryLabelColor];
+            } else {
+                cell.textLabel.textColor = [UIColor grayColor];
+            }
+            
             cell.textLabel.textAlignment = NSTextAlignmentNatural;
             
             cell.detailTextLabel.text = @"";
@@ -215,7 +233,13 @@
                 applicationName = @"Xcode";
             
             cell.textLabel.text = [NSString stringWithFormat:@"Device: %@", machineName];
-            cell.textLabel.textColor = [UIColor blackColor];
+            
+            if (@available(iOS 13.0, *)) {
+                cell.textLabel.textColor = [UIColor labelColor];
+            } else {
+                cell.textLabel.textColor = [UIColor darkTextColor];
+            }
+            
             cell.textLabel.textAlignment = NSTextAlignmentNatural;
             
             cell.detailTextLabel.text = [NSString stringWithFormat:@"Application: %@", applicationName];
@@ -265,8 +289,13 @@
         cell = capCell;
     }
     
+    if (@available(iOS 13.0, *)) {
+        cell.textLabel.backgroundColor = [UIColor secondarySystemGroupedBackgroundColor];
+    } else {
+        cell.textLabel.backgroundColor = [UIColor whiteColor];
+    }
+    
     cell.textLabel.opaque = YES;
-    cell.textLabel.backgroundColor = [UIColor whiteColor];
     
     return cell;
 }
