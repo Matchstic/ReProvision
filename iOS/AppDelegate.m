@@ -37,11 +37,6 @@
 - (id)initWithMachServiceName:(NSString*)arg1;
 @end
 
-@interface LSApplicationProxy : NSObject
-@property (nonatomic, readonly) NSURL *dataContainerURL;
-+ (instancetype)applicationProxyForIdentifier:(NSString*)arg1;
-@end
-
 @interface AppDelegate ()
 
 @property (nonatomic, strong) NSXPCConnection *daemonConnection;
