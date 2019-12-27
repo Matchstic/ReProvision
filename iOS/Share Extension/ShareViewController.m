@@ -7,7 +7,6 @@
 //
 
 #import "ShareViewController.h"
-#import <MobileCoreServices/UTCoreTypes.h>
 
 @interface ShareViewController ()
 

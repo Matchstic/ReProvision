@@ -778,6 +778,7 @@
 		C9313C2020052B1D000AD4C3 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C974028023B2378000BA9B25 /* Share Extension */,
 				C974028E23B6380500BA9B25 /* Images */,
 				C9E952E020FBCA2700E850B6 /* HTML */,
 				C93F3B6520F21C9000B573E6 /* HookUtil */,
@@ -1064,7 +1065,6 @@
 		C9C6EA5E2004261300211FDD /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				C974028023B2378000BA9B25 /* Share Extension */,
 				C9C6EA5F2004261300211FDD /* AppDelegate.h */,
 				C9C6EA602004261300211FDD /* AppDelegate.m */,
 				C9C6EA612004261300211FDD /* Assets.xcassets */,
