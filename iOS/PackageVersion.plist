@@ -9,8 +9,8 @@
 	<key>Minor</key>
 	<string>5</string>
 	<key>PackageRevision</key>
-	<string>5</string>
+	<string></string>
 	<key>Stage</key>
-	<string>~experimental8</string>
+	<string>~release</string>
 </dict>
 </plist>
