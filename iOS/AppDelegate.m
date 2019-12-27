@@ -37,6 +37,11 @@
 - (id)initWithMachServiceName:(NSString*)arg1;
 @end
 
+@interface LSApplicationProxy : NSObject
+@property (nonatomic, readonly) NSURL *dataContainerURL;
++ (instancetype)applicationProxyForIdentifier:(NSString*)arg1;
+@end
+
 @interface AppDelegate ()
 
 @property (nonatomic, strong) NSXPCConnection *daemonConnection;
@@ -109,6 +114,22 @@
 }
 
 -(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    
+    // Guard case
+    if (![[[url pathExtension] lowercaseString] isEqualToString:@"ipa"] &&
+        ![[url scheme] isEqualToString:@"reprovision"]) {
+        return NO;
+    }
+    
+    // Handle opening from URL scheme
+    if ([[url scheme] isEqualToString:@"reprovision"] && [[url host] containsString:@"share"]) {
+        NSString *path = [url path];
+        path = [path substringFromIndex:1]; // strip preceeding /
+        
+        url = [NSURL fileURLWithPath:path];
+        
+        NSLog(@"ReProvision :: trying to load from %@", path);
+    }
     
     // Incoming URL is a fileURL!
     

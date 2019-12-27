@@ -59,16 +59,32 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.matchstic.reprovision</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>reprovision</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>iPhone Application</string>
 			<key>CFBundleTypeIconFiles</key>
-			<array/>
+			<array>
+				<string>doc_22</string>
+				<string>doc_44</string>
+				<string>doc_64</string>
+				<string>doc_320</string>
+			</array>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.matchstic.reprovision.IPA</string>
+				<string>com.matchstic.reprovision.ipa</string>
 			</array>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
@@ -82,15 +98,15 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>public.archive</string>
+			<string>iPhone Application</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.matchstic.reprovision.IPA</string>
+			<string>com.matchstic.reprovision.ipa</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
-				<string>ipa</string>
-				<key>public.mime-type</key>
-				<string>application/octet-stream</string>
+				<array>
+					<string>ipa</string>
+				</array>
 			</dict>
 		</dict>
 	</array>

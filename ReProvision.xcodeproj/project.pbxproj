@@ -128,6 +128,12 @@
 		C96FBFE920EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE620EB9F0F007E2EC3 /* RPVInstalledSectionHeaderView.m */; };
 		C96FBFEE20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFEC20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.m */; };
 		C96FBFF120EBD287007E2EC3 /* RPVInstalledTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */; };
+		C974028323B2378000BA9B25 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C974028223B2378000BA9B25 /* ShareViewController.m */; };
+		C974028A23B2378000BA9B25 /* Share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C974027F23B2377F00BA9B25 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C974029323B6381D00BA9B25 /* doc_64.png in Resources */ = {isa = PBXBuildFile; fileRef = C974028F23B6381D00BA9B25 /* doc_64.png */; };
+		C974029423B6381D00BA9B25 /* doc_320.png in Resources */ = {isa = PBXBuildFile; fileRef = C974029023B6381D00BA9B25 /* doc_320.png */; };
+		C974029523B6381D00BA9B25 /* doc_22.png in Resources */ = {isa = PBXBuildFile; fileRef = C974029123B6381D00BA9B25 /* doc_22.png */; };
+		C974029623B6381D00BA9B25 /* doc_44.png in Resources */ = {isa = PBXBuildFile; fileRef = C974029223B6381D00BA9B25 /* doc_44.png */; };
 		C97C5F5D238B20FB0042638C /* RPVLoginImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = C97C5F5B238B20FB0042638C /* RPVLoginImpl.m */; };
 		C97EF5BA20F6AA3B005CB1DB /* RMessageDesign.json in Resources */ = {isa = PBXBuildFile; fileRef = C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */; };
 		C985A50C23A582F200A443A9 /* RPVLoginFallbackImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = C985A50B23A582F200A443A9 /* RPVLoginFallbackImpl.m */; };
@@ -285,6 +291,13 @@
 			remoteGlobalIDString = C964EA1321207FE100AC98E6;
 			remoteInfo = "tvOS Daemon";
 		};
+		C974028823B2378000BA9B25 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9C6EA3A2004257E00211FDD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C974027E23B2377F00BA9B25;
+			remoteInfo = "iOS Share Extension";
+		};
 		C996746720EE32BE00EEFBD2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C9C6EA3A2004257E00211FDD /* Project object */;
@@ -293,6 +306,20 @@
 			remoteInfo = "iOS Daemon";
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C974027723B234E700BA9B25 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C974028A23B2378000BA9B25 /* Share.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1BED720855DAA03FC578B695 /* Pods-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iOS/Pods-iOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -404,6 +431,14 @@
 		C96FBFED20EBA57B007E2EC3 /* RPVInstalledCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RPVInstalledCollectionViewCell.h; sourceTree = "<group>"; };
 		C96FBFEF20EBD287007E2EC3 /* RPVInstalledTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVInstalledTableViewCell.h; sourceTree = "<group>"; };
 		C96FBFF020EBD287007E2EC3 /* RPVInstalledTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVInstalledTableViewCell.m; sourceTree = "<group>"; };
+		C974027F23B2377F00BA9B25 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C974028123B2378000BA9B25 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
+		C974028223B2378000BA9B25 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
+		C974028723B2378000BA9B25 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C974028F23B6381D00BA9B25 /* doc_64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = doc_64.png; path = "Icons/iOS Sharing/doc_64.png"; sourceTree = SOURCE_ROOT; };
+		C974029023B6381D00BA9B25 /* doc_320.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = doc_320.png; path = "Icons/iOS Sharing/doc_320.png"; sourceTree = SOURCE_ROOT; };
+		C974029123B6381D00BA9B25 /* doc_22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = doc_22.png; path = "Icons/iOS Sharing/doc_22.png"; sourceTree = SOURCE_ROOT; };
+		C974029223B6381D00BA9B25 /* doc_44.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = doc_44.png; path = "Icons/iOS Sharing/doc_44.png"; sourceTree = SOURCE_ROOT; };
 		C97C5F5B238B20FB0042638C /* RPVLoginImpl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVLoginImpl.m; sourceTree = "<group>"; };
 		C97C5F5C238B20FB0042638C /* RPVLoginImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVLoginImpl.h; sourceTree = "<group>"; };
 		C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = RMessageDesign.json; sourceTree = "<group>"; };
@@ -616,6 +651,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C974027C23B2377F00BA9B25 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9C6EA3F2004257E00211FDD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -736,6 +778,7 @@
 		C9313C2020052B1D000AD4C3 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C974028E23B6380500BA9B25 /* Images */,
 				C9E952E020FBCA2700E850B6 /* HTML */,
 				C93F3B6520F21C9000B573E6 /* HookUtil */,
 				C9313C2120052C29000AD4C3 /* Headers */,
@@ -932,6 +975,27 @@
 			path = "Table View";
 			sourceTree = "<group>";
 		};
+		C974028023B2378000BA9B25 /* Share Extension */ = {
+			isa = PBXGroup;
+			children = (
+				C974028123B2378000BA9B25 /* ShareViewController.h */,
+				C974028223B2378000BA9B25 /* ShareViewController.m */,
+				C974028723B2378000BA9B25 /* Info.plist */,
+			);
+			path = "Share Extension";
+			sourceTree = "<group>";
+		};
+		C974028E23B6380500BA9B25 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				C974029123B6381D00BA9B25 /* doc_22.png */,
+				C974029223B6381D00BA9B25 /* doc_44.png */,
+				C974028F23B6381D00BA9B25 /* doc_64.png */,
+				C974029023B6381D00BA9B25 /* doc_320.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		C97EF5BB20F6AA41005CB1DB /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
@@ -992,6 +1056,7 @@
 				C9C6EB342004282900211FDD /* ReProvision.app */,
 				C96CCE31211A2838008A249A /* ReProvision.app */,
 				C964EA2221207FE100AC98E6 /* reprovisiond */,
+				C974027F23B2377F00BA9B25 /* Share.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -999,6 +1064,7 @@
 		C9C6EA5E2004261300211FDD /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				C974028023B2378000BA9B25 /* Share Extension */,
 				C9C6EA5F2004261300211FDD /* AppDelegate.h */,
 				C9C6EA602004261300211FDD /* AppDelegate.m */,
 				C9C6EA612004261300211FDD /* Assets.xcassets */,
@@ -1427,6 +1493,23 @@
 			productReference = C96CCE31211A2838008A249A /* ReProvision.app */;
 			productType = "com.apple.product-type.application";
 		};
+		C974027E23B2377F00BA9B25 /* iOS Share Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C974028B23B2378000BA9B25 /* Build configuration list for PBXNativeTarget "iOS Share Extension" */;
+			buildPhases = (
+				C974027B23B2377F00BA9B25 /* Sources */,
+				C974027C23B2377F00BA9B25 /* Frameworks */,
+				C974027D23B2377F00BA9B25 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "iOS Share Extension";
+			productName = "iOS Share Extension";
+			productReference = C974027F23B2377F00BA9B25 /* Share.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		C9C6EA412004257E00211FDD /* iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9C6EA5B2004257E00211FDD /* Build configuration list for PBXNativeTarget "iOS" */;
@@ -1437,13 +1520,15 @@
 				C9C6EA3F2004257E00211FDD /* Frameworks */,
 				C9C6EA402004257E00211FDD /* Resources */,
 				38659AA49377400431BBBE6E /* [CP] Copy Pods Resources */,
-				C996746420EE30EB00EEFBD2 /* Sign application and create .deb */,
 				00CA779635D0B66A25D616D7 /* [CP] Embed Pods Frameworks */,
+				C974027723B234E700BA9B25 /* Embed App Extensions */,
+				C996746420EE30EB00EEFBD2 /* Sign application and create .deb */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				C996746820EE32BE00EEFBD2 /* PBXTargetDependency */,
+				C974028923B2378000BA9B25 /* PBXTargetDependency */,
 			);
 			name = iOS;
 			productName = ReProvision;
@@ -1492,6 +1577,7 @@
 		C9C6EA3A2004257E00211FDD /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				DefaultBuildSystemTypeForWorkspace = Original;
 				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = "Matt Clarke";
 				TargetAttributes = {
@@ -1500,6 +1586,10 @@
 					};
 					C96CCE30211A2838008A249A = {
 						CreatedOnToolsVersion = 9.4.1;
+						ProvisioningStyle = Manual;
+					};
+					C974027E23B2377F00BA9B25 = {
+						CreatedOnToolsVersion = 11.2;
 						ProvisioningStyle = Manual;
 					};
 					C9C6EA412004257E00211FDD = {
@@ -1544,6 +1634,7 @@
 				C9C6EB332004282900211FDD /* macOS */,
 				C96CCE30211A2838008A249A /* tvOS */,
 				C964EA1321207FE100AC98E6 /* tvOS Daemon */,
+				C974027E23B2377F00BA9B25 /* iOS Share Extension */,
 			);
 		};
 /* End PBXProject section */
@@ -1559,10 +1650,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C974027D23B2377F00BA9B25 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9C6EA402004257E00211FDD /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C974029623B6381D00BA9B25 /* doc_44.png in Resources */,
+				C974029323B6381D00BA9B25 /* doc_64.png in Resources */,
+				C974029423B6381D00BA9B25 /* doc_320.png in Resources */,
+				C974029523B6381D00BA9B25 /* doc_22.png in Resources */,
 				C9C6EA6D2004261300211FDD /* Assets.xcassets in Resources */,
 				C9E952E220FBCF5C00E850B6 /* privacy-policy.html in Resources */,
 				C9C6EA6F2004261300211FDD /* Main.storyboard in Resources */,
@@ -1712,7 +1814,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"Copying application into Package\"\n\n# Clean out existing .app\nrm -rf \"${PROJECT_DIR}/iOS/Package/Applications/${CONTENTS_FOLDER_PATH}\"\n\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/${CONTENTS_FOLDER_PATH}\"\ncp -R $builtpath \"${PROJECT_DIR}/iOS/Package/Applications/\"\n\n# Sign with entitlements\n${PROJECT_DIR}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/iOS/Package/Applications/${EXECUTABLE_PATH}\"\n\n# Build package!\n${PROJECT_DIR}/bin/iosod build -p \"${PROJECT_DIR}/iOS/PackageVersion.plist\" \"${PROJECT_DIR}/iOS/Package\" \"${PROJECT_DIR}/iOS/CydiaPackages\"\n";
+			shellScript = "echo \"Copying application into Package\"\n\n# Clean out existing .app\nrm -rf \"${PROJECT_DIR}/iOS/Package/Applications/${CONTENTS_FOLDER_PATH}\"\n\nbuiltpath=\"${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/${CONTENTS_FOLDER_PATH}\"\ncp -R $builtpath \"${PROJECT_DIR}/iOS/Package/Applications/\"\n\n# Sign with entitlements\n${PROJECT_DIR}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/iOS/Package/Applications/${EXECUTABLE_PATH}\"\n\n# Do the same for the sharing extension\n${PROJECT_DIR}/bin/ldid2 -S\"${PROJECT_DIR}/Shared/entitlements.xml\" \"${PROJECT_DIR}/iOS/Package/Applications/${CONTENTS_FOLDER_PATH}/Plugins/Share.appex/Share\"\n\n# Build package!\n${PROJECT_DIR}/bin/iosod build -p \"${PROJECT_DIR}/iOS/PackageVersion.plist\" \"${PROJECT_DIR}/iOS/Package\" \"${PROJECT_DIR}/iOS/CydiaPackages\"\n";
 		};
 		C996746A20EE32D500EEFBD2 /* Move daemon binary into Package */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1903,6 +2005,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C974027B23B2377F00BA9B25 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C974028323B2378000BA9B25 /* ShareViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9C6EA3E2004257E00211FDD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2075,6 +2185,11 @@
 			isa = PBXTargetDependency;
 			target = C964EA1321207FE100AC98E6 /* tvOS Daemon */;
 			targetProxy = C964EA232120803000AC98E6 /* PBXContainerItemProxy */;
+		};
+		C974028923B2378000BA9B25 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C974027E23B2377F00BA9B25 /* iOS Share Extension */;
+			targetProxy = C974028823B2378000BA9B25 /* PBXContainerItemProxy */;
 		};
 		C996746820EE32BE00EEFBD2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2263,6 +2378,47 @@
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				iOSOpenDevPath = /opt/iOSOpenDev;
+			};
+			name = Release;
+		};
+		C974028C23B2378000BA9B25 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = "iOS/Share Extension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.matchstic.reprovision.ios.share;
+				PRODUCT_NAME = Share;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C974028D23B2378000BA9B25 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = "iOS/Share Extension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.matchstic.reprovision.ios.share;
+				PRODUCT_NAME = Share;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -2580,6 +2736,15 @@
 			buildConfigurations = (
 				C96CCE44211A2839008A249A /* Debug */,
 				C96CCE45211A2839008A249A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C974028B23B2378000BA9B25 /* Build configuration list for PBXNativeTarget "iOS Share Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C974028C23B2378000BA9B25 /* Debug */,
+				C974028D23B2378000BA9B25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
