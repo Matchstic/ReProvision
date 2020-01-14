@@ -24,9 +24,9 @@ Please note that only jailbroken devices are supported at this time. Follow [iss
 - Basic settings to configure alerts shown by the automatic re-signing.
 - Ability to install any `.ipa` file downloaded to the device.
 
-#### macOS [TODO]
+#### macOS [N/A]
 
-- Ability to write a newly provisioned `.ipa` file to the filesystem, or install directly to the user's device
+- Not viable with this codebase. See AltDeploy instead: https://github.com/pixelomer/AltDeploy
 
 ### Pre-Requisites
 
@@ -55,3 +55,5 @@ Licensed under the AGPLv3 License.
 If you re-distribute this package on a Cydia repository, be aware that I will not provide any support whatsoever for users of it on said repository.
 
 Furthermore, ReProvision (and by extension, libProvision as found in `/Shared/`) IS NOT FOR PIRACY. It is intended to allow users to ensure applications signed with a free development certificate remain signed past the usual 7-day window.
+
+Absolutely no warranty or guarantee is provided; the software is provided AS-IS.
