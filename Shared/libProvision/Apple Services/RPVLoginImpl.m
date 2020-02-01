@@ -256,7 +256,7 @@ static NSData *createAppTokensChecksum(NSData *sk, NSString *adsid, NSArray<NSSt
     self = [super init];
     
     if (self) {
-        self.clientInfoOverride = @"<MacBookPro11,5> <Mac OS X;10.14.6;18G103> <com.apple.AuthKit/1 (com.apple.akd/1.0)>";
+        self.clientInfoOverride = @"<iMac11,3> <Mac OS X;10.10.4;14E46> <http://com.apple.Xcode/217>";
         
 #if TARGET_OS_IOS
         // Create rng pointer
