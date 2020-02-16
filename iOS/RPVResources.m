@@ -97,7 +97,8 @@ static dispatch_once_t nanoRegistryOnceToken;
     [(AppDelegate*)[UIApplication sharedApplication].delegate requestPreferencesUpdate];
     
     // Broadcast notification as Darwin
-    [self _broadcastNotification:notification withUserInfo:nil];
+    if (notification)
+        [self _broadcastNotification:notification withUserInfo:nil];
 }
 
 + (void)_broadcastNotification:(NSString*)notifiation withUserInfo:(NSDictionary*)userInfo {

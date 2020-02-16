@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#define CURRENT_CREDENTIALS_VERSION @"1"
+#define CURRENT_CREDENTIALS_VERSION @"2"
 
 @interface RPVResources : NSObject
 

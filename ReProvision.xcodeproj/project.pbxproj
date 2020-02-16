@@ -139,6 +139,8 @@
 		C985A50C23A582F200A443A9 /* RPVLoginFallbackImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = C985A50B23A582F200A443A9 /* RPVLoginFallbackImpl.m */; };
 		C996746620EE314B00EEFBD2 /* PackageVersion.plist in Resources */ = {isa = PBXBuildFile; fileRef = C996746520EE314B00EEFBD2 /* PackageVersion.plist */; };
 		C99722A5237A145F009822FC /* RPVAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C99722A4237A145F009822FC /* RPVAuthentication.m */; };
+		C99C883623D0C36500CC48BB /* RPVFullscreenAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = C99C883523D0C36500CC48BB /* RPVFullscreenAlertController.m */; };
+		C99C883B23D0C7E000CC48BB /* thatsallfolks.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C99C883A23D0C7E000CC48BB /* thatsallfolks.jpg */; };
 		C9A9446D2215FADD00F5C556 /* root.pem in Resources */ = {isa = PBXBuildFile; fileRef = C9A9446C2215FADC00F5C556 /* root.pem */; };
 		C9C5921D21206E1000DF2E19 /* RPVInstalledViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C96FBFE120EB9DF0007E2EC3 /* RPVInstalledViewController.m */; };
 		C9C5921E21206E1300DF2E19 /* RPVResources.m in Sources */ = {isa = PBXBuildFile; fileRef = C9313C1E20052B13000AD4C3 /* RPVResources.m */; };
@@ -447,6 +449,9 @@
 		C996746520EE314B00EEFBD2 /* PackageVersion.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
 		C99722A3237A145F009822FC /* RPVAuthentication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVAuthentication.h; sourceTree = "<group>"; };
 		C99722A4237A145F009822FC /* RPVAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVAuthentication.m; sourceTree = "<group>"; };
+		C99C883423D0C36500CC48BB /* RPVFullscreenAlertController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVFullscreenAlertController.h; sourceTree = "<group>"; };
+		C99C883523D0C36500CC48BB /* RPVFullscreenAlertController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RPVFullscreenAlertController.m; sourceTree = "<group>"; };
+		C99C883A23D0C7E000CC48BB /* thatsallfolks.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = thatsallfolks.jpg; sourceTree = "<group>"; };
 		C9A371152311D25B00DD5040 /* RPVDaemonProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVDaemonProtocol.h; sourceTree = "<group>"; };
 		C9A371162311D26900DD5040 /* RPVApplicationProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RPVApplicationProtocol.h; sourceTree = "<group>"; };
 		C9A9446A2215F72700F5C556 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -993,6 +998,7 @@
 				C974029223B6381D00BA9B25 /* doc_44.png */,
 				C974028F23B6381D00BA9B25 /* doc_64.png */,
 				C974029023B6381D00BA9B25 /* doc_320.png */,
+				C99C883A23D0C7E000CC48BB /* thatsallfolks.jpg */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -1005,6 +1011,15 @@
 				C97EF5B920F6AA3B005CB1DB /* RMessageDesign.json */,
 			);
 			path = Notifications;
+			sourceTree = "<group>";
+		};
+		C99C883323D0C34600CC48BB /* Fullscreen Alert */ = {
+			isa = PBXGroup;
+			children = (
+				C99C883423D0C36500CC48BB /* RPVFullscreenAlertController.h */,
+				C99C883523D0C36500CC48BB /* RPVFullscreenAlertController.m */,
+			);
+			path = "Fullscreen Alert";
 			sourceTree = "<group>";
 		};
 		C9C5921A21206D7500DF2E19 /* Classes */ = {
@@ -1065,6 +1080,7 @@
 		C9C6EA5E2004261300211FDD /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				C99C883323D0C34600CC48BB /* Fullscreen Alert */,
 				C9C6EA5F2004261300211FDD /* AppDelegate.h */,
 				C9C6EA602004261300211FDD /* AppDelegate.m */,
 				C9C6EA612004261300211FDD /* Assets.xcassets */,
@@ -1661,6 +1677,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C99C883B23D0C7E000CC48BB /* thatsallfolks.jpg in Resources */,
 				C974029623B6381D00BA9B25 /* doc_44.png in Resources */,
 				C974029323B6381D00BA9B25 /* doc_64.png in Resources */,
 				C974029423B6381D00BA9B25 /* doc_320.png in Resources */,
@@ -2039,6 +2056,7 @@
 				C9C6EB142004280A00211FDD /* Real.cpp in Sources */,
 				C9E9BB7A20C5D16E00EE27D9 /* RPVSplitViewMasterTableViewController.m in Sources */,
 				C9C90B2120FCA8D9001258C3 /* RPVCalendarCell.m in Sources */,
+				C99C883623D0C36500CC48BB /* RPVFullscreenAlertController.m in Sources */,
 				C9E952D920FBC61700E850B6 /* RPVWebViewController.m in Sources */,
 				C9C6EB1B2004280A00211FDD /* SAMKeychainQuery.m in Sources */,
 				C9C6EB152004280A00211FDD /* String.cpp in Sources */,

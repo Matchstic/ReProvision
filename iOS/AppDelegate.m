@@ -16,6 +16,7 @@
 #import "RPVIpaBundleApplication.h"
 #import "RPVApplicationDetailController.h"
 #import "RPVApplicationDatabase.h"
+#import "RPVFullscreenAlertController.h"
 
 #import <RMessageView.h>
 #import "SAMKeychain.h"
@@ -42,6 +43,7 @@
 @property (nonatomic, strong) NSXPCConnection *daemonConnection;
 @property (nonatomic, readwrite) BOOL applicationIsActive;
 @property (nonatomic, readwrite) BOOL pendingDaemonConnectionAlert;
+@property (nonatomic, strong) UIWindow *alertWindow;
 
 @end
 
@@ -73,6 +75,34 @@
     
     NSLog(@"*** [ReProvision] :: applicationDidFinishLaunching, options: %@", launchOptions);
     
+    BOOL showEOLNotice = ![[RPVResources preferenceValueForKey:@"displayedEOLAlert"] boolValue];
+    
+    // Open fullscreen alert for deprecation
+    if (showEOLNotice) {
+        self.alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        
+        RPVFullscreenAlertController *alertController = [[RPVFullscreenAlertController alloc] init];
+        alertController.onDismiss = ^{
+            [RPVResources setPreferenceValue:@1 forKey:@"displayedEOLAlert" withNotification:nil];
+            
+            [UIView animateWithDuration:0.25 animations:^{
+                self.alertWindow.alpha = 0.0;
+            } completion:^(BOOL finished) {
+                if (finished) {
+                    [self.alertWindow setHidden:YES];
+                    self.alertWindow = nil;
+                }
+            }];
+
+        };
+        
+        self.alertWindow.rootViewController = alertController;
+        self.alertWindow.windowLevel = UIWindowLevelStatusBar;
+        [self.alertWindow setTintColor:[UIColor colorWithRed:147.0/255.0 green:99.0/255.0 blue:207.0/255.0 alpha:1.0]];
+        
+        [self.alertWindow makeKeyAndVisible];
+    }
+
     return YES;
 }
 

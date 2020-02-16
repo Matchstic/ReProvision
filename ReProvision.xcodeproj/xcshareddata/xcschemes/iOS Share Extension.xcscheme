@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C974027E23B2377F00BA9B25"
-               BuildableName = "iOS Share Extension.appex"
+               BuildableName = "Share.appex"
                BlueprintName = "iOS Share Extension"
                ReferencedContainer = "container:ReProvision.xcodeproj">
             </BuildableReference>
