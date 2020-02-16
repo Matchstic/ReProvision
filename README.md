@@ -2,6 +2,14 @@
 
 This project provides automatic re-provisioning of iOS and tvOS applications to avoid the 7-day expiration associated with free certificates, along with a macOS application to manually provision a given `.ipa` file.
 
+### WARNING
+
+This project is currently broken, and won't be fixed by the original author. See here for more info: https://github.com/Matchstic/ReProvision/wiki/Login-Notes
+
+Any pull requests that fix the login process will be accepted, provided they can be proven to work.
+
+Users: if you want automatic re-signing, it is strongly recommended to look at AltServer/AltStore.
+
 ### Features
 
 Provisioning is undertaken via the user's Apple ID credentials, and supports both paid and free development accounts. These credentials are stored in the user's Keychain for subsequent re-use, and are only sent to Apple's iTunes Connect API for authentication.
@@ -24,9 +32,9 @@ Please note that only jailbroken devices are supported at this time. Follow [iss
 - Basic settings to configure alerts shown by the automatic re-signing.
 - Ability to install any `.ipa` file downloaded to the device.
 
-#### macOS [TODO]
+#### macOS [N/A]
 
-- Ability to write a newly provisioned `.ipa` file to the filesystem, or install directly to the user's device
+- Not viable with this codebase. See AltDeploy instead: https://github.com/pixelomer/AltDeploy
 
 ### Pre-Requisites
 
@@ -55,3 +63,5 @@ Licensed under the AGPLv3 License.
 If you re-distribute this package on a Cydia repository, be aware that I will not provide any support whatsoever for users of it on said repository.
 
 Furthermore, ReProvision (and by extension, libProvision as found in `/Shared/`) IS NOT FOR PIRACY. It is intended to allow users to ensure applications signed with a free development certificate remain signed past the usual 7-day window.
+
+Absolutely no warranty or guarantee is provided; the software is provided AS-IS.
