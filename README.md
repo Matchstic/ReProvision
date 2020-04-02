@@ -4,9 +4,7 @@ This project provides automatic re-provisioning of iOS and tvOS applications to 
 
 ### WARNING
 
-This project is currently broken, and won't be fixed by the original author. See here for more info: https://github.com/Matchstic/ReProvision/wiki/Login-Notes
-
-Any pull requests that fix the login process will be accepted, provided they can be proven to work.
+This project is currently functional, but I won't be providing further updates. However, I am more than happy to review/accept pull requests, and then publish those as updates.
 
 Users: if you want automatic re-signing, it is strongly recommended to look at AltServer/AltStore.
 
