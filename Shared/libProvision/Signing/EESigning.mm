@@ -37,7 +37,7 @@ static auto dummy([](double) {});
         // Where key.pem == privateKey, certificate.pem == certificate, caChain.pem == apple-ios.pem
         
         // Create our PKCS12!
-        _PKCS12 = [self _createPKCS12CertificateWithKey:privateKey certificate:certificate andCAChain:[self _loadCAChainFromDisk]];
+        _PKCS12 = [self _createPKCS12CertificateWithKey:privateKey certificate:certificate andCAChain:[self _loadCAChainFromDiskForCertificate:certificate]];
         if (_PKCS12.size() == 0) {
             // Holy moly Batman.
         }
@@ -115,8 +115,26 @@ static auto dummy([](double) {});
     completionHandler(YES, @"");
 }
 
-- (X509 *)_loadCAChainFromDisk {
-    NSString *filepath = [[NSBundle mainBundle] pathForResource:@"apple-ios" ofType:@"pem"];
+- (X509 *)_loadCAChainFromDiskForCertificate:(NSData*)certificate {
+    X509 *cert;
+    const unsigned char *input = (unsigned char*)[certificate bytes];
+    cert = d2i_X509(NULL, &input, (int)[certificate length]);
+    if (!cert) {
+        NSLog(@"Error loading cert into memory.");
+        @throw [NSException exceptionWithName:@"libProvisionSigningException" reason:@"Could not load certificate into memory!" userInfo:nil];
+    }
+
+    unsigned long issuerHash = X509_issuer_name_hash(cert);
+
+    NSString *filepath;
+    if (issuerHash == 0x817d2f7a) {
+        filepath = [[NSBundle mainBundle] pathForResource:@"apple-ios" ofType:@"pem"];
+    } else if (issuerHash == 0x9b16b75c) {
+        filepath = [[NSBundle mainBundle] pathForResource:@"apple-ios-g3" ofType:@"pem"];
+    } else {
+        NSLog(@"Failed to determine intermediate certificate to use.");
+        @throw [NSException exceptionWithName:@"libProvisionSigningException" reason:@"Could not determine intermediate certificate to use!" userInfo:nil];
+    }
     
     NSLog(@"Loading CA chain from '%@'", filepath);
     
