@@ -2,9 +2,9 @@
 
 This project provides automatic re-provisioning of iOS and tvOS applications to avoid the 7-day expiration associated with free certificates, along with a macOS application to manually provision a given `.ipa` file.
 
-### WARNING
+### DEPRECATION NOTICE
 
-This project is currently functional, but I won't be providing further updates. However, I am more than happy to review/accept pull requests, and then publish those as updates.
+This project is currently functional, but I won't be providing further updates.
 
 Users: if you want automatic re-signing, it is strongly recommended to look at AltServer/AltStore.
 
